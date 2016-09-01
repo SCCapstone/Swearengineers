@@ -1,0 +1,35 @@
+﻿Currently, we’re assuming that you want to load these problems and solutions
+into the database individually because it would allow any teacher to compose
+problems.  Because of the general format of math problems, we are considering an
+interface that works with LaTeX, but also allowed an easier method of input that
+has push buttons.  Here is an example of such an interface:
+    https://www.codecogs.com/latex/eqneditor.php
+
+LaTeX is a universal and common way of writing math problems in code.  Because
+it’s common, it will probably offer instructors the most flexibility:  Aside
+from this project, there are several apps like that can be used to generate the
+LaTex you’ll probably want in the database.  Here’s an example:
+    http://webdemo.myscript.com/views/math.html
+
+Do you have a teacher interface example that you feel would be more appropriate?
+
+Do you have any comments or concerns about LaTeX?
+
+Do you already have example formats that you have planned for us to utilize
+other than LaTeX?
+
+Have you decided if this is a network application or a web app?
+
+Do you have any comments about the possible use of MathJax in a web application?
+There are LaTeX examples on the page:
+    https://www.mathjax.org/
+
+If this will be a network application, are there any network infrastructure we
+should be aware of?
+(You may need to run this by the person who administers the school network.)
+
+Do you have any comments, questions or concerns regarding any programming
+languages we may consider using?  For example, the use of Visual Basic
+would confine the application to the Microsoft environment.
+
+Any other questions for the team?
