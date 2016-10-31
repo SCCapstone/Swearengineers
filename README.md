@@ -1,7 +1,7 @@
-# Guestbook
+# Hello World
 
-Guestbook is an example application showing basic usage of Google App
-Engine. Users can read & write text messages and optionaly log-in with
+Hello World is an example application showing basic usage of Google App
+Engine. Users can optionaly log-in with
 their Google account. Messages are stored in App Engine (NoSQL)
 High Replication Datastore (HRD) and retrieved using a strongly consistent
 (ancestor) query.
