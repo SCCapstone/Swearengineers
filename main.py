@@ -1,3 +1,7 @@
+#Signatures: Matthew
+#John
+#Jory
+#James
 # [START imports]
 import os
 import urllib
@@ -11,7 +15,6 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     autoescape=True)
 # [END imports]
 
-#Signatures: Matthew
 class LoginPage(webapp2.RequestHandler):
     def get(self):
         template = JINJA_ENVIRONMENT.get_template('loginMQ.html')
