@@ -1,4 +1,17 @@
+<<<<<<< HEAD
 #!/usr/bin/env python
+=======
+#Signatures: 
+#Matthew
+#John
+#Jory
+#James
+#Nathaniel Polly
+
+# [START imports]
+import os
+import urllib
+>>>>>>> 2537add155f222a97e690d24953ebad1a31880ac
 
 from google.appengine.ext.webapp import template
 from google.appengine.ext import ndb
@@ -10,6 +23,7 @@ import webapp2
 from webapp2_extras import auth
 from webapp2_extras import sessions
 
+<<<<<<< HEAD
 from webapp2_extras.auth import InvalidAuthIdError
 from webapp2_extras.auth import InvalidPasswordError
 
@@ -24,6 +38,12 @@ def user_required(handler):
       self.redirect(self.uri_for('login'), abort=True)
     else:
       return handler(self, *args, **kwargs)
+=======
+class LoginPage(webapp2.RequestHandler):
+    def get(self):
+        template = JINJA_ENVIRONMENT.get_template('loginMQ.html')
+        self.response.out.write(template.render())
+>>>>>>> 2537add155f222a97e690d24953ebad1a31880ac
 
   return check_login
 
@@ -38,6 +58,7 @@ class BaseHandler(webapp2.RequestHandler):
     """Shortcut to access a subset of the user attributes that are stored
     in the session.
 
+<<<<<<< HEAD
     The list of attributes to store in the session is specified in
       config['webapp2_extras.auth']['user_attributes'].
     :returns
@@ -287,3 +308,11 @@ app = webapp2.WSGIApplication([
 ], debug=True, config=config)
 
 logging.getLogger().setLevel(logging.DEBUG)
+=======
+# [START app]
+app = webapp2.WSGIApplication([
+    ('/', LoginPage)
+
+], debug=True)
+# [END app]
+>>>>>>> 2537add155f222a97e690d24953ebad1a31880ac
