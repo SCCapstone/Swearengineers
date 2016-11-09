@@ -32,20 +32,15 @@ def user_required(handler):
     Decorator that checks if there's a user associated with the current session.
     Will also fail if there's no session present.
   """
-  def check_login(self, *args, **kwargs):
+def check_login(self, *args, **kwargs):
     auth = self.auth
     if not auth.get_user_by_session():
       self.redirect(self.uri_for('login'), abort=True)
     else:
       return handler(self, *args, **kwargs)
 #=======
-class LoginPage(webapp2.RequestHandler):
-    def get(self):
-        template = JINJA_ENVIRONMENT.get_template('loginMQ.html')
-        self.response.out.write(template.render())
 
-
-  return check_login
+    return check_login
 
 class BaseHandler(webapp2.RequestHandler):
   @webapp2.cached_property
@@ -294,7 +289,7 @@ config = {
     'secret_key': 'YOUR_SECRET_KEY'
   }
 }
-
+# [START app]
 app = webapp2.WSGIApplication([
     webapp2.Route('/', MainHandler, name='home'),
     webapp2.Route('/signup', SignupHandler),
@@ -308,10 +303,7 @@ app = webapp2.WSGIApplication([
 ], debug=True, config=config)
 
 logging.getLogger().setLevel(logging.DEBUG)
-=======
-# [START app]
-app = webapp2.WSGIApplication([
-    ('/', LoginPage)
+#=======
 
-], debug=True)
+
 # [END app]
