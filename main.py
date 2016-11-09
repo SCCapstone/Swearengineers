@@ -9,8 +9,7 @@
 #Nathaniel Polly
 
 # [START imports]
-import os
-import urllib
+
 
 
 from google.appengine.ext.webapp import template
@@ -32,21 +31,20 @@ def user_required(handler):
     Decorator that checks if there's a user associated with the current session.
     Will also fail if there's no session present.
   """
-def check_login(self, *args, **kwargs):
+  def check_login(self, *args, **kwargs):
     auth = self.auth
     if not auth.get_user_by_session():
       self.redirect(self.uri_for('login'), abort=True)
     else:
       return handler(self, *args, **kwargs)
-#=======
-
-    return check_login
+            
+  return check_login
 
 class BaseHandler(webapp2.RequestHandler):
   @webapp2.cached_property
   def auth(self):
-    """Shortcut to access the auth instance as a property."""
-    return auth.get_auth()
+     """Shortcut to access the auth instance as a property."""
+     return auth.get_auth()
 
   @webapp2.cached_property
   def user_info(self):
@@ -116,11 +114,11 @@ class BaseHandler(webapp2.RequestHandler):
 
 class MainHandler(BaseHandler):
   def get(self):
-    self.render_template('main.html')
+     self.render_template('main.html')
 
 class SignupHandler(BaseHandler):
   def get(self):
-    self.render_template('signup.html')
+     self.render_template('signup.html')
 
   def post(self):
     user_name = self.request.get('username')
@@ -276,9 +274,9 @@ class LogoutHandler(BaseHandler):
     self.redirect(self.uri_for('home'))
 
 class AuthenticatedHandler(BaseHandler):
-  @user_required
-  def get(self):
-    self.render_template('authenticated.html')
+   @user_required
+   def get(self):
+     self.render_template('authenticated.html')
 
 config = {
   'webapp2_extras.auth': {
@@ -303,7 +301,7 @@ app = webapp2.WSGIApplication([
 ], debug=True, config=config)
 
 logging.getLogger().setLevel(logging.DEBUG)
-#=======
+
 
 
 # [END app]
