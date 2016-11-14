@@ -277,7 +277,17 @@ class LogoutHandler(BaseHandler):
 class AuthenticatedHandler(BaseHandler):
    @user_required
    def get(self):
-     self.render_template('authenticated.html')
+     self.render_template('inMain.html')
+
+class inMainHandler(BaseHandler):
+   @user_required
+   def get(self):
+     self.render_template('inMain.html')
+
+class inAssignmentHandler(BaseHandler):
+   @user_required
+   def get(self):
+     self.render_template('inAssignment.html')
 
 config = {
   'webapp2_extras.auth': {
@@ -298,7 +308,9 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/login', LoginHandler, name='login'),
     webapp2.Route('/logout', LogoutHandler, name='logout'),
     webapp2.Route('/forgot', ForgotPasswordHandler, name='forgot'),
-    webapp2.Route('/authenticated', AuthenticatedHandler, name='authenticated')
+    webapp2.Route('/authenticated', AuthenticatedHandler, name='authenticated'),
+    webapp2.Route('/inMain', inMainHandler, name='inMain'),
+    webapp2.Route('/inAssignment', inAssignmentHandler, name='inAssignment')
 ], debug=True, config=config)
 
 logging.getLogger().setLevel(logging.DEBUG)
