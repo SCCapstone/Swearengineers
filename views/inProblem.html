@@ -1,9 +1,10 @@
 {% extends "inTemplate.html" %}
 
-
 {% block style %}
     <link href="./bootstrap/css/inProblem.css" rel="stylesheet" >
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 {% endblock %}
+
 
 {% block sidebar %}
     <div class="collapse navbar-collapse navbar-ex1-collapse">
@@ -11,11 +12,11 @@
             <li>
                 <a href="/inMain"><i class="fa fa-fw fa-home"></i> Home</a>
             </li>
-            <li>
-                <a href="/inAssignment"><i class="fa fa-fw fa-edit"></i> Assignments</a>
-            </li>
             <li class="active">
                 <a href="/inProblem"><i class="fa fa-fw fa-edit"></i> Problem</a>
+            </li>
+            <li>
+                <a href="/inMyProblems"><i class="fa fa-fw fa-edit"></i> My Problems</a>
             </li>
         </ul>
     </div>
@@ -37,9 +38,7 @@
                     </div>
                 </div>
 
-<!--
---------------------------------------------------------------------------------
--->
+<!-- -->
 
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({
@@ -67,11 +66,13 @@
   <li onclick="addLaTex('\\infty ')">$\infty$</li>
   <li onclick="addLaTex('\\sum_{i=0}^n ')">$\sum_{i=0}^n$</li>
 </ul>
-<div class="problem">
-  <label for="data">Question:</label>
-  <input type="text" id="textbox" name="exp">
-  <button onclick="nextFun()" id ="prev" type="submit">previous</button>
-  <button onclick="nextFun()" id ="next" type="submit">next</button>
+<div class="inputArea">
+  <form action="/inProblem" method="POST">
+    <label for="data">Question:</label>
+    <input type="text" id="textbox" name="problem">
+    <button onclick="nextFun()" id ="prev" type="submit">previous</button>
+    <button id ="next" type="submit">save</button>
+  </form>
 </div>
                 </div>
             </div>
@@ -80,28 +81,36 @@
         <!-- /#page-wrapper -->
     </div>
 
-
 <script>
+/*******************************************************************************
+* Variables set to match ids of elements:
+*
+**********/
 var textbox = document.getElementById("textbox");
 var display = document.getElementById("display");
 
 /*******************************************************************************
-* Focus the textbox on when the page loads.
-*******************************************************************************/
-
-window.onload = function() {
-  textbox.focus();
-  window.scrollTo(0,0);
-};
-
+* Page Load
+* ---------
+*  - Focus the textbox
+*  - Then, scroll back to the top
+*  - Mathjax buttons show up slowly to avoid jittery behaivior
+*
+**********/
+$("#textbox").focus();
+window.scrollTo(0,0);
+$(".mbttn li").animate({opacity: '1'}, 2500);
 
 /*******************************************************************************
-* The textbox will match the display.
-*******************************************************************************/
+* Display Function
+* ----------------
+* - Make the math display match the textbox
+* - A timeout where the text is invisible allows the mathjax to render
+*
+**********/
 var displayRefreshRate = setInterval(match, 100);
 var old;
 function match() {
-
   if( old != textbox.value ){
     clearInterval(displayRefreshRate);
     display.style.color = "white";
@@ -111,22 +120,33 @@ function match() {
     setTimeout(
       function visible(){ display.style.color = "black";}, 300
     );
-
     displayRefreshRate = setInterval(match, 100);
   }
 }
-
-
+/*******************************************************************************
+* LaTeX Button Function
+* ---------------------
+* - Put the Latex in the textbox
+* - Re-focus the textbox
+*
+**********/
+function addLaTex(latex){
+  textbox.value=textbox.value.concat(latex);
+  textbox.focus();
+}
+/*******************************************************************************
+* Offline Functions:
+* -----------------
+* Only used to test js while server is not running
+* 1.)  Clear the textbox
+*      - called by <enter>, next, or prev buttons
+*
+* 2.)  <Enter> key event listener
+*
+**********/
 function nextFun() {
   textbox.value = "";
 }
-
-
-
-/*******************************************************************************
-* The <Enter> key event listener
-*******************************************************************************/
-
 textbox.addEventListener("keyup",
   function(event) {
     event.preventDefault();
@@ -134,14 +154,6 @@ textbox.addEventListener("keyup",
         document.getElementById("next").click();
     }
 });
-
-/*******************************************************************************
-* Put the Latex in the textbox
-*******************************************************************************/
-
-function addLaTex(latex){
-  textbox.value=textbox.value.concat(latex);
-  textbox.focus();
-}
 </script>
+
 {% endblock %}

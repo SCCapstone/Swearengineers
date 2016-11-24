@@ -15,10 +15,13 @@
 
 from google.appengine.ext.webapp import template
 from google.appengine.ext import ndb
+from google.appengine.api import users
 
 import logging
 import os.path
 import webapp2
+import urllib
+
 
 from webapp2_extras import auth
 from webapp2_extras import sessions
@@ -26,6 +29,26 @@ from webapp2_extras import sessions
 
 from webapp2_extras.auth import InvalidAuthIdError
 from webapp2_extras.auth import InvalidPasswordError
+
+
+DEFAULT_USER = "test@email.sc.edu"
+
+class Author(ndb.Model):
+    """Sub model for representing an author."""
+    identity = ndb.StringProperty(indexed=False)
+    email = ndb.StringProperty(indexed=False)
+
+class Problem(ndb.Model):
+    author = ndb.StructuredProperty(Author)
+    content = ndb.StringProperty(indexed=False)
+    date = ndb.DateTimeProperty(auto_now_add=True)
+
+def user_key(user=DEFAULT_USER):
+    """Constructs a Datastore key for a User entity.
+
+    We use guestbook_name as the key.
+    """
+    return ndb.Key('User', user)
 
 def user_required(handler):
   """
@@ -256,7 +279,7 @@ class LoginHandler(BaseHandler):
     try:
       u = self.auth.get_user_by_password(username, password, remember=True,
         save_session=True)
-      self.redirect(self.uri_for('home'))
+      self.redirect(self.uri_for('inMain'))
     except (InvalidAuthIdError, InvalidPasswordError) as e:
       logging.info('Login failed for user %s because of %s', username, type(e))
       self._serve_page(True)
@@ -284,15 +307,40 @@ class inMainHandler(BaseHandler):
    def get(self):
      self.render_template('inMain.html')
 
-class inAssignmentHandler(BaseHandler):
-   @user_required
-   def get(self):
-     self.render_template('inAssignment.html')
+#class inAssignmentHandler(BaseHandler):
+#   @user_required
+#   def get(self):
+#     self.render_template('inAssignment.html')
 
-class inProblemHandler(BaseHandler):
+class inProblemHandler(BaseHandler, webapp2.RequestHandler):
    @user_required
    def get(self):
      self.render_template('inProblem.html')
+
+   def post(self):
+     user = self.user
+     problem = Problem(parent=user_key(user.email_address))
+     problem.author = Author(
+                 identity=user.name,
+                 email=user.email_address)
+     problem.content = self.request.get('problem')
+     problem.put()
+     self.redirect(self.uri_for('inProblem'))
+
+class inMyProblemsHandler(BaseHandler):
+   @user_required
+   def get(self):
+     user = self.user
+
+     problem_query = Problem.query(
+          ancestor=user_key(user.email_address)).order(-Problem.date)
+     problems = problem_query.fetch(10)
+
+     template_values = {
+            'problems': problems,
+        }
+
+     self.render_template('inMyProblems.html', template_values)
 
 config = {
   'webapp2_extras.auth': {
@@ -315,8 +363,9 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/forgot', ForgotPasswordHandler, name='forgot'),
     webapp2.Route('/authenticated', AuthenticatedHandler, name='authenticated'),
     webapp2.Route('/inMain', inMainHandler, name='inMain'),
-    webapp2.Route('/inAssignment', inAssignmentHandler, name='inAssignment'),
-    webapp2.Route('/inProblem', inProblemHandler, name='inProblem')
+    #webapp2.Route('/inAssignment', inAssignmentHandler, name='inAssignment'),
+    webapp2.Route('/inProblem', inProblemHandler, name='inProblem'),
+    webapp2.Route('/inMyProblems', inMyProblemsHandler, name='inMyProblems')
 ], debug=True, config=config)
 
 logging.getLogger().setLevel(logging.DEBUG)
