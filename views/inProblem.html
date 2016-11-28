@@ -48,23 +48,66 @@
 <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML-full"></script>
 
 
-
 <h2 id="display"></h2>
+
 <ul class="mbttn">
-  <li onclick="addLaTex('\\frac{x}{y} ')">$\frac{x}{y}$</li>
-  <li onclick="addLaTex('x\\cdot y')">$x\cdot y$</li>
-  <li onclick="addLaTex('x^{xy}')">$x^{xy}$</li>
-  <li onclick="addLaTex('\\sqrt{x} ')">$\sqrt{x}$</li>
-  <li onclick="addLaTex('\\sqrt[3]{x}')">$\sqrt[3]{x}$</li>
-  <li onclick="addLaTex('|x| ')">$|x|$</li>
-  <li onclick="addLaTex('\\alpha ')">$\alpha$</li>
-  <li onclick="addLaTex('\\beta ')">$\beta$</li>
-  <li onclick="addLaTex('\\Delta ')">$\Delta$</li>
-  <li onclick="addLaTex('\\Omega ')">$\Omega$</li>
-  <li onclick="addLaTex('\\ge ')">$\ge$</li>
-  <li onclick="addLaTex('\\ne ')">$\ne$</li>
-  <li onclick="addLaTex('\\infty ')">$\infty$</li>
-  <li onclick="addLaTex('\\sum_{i=0}^n ')">$\sum_{i=0}^n$</li>
+
+  <li onclick="addLaTex('\\frac{x}{y} ')">
+    <script type="math/tex">\frac{x}{y}</script>
+  </li>
+
+  <li onclick="addLaTex('x\\cdot y')">
+    <script type="math/tex">x\cdot y</script>
+  </li>
+
+  <li onclick="addLaTex('x^{xy}')">
+    <script type="math/tex">x^{xy}</script>
+  </li>
+
+  <li onclick="addLaTex('\\sqrt{x} ')">
+    <script type="math/tex">\sqrt{x}</script>
+  </li>
+
+  <li onclick="addLaTex('\\sqrt[3]{x}')">
+    <script type="math/tex">\sqrt[3]{x}</script>
+  </li>
+
+  <li onclick="addLaTex('|x| ')">
+    <script type="math/tex">|x|</script>
+  </li>
+
+  <li onclick="addLaTex('\\alpha ')">
+    <script type="math/tex">\alpha</script>
+  </li>
+
+  <li onclick="addLaTex('\\beta ')">
+    <script type="math/tex">\beta</script>
+  </li>
+
+  <li onclick="addLaTex('\\Delta ')">
+    <script type="math/tex">\Delta</script>
+  </li>
+
+  <li onclick="addLaTex('\\Omega ')">
+    <script type="math/tex">\Omega</script>
+  </li>
+
+  <li onclick="addLaTex('\\ge ')">
+    <script type="math/tex">\ge</script>
+  </li>
+
+  <li onclick="addLaTex('\\ne ')">
+    <script type="math/tex">\ne</script>
+  </li>
+
+  <li onclick="addLaTex('\\infty ')">
+    <script type="math/tex">\infty</script>
+  </li>
+
+  <li onclick="addLaTex('\\sum_{i=0}^n ')">
+    <script type="math/tex">\sum_{i=0}^n</script>
+  </li>
+
 </ul>
 <div class="inputArea">
   <form action="/inProblem" method="POST">
@@ -89,17 +132,25 @@
 var textbox = document.getElementById("textbox");
 var display = document.getElementById("display");
 
+
 /*******************************************************************************
 * Page Load
 * ---------
 *  - Focus the textbox
 *  - Then, scroll back to the top
-*  - Mathjax buttons show up slowly to avoid jittery behaivior
+*  - Mathjax buttons show up later to avoid jittery behaivior
 *
 **********/
-$("#textbox").focus();
-window.scrollTo(0,0);
-$(".mbttn li").animate({opacity: '1'}, 2500);
+window.onload = function(){
+
+  textbox.focus();
+  window.scrollTo(0,0);
+
+  setTimeout(function(){
+    $("ul.mbttn li").css("color", "#f2f2f2");
+  }, 380);
+
+}
 
 /*******************************************************************************
 * Display Function
@@ -110,6 +161,7 @@ $(".mbttn li").animate({opacity: '1'}, 2500);
 **********/
 var displayRefreshRate = setInterval(match, 100);
 var old;
+
 function match() {
   if( old != textbox.value ){
     clearInterval(displayRefreshRate);
@@ -123,6 +175,8 @@ function match() {
     displayRefreshRate = setInterval(match, 100);
   }
 }
+
+
 /*******************************************************************************
 * LaTeX Button Function
 * ---------------------
@@ -134,6 +188,8 @@ function addLaTex(latex){
   textbox.value=textbox.value.concat(latex);
   textbox.focus();
 }
+
+
 /*******************************************************************************
 * Offline Functions:
 * -----------------
@@ -154,6 +210,8 @@ textbox.addEventListener("keyup",
         document.getElementById("next").click();
     }
 });
+
+
 </script>
 
 {% endblock %}
