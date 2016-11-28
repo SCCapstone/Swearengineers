@@ -2,7 +2,12 @@ runtime: python27
 api_version: 1
 threadsafe: yes
 
+# [START handlers]
 handlers:
+- url: /favicon\.ico
+  static_files: favicon.ico
+  upload: favicon\.ico
+
 - url: /signup
   script: main.app
   secure: always
@@ -20,8 +25,10 @@ handlers:
 
 - url: .*
   script: main.app
+# [END handlers]
 
-
+# [START libraries]
 libraries:
 - name: webapp2
-  version: "2.5.1"
+  version: latest
+# [END libraries]
