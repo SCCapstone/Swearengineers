@@ -27,8 +27,9 @@
 &nbsp;
 
 ## Client Info
-Clara Valtorta 
-cgvaltorta@gmail.com   
+Clara Valtorta
+
+[cgvaltorta@gmail.com]()
 [Website](https://www.linkedin.com/in/clara-valtorta-2b579a1b)
 
 &nbsp;
