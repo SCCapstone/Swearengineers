@@ -1,4 +1,4 @@
-/*
+
 *{
   margin:0;
   padding:0;
@@ -60,7 +60,6 @@ ul.mbttn {
 
 
 /* li color will changed after mathjax load */
-/*
 ul.mbttn li {
   color: #333;
   cursor: pointer;
@@ -94,4 +93,3 @@ ul.mbttn li:hover {
   padding-bottom:5%;
 }
 
-*/
