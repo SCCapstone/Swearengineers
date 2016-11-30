@@ -1,10 +1,58 @@
-# Hello World
+****
+# Math Quizzes Project Description
 
-Hello World is an example application showing basic usage of Google App
-Engine. Users can optionaly log-in with
-their Google account. Messages are stored in App Engine (NoSQL)
-High Replication Datastore (HRD) and retrieved using a strongly consistent
-(ancestor) query.
+## Goal
+### _To create an educational web app for kindergarten through 12th grade students that allows their teachers to assign them math problems._
+
+&nbsp;
+
+****
+## Overview
+* Each problem in the app's database will be tagged with both **keywords** and a **difficulty level** (Low, Medium, and High).
+  * The instructor interface needs the ability to specify a number of problems a student should need to complete at each difficulty level in order to advance to the next level.
+    * If an instructor decides that each student will answer, for example, 6 problems at the **Low** difficulty level
+    * The web app will only allow a student to advance to the **Medium** difficulty level after correctly answering 6  **Low** level problems. 
+
+* Instructors need a summary to view all students:
+  * Results 
+  * Results at each Difficulty level
+  * Include a link to the actual problems
+
+* _The client will provide the problems, tagged with the standard, difficulty level, and keyword(s)._
+
+&nbsp;
+
+****
+
+&nbsp;
+
+## Client Info
+Clara Valtorta 
+cgvaltorta@gmail.com   
+[Website](https://www.linkedin.com/in/clara-valtorta-2b579a1b)
+
+&nbsp;
+
+****
+
+&nbsp;
+
+## Platforms
+* Windows
+* Mac
+* Tablets
+
+&nbsp;
+
+****
+
+&nbsp;
+
+
+
+# Technical Requirements
+
+***
 
 ## Products
 - [App Engine][1]
@@ -30,23 +78,16 @@ High Replication Datastore (HRD) and retrieved using a strongly consistent
 [7]: http://twitter.github.com/bootstrap/
 
 
-## E2E Test for this sample app
+To run locally:
 
-A Makefile is provided to deploy and run the e2e test.
+     dev_appserver.py ./
+     
+To deploy:
 
-To run:
+     gcloud app deploy ./app.yaml ./index.yaml
 
-     export GAE_PROJECT=your-project-id
-     make
+To update a modified data store index:
 
-To manually run, install the requirements
-
-    pip install -r e2e/requirements-dev.txt
-
-Set the environment variable to point to your deployed app:
-
-    export GUESTBOOK_URL="http://guestbook-test-dot-useful-temple-118922.appspot.com/"
-
-Finally, run the test
-
-    python e2e/test_e2e.py
+     gcloud preview datastore cleanup-indexes ./index.yaml
+     gcloud preview datastore create-indexes ./index.yaml
+     gcloud app deploy ./index.yaml ./app.yaml
