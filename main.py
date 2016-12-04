@@ -151,6 +151,16 @@ class SignupHandler(BaseHandler):
     password = self.request.get('password')
     last_name = self.request.get('lastname')
 
+    if len(password) < 6:
+      self.display_message('Password Length must be at least 6 \
+        characters')
+      return 
+
+    if len(password) >= 12:
+      self.display_message('Password Length cannot be more than \
+        12 characters')
+      return
+
     unique_properties = ['email_address']
     user_data = self.user_model.create_user(user_name,
       unique_properties,
