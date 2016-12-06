@@ -63,7 +63,7 @@
                                 <thead>
                                     <tr>
                                         <th>Problem </th>
-                                        <th>Latex</th>
+                                        <th>LaTeX</th>
                                         <th>Author</th>
                                         <th>Creation Date</th>
                                     </tr>
@@ -71,7 +71,7 @@
                                 <tbody>
                                 {%for problem in problems %}
                                     <tr>
-                                        <td>$${{ problem.content }}$$</td>
+                                        <td><script type="math/tex">{{ problem.content }}</script></td>
                                         <td>{{ problem.content }}</td>
                                         <td>{{ problem.author.identity }}</td>
                                         <td>{{ problem.date }}</td>
