@@ -11,8 +11,6 @@
 
 # [START imports]
 
-
-
 from google.appengine.ext.webapp import template
 from google.appengine.ext import ndb
 from google.appengine.api import users
@@ -136,9 +134,10 @@ class BaseHandler(webapp2.RequestHandler):
           # Save all sessions.
           self.session_store.save_sessions(self.response)
 
-class MainHandler(BaseHandler):
-  def get(self):
-     self.render_template('main.html')
+# no longer using this
+#class MainHandler(BaseHandler):
+#  def get(self):
+#     self.render_template('main.html')
 
 class SignupHandler(BaseHandler):
   def get(self):
@@ -150,6 +149,17 @@ class SignupHandler(BaseHandler):
     name = self.request.get('name')
     password = self.request.get('password')
     last_name = self.request.get('lastname')
+
+    # Thanx Austin
+    if len(password) < 6:
+      self.display_message('Password Length must be at least 6 \
+        characters')
+      return
+
+    if len(password) >= 12:
+      self.display_message('Password Length cannot be more than \
+        12 characters')
+      return
 
     unique_properties = ['email_address']
     user_data = self.user_model.create_user(user_name,
@@ -169,9 +179,11 @@ class SignupHandler(BaseHandler):
     verification_url = self.uri_for('verification', type='v', user_id=user_id,
       signup_token=token, _full=True)
 
-    msg = 'Account created'
+    msg = 'Account Created!'
+#    self.display_message(msg.format(url=verification_url))
 
-    self.display_message(msg.format(url=verification_url))
+    self.redirect(self.uri_for('home'))
+
 
 class ForgotPasswordHandler(BaseHandler):
   def get(self):
@@ -279,7 +291,7 @@ class LoginHandler(BaseHandler):
     try:
       u = self.auth.get_user_by_password(username, password, remember=True,
         save_session=True)
-      self.redirect(self.uri_for('inMain'))
+      self.redirect(self.uri_for('home'))
     except (InvalidAuthIdError, InvalidPasswordError) as e:
       logging.info('Login failed for user %s because of %s', username, type(e))
       self._serve_page(True)
@@ -295,17 +307,17 @@ class LoginHandler(BaseHandler):
 class LogoutHandler(BaseHandler):
   def get(self):
     self.auth.unset_session()
-    self.redirect(self.uri_for('home'))
+    self.redirect(self.uri_for('login'))
 
 class AuthenticatedHandler(BaseHandler):
    @user_required
    def get(self):
-     self.render_template('inMain.html')
+     self.render_template('home.html')
 
-class inMainHandler(BaseHandler):
+class MainHandler(BaseHandler):
    @user_required
    def get(self):
-     self.render_template('inMain.html')
+     self.render_template('home.html')
 
 #class inAssignmentHandler(BaseHandler):
 #   @user_required
@@ -362,7 +374,7 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/logout', LogoutHandler, name='logout'),
     webapp2.Route('/forgot', ForgotPasswordHandler, name='forgot'),
     webapp2.Route('/authenticated', AuthenticatedHandler, name='authenticated'),
-    webapp2.Route('/inMain', inMainHandler, name='inMain'),
+    #webapp2.Route('/inMain', inMainHandler, name='inMain'),
     #webapp2.Route('/inAssignment', inAssignmentHandler, name='inAssignment'),
     webapp2.Route('/inProblem', inProblemHandler, name='inProblem'),
     webapp2.Route('/inMyProblems', inMyProblemsHandler, name='inMyProblems')
