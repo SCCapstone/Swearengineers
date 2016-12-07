@@ -2,6 +2,12 @@
 
 {% block style %}
     <link href="./bootstrap/css/inProblem.css" rel="stylesheet" >
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML-full"></script>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+      });
+    </script>
 {% endblock %}
 
 
@@ -12,7 +18,7 @@
                 <a href="/"><i class="fa fa-fw fa-home"></i> Home</a>
             </li>
             <li class="active">
-                <a href="/inProblem"><i class="fa fa-fw fa-edit"></i> Problem</a>
+                <a href="/inProblem"><i class="fa fa-fw fa-edit"></i> New Problem</a>
             </li>
             <li>
                 <a href="/inMyProblems"><i class="fa fa-fw fa-edit"></i> My Problems</a>
@@ -39,15 +45,9 @@
 
 <!-- -->
 
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({
-    tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
-  });
-</script>
-<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML-full"></script>
 
 
-<h2 style="background-color:white" id="display"></h2>
+<h2 id="display"></h2>
 
 <ul class="mbttn">
 
@@ -112,7 +112,7 @@
   <form action="/inProblem" method="POST">
     <label for="data">Question:</label>
     <input type="text" id="textbox" name="problem">
-    <button onclick="nextFun()" id ="prev" type="submit">previous</button>
+    <!--    <button onclick="nextFun()" id ="prev" type="submit">previous</button> -->
     <button id ="next" type="submit">save</button>
   </form>
 </div>
@@ -130,6 +130,8 @@
 **********/
 var textbox = document.getElementById("textbox");
 var display = document.getElementById("display");
+var old;
+var displayRefreshRate;
 
 
 /*******************************************************************************
@@ -147,7 +149,8 @@ window.onload = function(){
 
   setTimeout(function(){
     $("ul.mbttn li").css("color", "#f2f2f2");
-  }, 380);
+  }, 400);
+  displayRefreshRate = setInterval(match, 800);
 
 }
 
@@ -158,8 +161,6 @@ window.onload = function(){
 * - A timeout where the text is invisible allows the mathjax to render
 *
 **********/
-var displayRefreshRate = setInterval(match, 100);
-var old;
 
 function match() {
   if( old != textbox.value ){

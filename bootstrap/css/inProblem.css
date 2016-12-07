@@ -41,7 +41,9 @@ label{
   font-family: Arial;
 }
 
+/* display color will changed after mathjax load */
 #display {
+  color:white;
   background-color:white;
   display:block;
   height: 200px;
@@ -88,7 +90,8 @@ ul.mbttn li:hover {
 
 .inputArea {
   background-color:grey;
-  display:block;
+  display:inline-block;
+  width:100%;
   padding-top:5%;
   padding-bottom:5%;
 }
