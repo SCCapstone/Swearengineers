@@ -166,7 +166,7 @@ function match() {
   if( old != textbox.value ){
     clearInterval(displayRefreshRate);
     display.style.color = "white";
-    display.innerHTML = '$${' + textbox.value + '}$$';
+    display.innerHTML = '' + textbox.value + '';
     MathJax.Hub.Queue(["Typeset",MathJax.Hub,display]);
     old = this.textbox.value;
     setTimeout(
