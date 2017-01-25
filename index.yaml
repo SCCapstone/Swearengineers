@@ -5,4 +5,3 @@ indexes:
   - name: date
     direction: desc
   - name: tags
-    direction: desc
