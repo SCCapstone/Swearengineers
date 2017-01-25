@@ -110,8 +110,12 @@
 </ul>
 <div class="inputArea">
   <form action="/inProblem" method="POST">
-    <label for="data">Question:</label>
+    <label for="data">
+      Add <script type="math/tex">\rm\LaTeX</script>:
+    </label>
     <input type="text" id="textbox" name="problem">
+    <label for="data">Add Keywords:</label>
+    <input type="text" id="tagbox" name="tags">
     <!--    <button onclick="nextFun()" id ="prev" type="submit">previous</button> -->
     <button id ="next" type="submit">save</button>
   </form>
@@ -166,7 +170,7 @@ function match() {
   if( old != textbox.value ){
     clearInterval(displayRefreshRate);
     display.style.color = "white";
-    display.innerHTML = '' + textbox.value + '';
+    display.innerHTML = '$${' + textbox.value + '}$$';
     MathJax.Hub.Queue(["Typeset",MathJax.Hub,display]);
     old = this.textbox.value;
     setTimeout(

@@ -39,6 +39,7 @@ class Author(ndb.Model):
 class Problem(ndb.Model):
     author = ndb.StructuredProperty(Author)
     content = ndb.StringProperty(indexed=False)
+    tags = ndb.StringProperty(indexed=False)
     date = ndb.DateTimeProperty(auto_now_add=True)
 
 def user_key(user=DEFAULT_USER):
@@ -336,6 +337,7 @@ class inProblemHandler(BaseHandler, webapp2.RequestHandler):
                  identity=user.name,
                  email=user.email_address)
      problem.content = self.request.get('problem')
+     problem.tags = self.request.get('tags')
      problem.put()
      self.redirect(self.uri_for('inProblem'))
 

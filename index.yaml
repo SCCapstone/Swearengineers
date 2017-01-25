@@ -3,4 +3,5 @@ indexes:
   ancestor: yes
   properties:
   - name: date
+  - name: tags
     direction: desc

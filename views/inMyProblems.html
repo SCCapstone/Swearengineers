@@ -38,12 +38,13 @@
                         </h1>
                     </div>
                 </div>
+
                 <!-- /.row -->
                 <div class="row">
                     <div class="col-lg-4">
                         <form role="form">
                             <div class="form-group">
-                                <label>Class</label>
+                                <label>Class Search</label>
                                 <select class="form-control">
                                     <option>Class</option>
                                     <option>Math101</option>
@@ -55,13 +56,18 @@
                         </form>
                     </div>
                 </div>
+                <label>Keyword Search</label>
+                <br>
+                <input class="col-lg-4" type="text" id="myInput" onkeyup="myFunction()" placeholder="Search by tag..." title="Type in a name">
                 <div class="row">
                      <div class="col-lg-12">
-                        <h2>Problems</h2>
+                       <br>
+                       <br>
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped" name="problemsTable">
+                            <table id="myTable" class="table table-hover table-striped" name="problemsTable">
                                 <thead>
                                     <tr>
+                                        <th>Keywords </th>
                                         <th>Problem </th>
                                         <th>LaTeX</th>
                                         <th>Author</th>
@@ -71,6 +77,7 @@
                                 <tbody>
                                 {%for problem in problems %}
                                     <tr>
+                                        <td>{{ problem.tags }}</td>
                                         <td><script type="math/tex">{{ problem.content }}</script></td>
                                         <td>{{ problem.content }}</td>
                                         <td>{{ problem.author.identity }}</td>
@@ -88,5 +95,28 @@
         </div>
         <!-- /#page-wrapper -->
     </div>
+
+<script>
+function myFunction() {
+  var input, filter, table, tr, td, i;
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("myTable");
+  tr = table.getElementsByTagName("tr");
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[0];
+    if (td) {
+      if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
+}
+</script>
+
+
+
 
 {% endblock %}
