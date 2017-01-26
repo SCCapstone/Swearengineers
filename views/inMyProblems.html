@@ -58,7 +58,9 @@
                 </div>
                 <label>Keyword Search</label>
                 <br>
-                <input class="col-lg-4" type="text" id="myInput" onkeyup="search()" placeholder="Search by tag..." title="Type in a name">
+                <input class="col-lg-4" type="text" id="myInput" onkeyup="search()" placeholder="Enter a keyword" title="Type in a name">
+                &nbsp;
+                <button onclick="clearSearch()" id ="clear" type="submit">Clear Search</button>
                 <div class="row">
                      <div class="col-lg-12">
                        <br>
@@ -120,6 +122,16 @@ function search() {
     }
   }
 }
+
+
+function clearSearch() {
+  input.value = "";
+  search();
+  input.focus();
+}
+
+
+
 </script>
 
 

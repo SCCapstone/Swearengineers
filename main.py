@@ -348,7 +348,7 @@ class inMyProblemsHandler(BaseHandler):
 
      problem_query = Problem.query(
           ancestor=user_key(user.email_address)).order(-Problem.date)
-     problems = problem_query.fetch(10)
+     problems = problem_query.fetch()
 
      template_values = {
             'problems': problems,
