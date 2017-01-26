@@ -4,5 +4,3 @@ indexes:
   properties:
   - name: date
     direction: desc
-  - name: tags
-    direction: desc
