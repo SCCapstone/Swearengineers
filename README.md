@@ -73,12 +73,27 @@ Clara Valtorta
 
      dev_appserver.py ./
      
+### To run locally and require the program to use index.yaml like the real server does
+
+    dev_appserver.py ./ --require_indexes=yes
+
+     
 ### To deploy:
 
      gcloud app deploy ./app.yaml ./index.yaml
 
-### To update a modified data store index:
+* There is also a project flag to choose the project _will update soon_
+
+
+### To update a modified data store index and deploy:
 
      gcloud preview datastore cleanup-indexes ./index.yaml
      gcloud preview datastore create-indexes ./index.yaml
      gcloud app deploy ./index.yaml ./app.yaml
+     
+     
+### To run from school machines, the following commands are useful after untarring
+
+     find ./google-cloud-sdk/ -name "*.sh" -exec chmod 755 {} \;
+     find ./google-cloud-sdk/ -name "*.py" -exec chmod 755 {} \;
+     find ./Swearengineers/ -name "*.py" -exec chmod 755 {} \;
