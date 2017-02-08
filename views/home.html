@@ -37,13 +37,25 @@
                     <div class="col-lg-4">
                         <form role="form">
                             <div class="form-group">
-                                <label>Class</label>
+                                <label>Course</label>
                                 <select class="form-control">
-                                    <option>Class</option>
-                                    <option>Math101</option>
-                                    <option>Math102</option>
-                                    <option>Math103</option>
-                                    <option>Math104</option>
+                                {%for course in courses %}
+                                    <option>{{ course.content }}</option>
+                                {% endfor %}
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <form role="form">
+                            <div class="form-group">
+                                <label>Assignment</label>
+                                <select class="form-control">
+                                {%for assignment in assignments %}
+                                    <option>{{ assignment.content }}</option>
+                                {% endfor %}
                                 </select>
                             </div>
                         </form>

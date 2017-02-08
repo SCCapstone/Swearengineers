@@ -1,4 +1,14 @@
 indexes:
+- kind: Course
+  ancestor: yes
+  properties:
+  - name: date
+    direction: desc
+- kind: Assignment
+  ancestor: yes
+  properties:
+  - name: date
+    direction: desc
 - kind: Problem
   ancestor: yes
   properties:

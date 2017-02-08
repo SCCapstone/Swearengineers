@@ -37,10 +37,23 @@ class Author(ndb.Model):
     email = ndb.StringProperty(indexed=False)
 
 class Problem(ndb.Model):
+#    course = ndb.StructuredProperty(Course)
+#    assignment = ndb.StructuredProperty(Assignment)
     author = ndb.StructuredProperty(Author)
     content = ndb.StringProperty(indexed=False)
+    answer = ndb.StringProperty(indexed=False)
     tags = ndb.StringProperty(indexed=False)
     date = ndb.DateTimeProperty(auto_now_add=True)
+
+#class Assignment(ndb.Model):
+#    author = ndb.StructuredProperty(Author)
+#    content = ndb.StringProperty(indexed=False)
+#    date = ndb.DateTimeProperty(auto_now_add=True)
+#
+#class Course(ndb.Model):
+#    author = ndb.StructuredProperty(Author)
+#    content = ndb.StringProperty(indexed=False)
+#    date = ndb.DateTimeProperty(auto_now_add=True)
 
 def user_key(user=DEFAULT_USER):
     """Constructs a Datastore key for a User entity.
@@ -338,6 +351,7 @@ class inProblemHandler(BaseHandler, webapp2.RequestHandler):
                  email=user.email_address)
      problem.content = self.request.get('problem')
      problem.tags = self.request.get('tags')
+     problem.answer = self.request.get('answer')
      problem.put()
      self.redirect(self.uri_for('inProblem'))
 
