@@ -1,118 +1,45 @@
+
 {% extends "inTemplate.html" %}
 
-{% block sidebar %}
-    <div class="collapse navbar-collapse navbar-ex1-collapse">
-        <ul class="nav navbar-nav side-nav">
-            <li class="active">
-                <a href="/"><i class="fa fa-fw fa-home"></i> Home</a>
-            </li>
-            <li>
-                <a href="/inProblem"><i class="fa fa-fw fa-edit"></i> New Problem</a>
-            </li>
-            <li>
-                <a href="/inMyProblems"><i class="fa fa-fw fa-edit"></i> My Problems</a>
-            </li>
-        </ul>
-    </div>
-            <!-- /.navbar-collapse -->
-{% endblock %}
+{% block pageName %}Home{% endblock %}
 
 {% block maincontent %}
-        <div id="page-wrapper">
 
-            <div class="container-fluid">
 
-                <!-- Page Heading -->
-                <div class="row">
-                    <div class="col-lg-12">
-                        <h1 class="page-header">
-                            Home
-                            <small></small>
-                        </h1>
-                    </div>
-                </div>
-                <!-- /.row -->
-                <!-- TableCurrent /.row -->
-                <div class="row">
-                    <div class="col-lg-4">
-                        <form role="form">
-                            <div class="form-group">
-                                <label>Course</label>
-                                <select class="form-control">
-                                {%for course in courses %}
-                                    <option>{{ course.content }}</option>
-                                {% endfor %}
-                                </select>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-4">
-                        <form role="form">
-                            <div class="form-group">
-                                <label>Assignment</label>
-                                <select class="form-control">
-                                {%for assignment in assignments %}
-                                    <option>{{ assignment.content }}</option>
-                                {% endfor %}
-                                </select>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div class="row">
-                     <div class="col-lg-12">
-                        <h2>Current Assignments</h2>
-                        <div class="table-responsive">
-                            <table class="table table-hover table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Assignment</th>
-                                        <th>Attempted</th>
-                                        <th>Score</th>
-                                        <th>Due Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>A2: Subtraction</td>
-                                        <td>No</td>
-                                        <td>-</td>
-                                        <td>December 8th</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <!-- TablePast /.row -->
-                <div class="row">
-                    <div class="col-lg-12">
-                        <h3>Past Assignments</h3>
-                        <div class="table-responsive">
-                            <table class="table table-hover table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Assignment</th>
-                                        <th>Attempted</th>
-                                        <th>Score</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>A1: Addition</td>
-                                        <td>yes</td>
-                                        <td>100%</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- /.container-fluid -->
-        </div>
-        <!-- /#page-wrapper -->
+
+                                                     <!-- Past Quizzes Table -->
+<div class="row">
+  <div class="col-lg-12">
+    <h3>Quiz Grades</h3>
+    <div class="table-responsive">
+      <table class="table table-hover table-striped">
+        <thead>
+          <tr>
+            <th>Assignment</th>
+            <th>Attempted</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>A1: Addition</td>
+            <td>yes</td>
+            <td>100%</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+  </div>
+</div>
+
+
+
+
+<script>
+  document.getElementById("home").className += "active";
+</script>
 {% endblock %}
+
+
+
+

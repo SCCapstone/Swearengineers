@@ -1,108 +1,102 @@
+
 {% extends "inTemplate.html" %}
 
-{% block sidebar %}
-    <div class="collapse navbar-collapse navbar-ex1-collapse">
-        <ul class="nav navbar-nav side-nav">
-            <li>
-                <a href="/"><i class="fa fa-fw fa-home"></i> Home</a>
-            </li>
-            <li>
-                <a href="/inProblem"><i class="fa fa-fw fa-edit"></i> New Problem</a>
-            </li>
-            <li class="active">
-                <a href="/inMyProblems"><i class="fa fa-fw fa-edit"></i> My Problems</a>
-            </li>
-        </ul>
-    </div>
-            <!-- /.navbar-collapse -->
-{% endblock %}
+{% block pageName %}My Problems{% endblock %}
 
-{% block maincontent %}
-
+{% block header %}
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({
     tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
   });
 </script>
 <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML-full"></script>
+{% endblock %}
 
-<div id="page-wrapper">
-<div class="container-fluid">
 
-  <!-- Page Heading -->
-  <div class="row">
-    <div class="col-lg-12">
-        <h1 class="page-header">My Problems</h1>
-    </div>
-  </div>
 
-  <!-- /.row -->
-  <div class="row">
-    <div class="col-lg-4">
-      <form role="form">
-          <div class="form-group">
-              <label>Class Search</label>
-              <select class="form-control">
-                  <option>Class</option>
-                  <option>Math101</option>
-                  <option>Math102</option>
-                  <option>Math103</option>
-                  <option>Math104</option>
-              </select>
-          </div>
-      </form>
-    </div>
-  </div>
-  <label>Keyword Search</label>
-  <br>
-  <input class="col-lg-4" type="text" id="myInput" onkeyup="search()" placeholder="Enter a keyword" title="Type in a name">
-  &nbsp;
-  <button onclick="clearSearch()" id ="clear" type="submit">Clear Search</button>
-  <div class="row">
-    <div class="col-lg-12">
-      <br>
-      <br>
-       <div class="table-responsive">
-         <table id="myTable" class="table table-hover table-striped" name="problemsTable">
-             <thead>
-                 <tr>
-                     <th>Keywords </th>
-                     <th>Problem </th>
-                     <th>Answer</th>
-                     <th>LaTeX</th>
-                     <th>Author</th>
-                     <th>Creation Date</th>
-                 </tr>
-             </thead>
-             <tbody>
-             {%for problem in problems %}
-                 <tr>
-                     <td>{{ problem.tags }}</td>
-                     <td><script type="math/tex">{{ problem.content }}</script></td>
-                     <td>{{ problem.answer }}</td>
-                     <td>{{ problem.content }}</td>
-                     <td>{{ problem.author.identity }}</td>
-                     <td>{{ problem.date }}</td>
-                     <td><button type="button" onclick="alert('Function not yet implemented')"> Delete problem</button></td>
-                 </tr>
-             {% endfor %}
-             </tbody>
-         </table>
-       </div>
+{% block maincontent %}
+
+
+
+                                                          <!-- Dropdown Post -->
+<form action="/inMyProblems" method="POST">
+  <input id="hidden" type="hidden" name="quiz">
+  <input id="submitthis" type="submit" style="visibility:hidden">
+</form>
+
+
+
+                                                          <!-- Keyword Input -->
+<label>Keyword Search</label>
+<br>
+<input class="col-lg-4" type="text" id="myInput" onkeyup="search()" placeholder="Enter a keyword" title="Type in a name">
+&nbsp;
+<button onclick="clearSearch()" id ="clear" type="submit">Clear Search</button>
+
+
+
+
+                                                    <!-- Search Output Table -->
+<div class="row">
+  <div class="col-lg-12">
+    <br>
+    <br>
+    <div class="table-responsive">
+      <table id="myTable" class="table table-hover table-striped" name="problemsTable">
+        <thead>
+         <tr>
+             <th>Keywords </th>
+             <th>Problem </th>
+             <th>Answer</th>
+             <th>Quiz</th>
+             <!-- <th>LaTeX</th> -->
+             <!-- <th>Author</th> -->
+             <th>Creation Date</th>
+         </tr>
+        </thead>
+        <tbody>
+
+        {%for problem in problems %}
+          <tr>
+            <td>{{ problem.tags }}</td>
+            <td><script type="math/tex">{{ problem.content }}</script></td>
+            <td>{{ problem.answer }}</td>
+            <td>{{ problem.quiz }}</td>
+            <!-- <td>{{ problem.content }}</td> -->
+            <!-- <td>{{ problem.author.identity }}</td> -->
+            <td>{{ problem.date }}</td>
+            <!-- <td><button type="button" onclick="alert('Function not yet implemented')"> Delete problem</button></td> -->
+          </tr>
+        {% endfor %}
+
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
-</div><!-- /.container-fluid -->
-</div><!-- /#page-wrapper -->
+
+
+
 
 <script>
 
+/*******************************************************************************
+*  Window Load Function
+*    - Declare search field input
+*    - Focus the field
+**********/
+document.getElementById("myproblems").className += "active";
 var input = document.getElementById("myInput");
-
 window.onload = function(){
   input.focus();
 }
 
+
+/*******************************************************************************
+*  Search Function
+*    - Case insensative search by keyword
+*    - Dynamically alters results displayed in the table
+**********/
 function search() {
   var filter, table, tr, td, i;
   filter = input.value.toUpperCase();
@@ -121,6 +115,13 @@ function search() {
 }
 
 
+
+
+/*******************************************************************************
+*  clearSearch Function
+*    - Clears the search field
+*    - Focus the search field
+**********/
 function clearSearch() {
   input.value = "";
   search();
@@ -129,8 +130,8 @@ function clearSearch() {
 
 
 
-</script>
 
+</script>
 
 
 

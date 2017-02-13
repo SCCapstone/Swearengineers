@@ -37,19 +37,18 @@ class Author(ndb.Model):
     email = ndb.StringProperty(indexed=False)
 
 class Problem(ndb.Model):
-#    course = ndb.StructuredProperty(Course)
-#    assignment = ndb.StructuredProperty(Assignment)
+    quiz = ndb.StringProperty(indexed=True)
     author = ndb.StructuredProperty(Author)
     content = ndb.StringProperty(indexed=False)
     answer = ndb.StringProperty(indexed=False)
     tags = ndb.StringProperty(indexed=False)
     date = ndb.DateTimeProperty(auto_now_add=True)
 
-#class Assignment(ndb.Model):
+#class Quiz(ndb.Model):
 #    author = ndb.StructuredProperty(Author)
 #    content = ndb.StringProperty(indexed=False)
 #    date = ndb.DateTimeProperty(auto_now_add=True)
-#
+
 #class Course(ndb.Model):
 #    author = ndb.StructuredProperty(Author)
 #    content = ndb.StringProperty(indexed=False)
@@ -328,15 +327,11 @@ class AuthenticatedHandler(BaseHandler):
    def get(self):
      self.render_template('home.html')
 
-class MainHandler(BaseHandler):
+class MainHandler(BaseHandler, webapp2.RequestHandler):
    @user_required
    def get(self):
      self.render_template('home.html')
 
-#class inAssignmentHandler(BaseHandler):
-#   @user_required
-#   def get(self):
-#     self.render_template('inAssignment.html')
 
 class inProblemHandler(BaseHandler, webapp2.RequestHandler):
    @user_required
@@ -351,24 +346,45 @@ class inProblemHandler(BaseHandler, webapp2.RequestHandler):
                  email=user.email_address)
      problem.content = self.request.get('problem')
      problem.tags = self.request.get('tags')
+     problem.quiz = self.request.get('quiz')
      problem.answer = self.request.get('answer')
      problem.put()
      self.redirect(self.uri_for('inProblem'))
+
+
 
 class inMyProblemsHandler(BaseHandler):
    @user_required
    def get(self):
      user = self.user
-
      problem_query = Problem.query().order(-Problem.date)
 #          ancestor=user_key(user.email_address)).order(-Problem.date)
      problems = problem_query.fetch()
-
-     template_values = {
-            'problems': problems,
-        }
-
+     template_values = {'problems': problems }
      self.render_template('inMyProblems.html', template_values)
+   def post(self):
+     quiz = self.request.get('quiz')
+     problem_query = Problem.query().filter(Problem.quiz == quiz)
+     problems = problem_query.fetch()
+     template_values = { 'problems': problems, 'quiz': quiz }
+     self.render_template('inMyProblems.html', template_values)
+
+
+
+class inQuizzesHandler(BaseHandler, webapp2.RequestHandler):
+   @user_required
+   def get(self):
+     self.render_template('inQuizzes.html')
+
+   def post(self):
+     quiz = self.request.get('quiz')
+     problem_query = Problem.query().filter(Problem.quiz == quiz)
+     problems = problem_query.fetch()
+     template_values = { 'problems': problems}
+     self.render_template('inQuizzes.html', template_values)
+
+
+
 
 config = {
   'webapp2_extras.auth': {
@@ -390,10 +406,11 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/logout', LogoutHandler, name='logout'),
     webapp2.Route('/forgot', ForgotPasswordHandler, name='forgot'),
     webapp2.Route('/authenticated', AuthenticatedHandler, name='authenticated'),
-    #webapp2.Route('/inMain', inMainHandler, name='inMain'),
-    #webapp2.Route('/inAssignment', inAssignmentHandler, name='inAssignment'),
     webapp2.Route('/inProblem', inProblemHandler, name='inProblem'),
-    webapp2.Route('/inMyProblems', inMyProblemsHandler, name='inMyProblems')
+    webapp2.Route('/inMyProblems', inMyProblemsHandler, name='inMyProblems'),
+    webapp2.Route('/inQuizzes', inQuizzesHandler, name='inQuizzes')
+# webapp2.Route('/inMain', inMainHandler, name='inMain'),
+# webapp2.Route('/inAssignment', inAssignmentHandler, name='inAssignment'),
 ], debug=True, config=config)
 
 logging.getLogger().setLevel(logging.DEBUG)

@@ -1,69 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8"/>
-    <head>
+<head>
 
-        <meta charset="utf-8">
-            <meta http-equiv="X-UA-Compatible" content="IE=edge">
-                <meta name="viewport" content="width=device-width, shrink-to-fit=no, initial-scale=1">
-                    <meta name="description" content="">
-                        <meta name="author" content="">
+  <title>Math Quizzes</title>
 
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="SwearEngineers">
+  <meta name="Description"
+    content="MathQuizzes is an Educational Web App designed to help math
+             teachers and math students from grades K-12 work together online.
+             It has been designed as a University of South Carolina College of
+             Engineering and Computing Capstone Project by Undergraduate
+             Students.  MathQuizzes has been released under the MIT Software
+             License by the SwearEngineers.">
+  <meta name="Keywords"
+    content="education math mathematics edu capstone University of South
+             Carolina CEC College of Engineering and Computing MIT LaTex
+             webapp quiz quizzes assignments grades K-12">
 
-                            <!-- Bootstrap Core CSS -->
-                            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <!-- Bootstrap Core CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-                                <!-- Optional theme -->
-                                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 
-                                    <!-- Custom CSS -->
-                                    <link rel="stylesheet" href="./bootstrap/css/login.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="./bootstrap/css/login.css">
 
-                                        <!-- For JS -->
-                                        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <!-- For JS -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 
-                                        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-                                        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-                                        <!--[if lt IE 9]>
-                                         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-                                         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-                                         <![endif]-->
-
-    <title>Welcome to Math Quizzes</title>
-    <style>
-    body {background-color: powderblue;}
-    </style>
-  </head>
-
-  <body>
-
-  <div class="content">
-    {% block maincontent %}
-
-    {% endblock %}
-  </div>
-
-  <div>
-    <footer>
-      <hr/>
-      <p style="text-align:center;color: #59B2E0; font-size:1.5em;">
-
-        {% if not user %}
-          <a href="/login">Login</a>
-          &nbsp | &nbsp
-          <a href="/forgot">Forgot Password</a>
-          &nbsp | &nbsp
-          <a href="/signup">Register</a>
-        {% else %}
-          <a href="/">{{ user.name }}'s home</a>
-          &nbsp | &nbsp
-          <a href="/logout">Logout</a>
-        {% endif %}
-      </p>
-    </footer>
-  </div>
+   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+   <!--[if lt IE 9]>
+   <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+   <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+   <![endif]-->
+</head>
 
 
-  </body>
+
+
+<body>
+
+<div class="content">
+  {% block maincontent %}
+
+  {% endblock %}
+</div>
+
+<div>
+  <footer>
+    <hr/>
+    <p style="text-align:center;color: #59B2E0; font-size:1.5em;">
+
+      {% if not user %}
+        <a href="/login">Login</a>
+        &nbsp; | &nbsp;
+        <a href="/forgot">Forgot Password</a>
+        &nbsp; | &nbsp;
+        <a href="/signup">Register</a>
+      {% else %}
+        <a href="/">{{ user.name }}'s home</a>
+        &nbsp; | &nbsp;
+        <a href="/logout">Logout</a>
+      {% endif %}
+    </p>
+  </footer>
+</div>
+
+
+</body>
 </html>

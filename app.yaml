@@ -23,6 +23,9 @@ handlers:
 - url: /bootstrap
   static_dir: bootstrap
 
+- url: /img
+  static_dir: img
+
 - url: .*
   script: main.app
 # [END handlers]

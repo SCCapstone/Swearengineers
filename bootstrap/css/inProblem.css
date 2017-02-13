@@ -4,7 +4,7 @@
   padding:0;
 }
 
-input[type=text] {
+input[type=text].inproblem {
   width: 90%;
   margin: 8px 5%;
   padding: 12px 20px;
@@ -14,27 +14,32 @@ input[type=text] {
   box-sizing: border-box;
 }
 
-#prev, #next {
+#next {
   width: 35%;
   margin: 8px;
-  background-color: #4CAF50;
-  color: white;
-  padding: 14px 20px;
-  border-radius: 4px;
   border:none;
+  padding: 14px 20px;
   cursor: pointer;
 }
+
+/* removed next styles
+  border-radius: 4px;
+  background-color: #4CAF50;
+  color: white;
+// from hover below
+  background-color: #45a049;
+#next:hover {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+*/
+
 
 #prev {margin-left:5%; }
 
 #next {float:right; margin-right:5%;}
 
-#prev:hover, #next:hover {
-  background-color: #45a049;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
 
-label{
+label.inproblem{
   color:#fff;
   margin-left: 5%;
   font-size:110%;
