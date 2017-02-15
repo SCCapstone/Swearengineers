@@ -1,5 +1,11 @@
 body {
+    height:100vh;
     padding-top: 90px;
+    background-image: url("/img/book1.jpg");
+    background-position:center center;
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-color: #000;
 }
 .panel-login {
 	border-color: #ccc;
@@ -97,4 +103,14 @@ body {
 	background-color: #1CA347;
 	border-color: #1CA347;
 }
+
+
+/* new */
+h1{
+  color:white;
+  text-shadow: 2px 2px 3px #000;
+  text-align: center;
+}
+
+
 
