@@ -140,8 +140,10 @@ window.onload = function(){
 $('#addquizbtn').click(function(){
   var text = document.getElementById('quizname').value;
   var s= document.getElementById('selectid');
+  var h= document.getElementById('hidden');
   s.options[0]= new Option(text, text);
   s.value=text;
+  h.value=text;
 });
 
 

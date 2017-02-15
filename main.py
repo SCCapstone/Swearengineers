@@ -374,9 +374,10 @@ class inMyProblemsHandler(BaseHandler):
 class inQuizzesHandler(BaseHandler, webapp2.RequestHandler):
    @user_required
    def get(self):
-#     quizzes = Problem.query().fetch(projection=[Problem.quiz])
-     template_values = { 'quizzes': 'poop'}
-     self.render_template('inQuizzes.html', template_values)
+#     quizzes = Problem.query().fetch()
+#     template_values = { 'quizzes': ''}
+#     self.render_template('inQuizzes.html', template_values)
+     self.render_template('inQuizzes.html')
 
    def post(self):
      quiz = self.request.get('quiz')
