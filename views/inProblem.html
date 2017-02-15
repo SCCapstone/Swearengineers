@@ -131,16 +131,17 @@ window.onload = function(){
 
 
 /*******************************************************************************
-* New Quiz Function
+* Add Quiz Function
 * -----------------
 * - Adds the option to the selection box
 *
+  s.options.add(new Option(text, text), s.options[0]);
 **********/
-$('#newquizbtn').click(function(){
+$('#addquizbtn').click(function(){
   var text = document.getElementById('quizname').value;
   var s= document.getElementById('selectid');
-  s.options[s.options.length]= new Option(text, '1');
-  mySelect.options.add(new Option("text", "1"), mySelect.options[0]);
+  s.options[0]= new Option(text, text);
+  s.value=text;
 });
 
 
