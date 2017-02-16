@@ -53,21 +53,7 @@
 
 <div>
   <footer>
-    <hr/>
-    <p style="text-align:center;color: #59B2E0; font-size:1.5em;">
-
-      {% if not user %}
-        <a href="/login">Login</a>
-        &nbsp; | &nbsp;
-        <a href="/forgot">Forgot Password</a>
-        &nbsp; | &nbsp;
-        <a href="/signup">Register</a>
-      {% else %}
-        <a href="/">{{ user.name }}'s home</a>
-        &nbsp; | &nbsp;
-        <a href="/logout">Logout</a>
-      {% endif %}
-    </p>
+    <!-- Moved from here to login.html to move it in to the white panel-->
   </footer>
 </div>
 
