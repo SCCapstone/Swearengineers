@@ -206,7 +206,7 @@ class ForgotPasswordHandler(BaseHandler):
       signup_token=token, _full=True)
 
     msg = 'Send an email to user in order to reset their password. \
-          They will be able to do so by visiting <a href="{url}">{url}</a>'
+          They will be able to do so by visiting'
 
     self.display_message(msg.format(url=verification_url))
 
