@@ -19,6 +19,7 @@ import logging
 import os.path
 import webapp2
 import urllib
+import time
 
 
 from webapp2_extras import auth
@@ -44,15 +45,27 @@ class Problem(ndb.Model):
     tags = ndb.StringProperty(indexed=False)
     date = ndb.DateTimeProperty(auto_now_add=True)
 
-#class Quiz(ndb.Model):
-#    author = ndb.StructuredProperty(Author)
-#    content = ndb.StringProperty(indexed=False)
-#    date = ndb.DateTimeProperty(auto_now_add=True)
+def get_entity(prob_key):
+    problem = prob_key.get()
+    return problem
 
-#class Course(ndb.Model):
-#    author = ndb.StructuredProperty(Author)
-#    content = ndb.StringProperty(indexed=False)
-#    date = ndb.DateTimeProperty(auto_now_add=True)
+def deleteEntity(problem):
+    problem.key.delete()
+
+def updateEntity(key):
+    problem = key.get()
+    problem.content = 'omgitworked'
+    problem.put()
+
+class Quiz(ndb.Model):
+    author = ndb.StructuredProperty(Author)
+    content = ndb.StringProperty(indexed=False)
+    date = ndb.DateTimeProperty(auto_now_add=True)
+
+class Course(ndb.Model):
+    author = ndb.StructuredProperty(Author)
+    content = ndb.StringProperty(indexed=False)
+    date = ndb.DateTimeProperty(auto_now_add=True)
 
 def user_key(user=DEFAULT_USER):
     """Constructs a Datastore key for a User entity.
@@ -362,12 +375,32 @@ class inMyProblemsHandler(BaseHandler):
      problems = problem_query.fetch()
      template_values = {'problems': problems }
      self.render_template('inMyProblems.html', template_values)
+
    def post(self):
      quiz = self.request.get('quiz')
      problem_query = Problem.query().filter(Problem.quiz == quiz)
      problems = problem_query.fetch()
      template_values = { 'problems': problems, 'quiz': quiz }
      self.render_template('inMyProblems.html', template_values)
+
+class deleteHandler(BaseHandler):
+  @user_required
+  def post(self):
+      prob_key = ndb.Key(urlsafe=self.request.get('problem_key_delete'))
+      #problem = prob_key.get()
+      prob_key.delete()
+      time.sleep(0.1)
+
+      self.redirect("/inMyProblems")
+
+class editProblemHanlder(BaseHandler):
+  @user_required
+  def post(self):
+      user = self.user
+      self.prob_key = ndb.Key(urlsafe=self.request.get('problem_key_edit'))
+      self.problem = self.prob_key.get()
+      template_values = {'problem': self.problem.content}
+      self.render_template('inProblem.html', template_values)
 
 
 
@@ -386,7 +419,23 @@ class inQuizzesHandler(BaseHandler, webapp2.RequestHandler):
      template_values = { 'problems': problems}
      self.render_template('inQuizzes.html', template_values)
 
+class inCreateClassHandler(BaseHandler, webapp2.RequestHandler):
+   @user_required
+   def get(self):
+     self.render_template('inCreateClass.html')
 
+   def post(self):
+     user = self.user
+     course = Course(parent=user_key(user.email_address))
+     course.author = Author(
+                 identity=user.name,
+                 email=user.email_address)
+     course.description = self.request.get('description')
+     #if problem.answer/problem.content == null
+     #  displayMessage = "please enter a value for answer/problem"
+     # *THEN* problem.put
+     course.put()
+     self.redirect(self.uri_for('inCreateClass'))
 
 
 config = {
@@ -411,7 +460,10 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/authenticated', AuthenticatedHandler, name='authenticated'),
     webapp2.Route('/inProblem', inProblemHandler, name='inProblem'),
     webapp2.Route('/inMyProblems', inMyProblemsHandler, name='inMyProblems'),
-    webapp2.Route('/inQuizzes', inQuizzesHandler, name='inQuizzes')
+    webapp2.Route('/inQuizzes', inQuizzesHandler, name='inQuizzes'),
+    webapp2.Route('/inCreateClass', inCreateClassHandler, name='inCreateClass'),
+    webapp2.Route('/deleteProblem', deleteHandler, name='deleteProblem'),
+    webapp2.Route('/editProblem', editProblemHanlder, name='editProblem')   
 # webapp2.Route('/inMain', inMainHandler, name='inMain'),
 # webapp2.Route('/inAssignment', inAssignmentHandler, name='inAssignment'),
 ], debug=True, config=config)

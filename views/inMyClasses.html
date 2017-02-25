@@ -1,7 +1,7 @@
 
 {% extends "inTemplate.html" %}
 
-{% block pageName %}My Problems{% endblock %}
+{% block pageName %}My Classes{% endblock %}
 
 {% block header %}
 <script type="text/x-mathjax-config">
@@ -19,7 +19,7 @@
 
 
                                                           <!-- Dropdown Post -->
-<form action="/inMyProblems" method="POST">
+<form action="/inMyClasses" method="POST">
   <input id="hidden" type="hidden" name="quiz">
   <input id="submitthis" type="submit" style="visibility:hidden">
 </form>
@@ -58,19 +58,14 @@
 
         {%for problem in problems %}
           <tr>
-              <td>{{ problem.tags }}</td>
-              <td><script type="math/tex">{{ problem.content }}</script></td>
-              <td>{{ problem.answer }}</td>
-              <td>{{ problem.quiz }}</td>
+            <td>{{ problem.tags }}</td>
+            <td><script type="math/tex">{{ problem.content }}</script></td>
+            <td>{{ problem.answer }}</td>
+            <td>{{ problem.quiz }}</td>
             <!-- <td>{{ problem.content }}</td> -->
             <!-- <td>{{ problem.author.identity }}</td> -->
-              <td>{{ problem.date }}</td>
-              <form action="/deleteProblem" method="POST">
-                <td><button type="submit" name="problem_key_delete" value="{{ problem.key.urlsafe }}">Delete Problem</button></td> 
-              </form>
-              <form action="/editProblem" method="POST">
-                <td><button type="submit" name="problem_key_edit" value="{{ problem.key.urlsafe }}">Edit Problem</button></td> 
-              </form>
+            <td>{{ problem.date }}</td>
+            <!-- <td><button type="button" onclick="alert('Function not yet implemented')"> Delete problem</button></td> -->
           </tr>
         {% endfor %}
 
@@ -85,7 +80,6 @@
 
 <script>
 
-var displayRefreshRate;
 /*******************************************************************************
 *  Window Load Function
 *    - Declare search field input
@@ -94,10 +88,7 @@ var displayRefreshRate;
 document.getElementById("myproblems").className += "active";
 var input = document.getElementById("myInput");
 window.onload = function(){
-  //input.focus();
-  setTimeout(function() {
-    (".row").delay(2000).fadeIn(500)
-    }
+  input.focus();
 }
 
 
@@ -122,6 +113,7 @@ function search() {
     }
   }
 }
+
 
 
 
