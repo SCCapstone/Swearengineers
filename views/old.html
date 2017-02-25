@@ -116,9 +116,25 @@
           &nbsp;&nbsp;&nbsp;&nbsp;Take a Quiz
         </a>
       </li>
-      <li id="problem">
-        <a class="menu" href="/inProblem"><i class="fa fa-fw fa-graduation-cap"></i>
-          &nbsp;&nbsp;&nbsp;&nbsp;Create Problems
+      <li>
+        <a href="javascript:;" data-toggle="collapse" data-target="#demo"><i class="fa fa-fw fa-gavel"></i> &nbsp;&nbsp;&nbsp;&nbsp;Create <i class="fa fa-fw fa-caret-down"></i></a>
+          <ul id="demo" class="collapse">
+            <li>
+              <a href="/inProblem"><i class="fa fa-fw fa-graduation-cap"></i>
+                &nbsp;&nbsp;&nbsp;&nbsp;Create Problem
+              </a>
+            </li>
+            <li>
+              <a href="/inProblem"><i class="fa fa-fw fa-graduation-cap"></i>
+                &nbsp;&nbsp;&nbsp;&nbsp;Create Quiz
+              </a>
+            </li>
+            <li>
+              <a href="/inCreateClass"><i class="fa fa-fw fa-graduation-cap"></i>
+                &nbsp;&nbsp;&nbsp;&nbsp;Create Class
+              </a>
+            </li>
+          </ul>
         </a>
       </li>
       <li id="myproblems">
@@ -172,7 +188,7 @@
     -->
     <div class="row">
      <div class="col-lg-12">
-         <h2 style="float:right; "class="page-header">
+         <h2 style="float:left; "class="page-header">
              {% block pageName %}{% endblock %}
          </h2>
      </div>
