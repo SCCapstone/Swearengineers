@@ -66,7 +66,7 @@
             <!-- <td>{{ problem.author.identity }}</td> -->
               <td>{{ problem.date }}</td>
               <form action="/deleteProblem" method="POST">
-                <td><button type="submit" name="problem_key_delete" value="{{ problem.key.urlsafe }}">Delete Problem</button></td>
+                <td><button type="submit" id = "deleteButton" name="problem_key_delete" value="{{ problem.key.urlsafe }}">Delete Problem</button></td>
               </form>
               <form action="/editProblem" method="POST">
                 <td><button type="submit" name="problem_key_edit" value="{{ problem.key.urlsafe }}">Edit Problem</button></td>
