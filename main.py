@@ -353,16 +353,28 @@ class inProblemHandler(BaseHandler, webapp2.RequestHandler):
 
    def post(self):
      user = self.user
-     problem = Problem(parent=user_key(user.email_address))
-     problem.author = Author(
+     problem_key = self.request.get('problem_key')
+     if not problem_key:
+        problem = Problem(parent=user_key(user.email_address))
+        problem.author = Author(
                  identity=user.name,
                  email=user.email_address)
-     problem.content = self.request.get('problem')
-     problem.tags = self.request.get('tags')
-     problem.quiz = self.request.get('quiz')
-     problem.answer = self.request.get('answer')
-     problem.put()
-     self.redirect(self.uri_for('inProblem'))
+        problem.content = self.request.get('problem')
+        problem.tags = self.request.get('tags')
+        problem.quiz = self.request.get('quiz')
+        problem.answer = self.request.get('answer')
+        problem.put()
+        self.redirect(self.uri_for('inProblem'))
+     else:
+        prob_key = ndb.Key(urlsafe=self.request.get('problem_key'))
+        problem = prob_key.get()
+        problem.content = self.request.get('problem')
+        problem.tags = self.request.get('tags')
+        problem.quiz = self.request.get('quiz')
+        problem.answer = self.request.get('answer')
+        problem.put()
+        time.sleep(.1)
+        self.redirect(self.uri_for('inMyProblems'))
 
 
 
@@ -397,9 +409,13 @@ class editProblemHanlder(BaseHandler):
   @user_required
   def post(self):
       user = self.user
-      self.prob_key = ndb.Key(urlsafe=self.request.get('problem_key_edit'))
-      self.problem = self.prob_key.get()
-      template_values = {'problem': self.problem.content}
+      prob_key = ndb.Key(urlsafe=self.request.get('problem_key_edit'))
+      problem = prob_key.get()
+      template_values = {'problem_content': problem.content,
+                         'problem_answer': problem.answer,
+                         'problem_tags': problem.tags,
+                         'problem_key': prob_key}
+      #self.display_message(problem.content)
       self.render_template('inProblem.html', template_values)
 
 

@@ -78,11 +78,12 @@
     <label class="inproblem" for="data">
       Add <script type="math/tex">\rm\LaTeX</script>:
     </label>
-    <input class="inproblem" type="text" id="textbox" name="problem">
+    <input class="inproblem" type="text" id="textbox" name="problem" value="{{ problem_content }}">
     <label class="inproblem" for="data">Answer:</label>
-    <input class="inproblem" type="text" id="answerbox" name="answer">
+    <input class="inproblem" type="text" id="answerbox" name="answer" value="{{ problem_answer }}">
     <label class="inproblem" for="data">Add Keywords:</label>
-    <input class="inproblem" type="text" id="tagbox" name="tags">
+    <input class="inproblem" type="text" id="tagbox" name="tags" value="{{ problem_tags }}">
+    <input class="inproblem" type="hidden" id="keybox" name="problem_key" value="{{ problem_key.urlsafe }}">
     <button id ="next" class="bluebtn btn btn-primary" data-target="#newquiz"
       type="submit">Save
     </button>
