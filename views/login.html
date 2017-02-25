@@ -12,13 +12,6 @@
   <p>{% autoescape off %}{{ message }}{% endautoescape %}</p>
 -->
 
-{% if failed %}
-  <p style="text-align:center; color:red;"><strong>Login failed!</strong> Check your credentials and try again.</p>
-
-{% else %}
-  <p style="text-align:center; color:black;">Login or <a style="font-weight:bold;" href="/signup">Create a New Account</a></p>
-
-{% endif %}
 
 <br>
 
@@ -30,7 +23,10 @@
         <div class="panel-heading">
           <div class="row">
               <div class="col-xs-12">
-                  <a href="#" class="active" id="login-form-link">Login</a>
+                <a href="#" class="active" id="login-form-link">Login</a>
+                {% if failed %}
+                  <p style="text-align:center; color:red;"><strong>Login failed!</strong> Check your credentials and try again.</p>
+                {% endif %}
               </div>
           </div>
           <hr>
