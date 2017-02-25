@@ -4,3 +4,4 @@ indexes:
   properties:
   - name: date
     direction: desc
+  - name: quiz

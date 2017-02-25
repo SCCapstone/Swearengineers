@@ -1,131 +1,97 @@
+
 {% extends "inTemplate.html" %}
 
-{% block style %}
-    <link href="./bootstrap/css/inProblem.css" rel="stylesheet" >
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML-full"></script>
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
-      });
-    </script>
+{% block pageName %}Create Problems{% endblock %}
+
+{% block header %}
+  <link href="./bootstrap/css/inProblem.css" rel="stylesheet" >
+  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML-full"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+    });
+  </script>
 {% endblock %}
 
 
-{% block sidebar %}
-    <div class="collapse navbar-collapse navbar-ex1-collapse">
-        <ul class="nav navbar-nav side-nav">
-            <li>
-                <a href="/"><i class="fa fa-fw fa-home"></i> Home</a>
-            </li>
-            <li class="active">
-                <a href="/inProblem"><i class="fa fa-fw fa-edit"></i> New Problem</a>
-            </li>
-            <li>
-                <a href="/inMyProblems"><i class="fa fa-fw fa-edit"></i> My Problems</a>
-            </li>
-        </ul>
-    </div>
-            <!-- /.navbar-collapse -->
-{% endblock %}
 
 {% block maincontent %}
-        <div id="page-wrapper">
-
-            <div class="container-fluid">
-
-                <!-- Page Heading -->
-                <div class="row">
-                    <div class="col-lg-12">
-                        <h1 class="page-header">
-                            New Problem
-                            <small></small>
-                        </h1>
-                    </div>
-                </div>
-
-<!-- -->
 
 
 
+                                                            <!-- Math Display-->
 <h2 id="display"></h2>
 
-<ul class="mbttn">
 
+
+                                                            <!-- Math Buttons-->
+<ul class="mbttn">
   <li onclick="addLaTex('\\frac{x}{y} ')">
     <script type="math/tex">\frac{x}{y}</script>
   </li>
-
   <li onclick="addLaTex('x\\cdot y')">
     <script type="math/tex">x\cdot y</script>
   </li>
-
   <li onclick="addLaTex('x^{xy}')">
     <script type="math/tex">x^{xy}</script>
   </li>
-
   <li onclick="addLaTex('\\sqrt{x} ')">
     <script type="math/tex">\sqrt{x}</script>
   </li>
-
   <li onclick="addLaTex('\\sqrt[3]{x}')">
     <script type="math/tex">\sqrt[3]{x}</script>
   </li>
-
   <li onclick="addLaTex('|x| ')">
     <script type="math/tex">|x|</script>
   </li>
-
   <li onclick="addLaTex('\\alpha ')">
     <script type="math/tex">\alpha</script>
   </li>
-
   <li onclick="addLaTex('\\beta ')">
     <script type="math/tex">\beta</script>
   </li>
-
   <li onclick="addLaTex('\\Delta ')">
     <script type="math/tex">\Delta</script>
   </li>
-
   <li onclick="addLaTex('\\Omega ')">
     <script type="math/tex">\Omega</script>
   </li>
-
   <li onclick="addLaTex('\\ge ')">
     <script type="math/tex">\ge</script>
   </li>
-
   <li onclick="addLaTex('\\ne ')">
     <script type="math/tex">\ne</script>
   </li>
-
   <li onclick="addLaTex('\\infty ')">
     <script type="math/tex">\infty</script>
   </li>
-
   <li onclick="addLaTex('\\sum_{i=0}^n ')">
     <script type="math/tex">\sum_{i=0}^n</script>
   </li>
-
 </ul>
+
+
+
+                                                              <!-- Input Form-->
 <div class="inputArea">
   <form action="/inProblem" method="POST">
-    <label for="data">
+    <label class="inproblem" for="data">
       Add <script type="math/tex">\rm\LaTeX</script>:
     </label>
-    <input type="text" id="textbox" name="problem">
-    <label for="data">Add Keywords:</label>
-    <input type="text" id="tagbox" name="tags">
-    <!--    <button onclick="nextFun()" id ="prev" type="submit">previous</button> -->
-    <button id ="next" type="submit">save</button>
+    <input class="inproblem" type="text" id="textbox" name="problem">
+    <label class="inproblem" for="data">Answer:</label>
+    <input class="inproblem" type="text" id="answerbox" name="answer">
+    <label class="inproblem" for="data">Add Keywords:</label>
+    <input class="inproblem" type="text" id="tagbox" name="tags">
+    <button id ="next" class="bluebtn btn btn-primary" data-target="#newquiz"
+      type="submit">Save
+    </button>
+    <input id="hidden" type="hidden" name="quiz">
   </form>
 </div>
-                </div>
-            </div>
-            <!-- /.container-fluid -->
-        </div>
-        <!-- /#page-wrapper -->
-    </div>
+
+
+
 
 <script>
 /*******************************************************************************
@@ -138,6 +104,8 @@ var old;
 var displayRefreshRate;
 
 
+
+
 /*******************************************************************************
 * Page Load
 * ---------
@@ -147,9 +115,12 @@ var displayRefreshRate;
 *
 **********/
 window.onload = function(){
+  document.getElementById("problem").className += "active";
 
   textbox.focus();
   window.scrollTo(0,0);
+
+  $('#newquizbtn').css('display', 'inline');
 
   setTimeout(function(){
     $("ul.mbttn li").css("color", "#f2f2f2");
@@ -158,6 +129,24 @@ window.onload = function(){
 
 }
 
+
+/*******************************************************************************
+* Add Quiz Function
+* -----------------
+* - Adds the option to the selection box
+*
+  s.options.add(new Option(text, text), s.options[0]);
+**********/
+$('#addquizbtn').click(function(){
+  var text = document.getElementById('quizname').value;
+  var s= document.getElementById('selectid');
+  var h= document.getElementById('hidden');
+  s.options[0]= new Option(text, text);
+  s.value=text;
+  h.value=text;
+});
+
+
 /*******************************************************************************
 * Display Function
 * ----------------
@@ -165,7 +154,6 @@ window.onload = function(){
 * - A timeout where the text is invisible allows the mathjax to render
 *
 **********/
-
 function match() {
   if( old != textbox.value ){
     clearInterval(displayRefreshRate);
@@ -181,6 +169,8 @@ function match() {
 }
 
 
+
+
 /*******************************************************************************
 * LaTeX Button Function
 * ---------------------
@@ -192,6 +182,8 @@ function addLaTex(latex){
   textbox.value=textbox.value.concat(latex);
   textbox.focus();
 }
+
+
 
 
 /*******************************************************************************
@@ -216,6 +208,12 @@ textbox.addEventListener("keyup",
 });
 
 
+
+
 </script>
 
 {% endblock %}
+
+
+
+

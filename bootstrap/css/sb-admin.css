@@ -9,6 +9,7 @@
 body {
     margin-top: 100px;
     background-color: #222;
+    overflow-y:scroll;
 }
 
 @media(min-width:768px) {
@@ -22,10 +23,10 @@ body {
 }
 
 #page-wrapper {
+    min-height:95vh;
     width: 100%;
     padding: 0;
     background-color: #fff;
-    min-height:92vh; 
 }
 
 .huge {
@@ -67,7 +68,7 @@ body {
 .top-nav>.open>a:hover,
 .top-nav>.open>a:focus {
     color: #fff;
-    background-color: #000;
+    background-color: #2C3236;
 }
 
 .top-nav>.open>.dropdown-menu {
@@ -136,10 +137,21 @@ ul.alert-dropdown {
     .side-nav li a:hover,
     .side-nav li a:focus {
         outline: none;
-        background-color: #000 !important;
+        background-color: #2C3236 !important;
     }
+
+   .side-nav li.active a:hover,
+   .side-nav li.active a:focus,
+   .side-nav li.active a {
+       background-color: #2c3236 !important;
+       color: #DEDFE3 !important;
+       cursor: default;
+       font-weight:550;
+   }
 }
 
+/*       color: #53A3CD !important;
+       background-color: #000 !important; */
 .side-nav>li>ul {
     padding: 0;
 }
@@ -151,9 +163,10 @@ ul.alert-dropdown {
     color: #999;
 }
 
-.side-nav>li>ul>li>a:hover {
+.side-nav li a:hover {
     color: #fff;
 }
+
 
 /* Flot Chart Containers */
 
@@ -225,4 +238,70 @@ ul.alert-dropdown {
 
 .panel-yellow > a:hover {
     color: #df8a13;
+}
+
+
+
+/*****************************************
+ * side-nav styles modified above
+ * Other styles added here:
+ *
+ * */
+
+
+/* The MathQuizzes brand at the top left of each page */
+
+.navbar-inverse .navbar-brand .logo2,
+.navbar-inverse .navbar-brand .logo2 {
+  color: #53A3CD;
+}
+.navbar-inverse .navbar-brand:hover span,
+.navbar-inverse .navbar-brand:focus span{
+ color: #99D2F0;
+}
+
+
+
+/* The page-header is at top-right of each page */
+
+.page-header {
+  text-align:right;
+  margin-top:20px;
+}
+
+
+/* Dialog box */
+.modal-header {
+  background-color: #53A3CD;
+  color:#FFF;
+}
+
+
+/* Button */
+.btn {
+  padding: 10px;
+  width:20%;
+}
+.bluebtn {
+  background-color: #53A3CD;
+  color:#FFF;
+  border:none;
+}
+.bluebtn.active,
+.bluebtn:active,
+.bluebtn:hover,
+.bluebtn:target,
+.bluebtn:focus {
+  color:#FFF;
+  background-color: #64BEED;
+}
+
+
+
+/* remove styles added by mozilla */
+:target :active, :focus { outline: none; -moz-outline-style: none; }
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
