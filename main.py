@@ -570,7 +570,7 @@ class editProblemHanlder(BaseHandler):
                          'problem_tags': problem.tags,
                          'problem_key': prob_key,
                          'problem_difficulty': problem.difficulty,
-                         'quizzes': quizzes}
+                         'quizzes': quizzes, 'selectdefault': problem.quiz}
       #self.display_message(problem.content)
       self.render_template('inProblem.html', template_values)
 

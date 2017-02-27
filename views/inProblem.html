@@ -118,7 +118,7 @@
     <button id ="next" class="bluebtn btn btn-primary" data-target="#newquiz"
       type="submit">Save
     </button>
-    <input id="hidden" type="hidden" name="quiz_name">
+    <input id="hidden" type="hidden" name="quiz_name" value="{{ selectdefault }}">
   </form>
 </div>
 
@@ -181,7 +181,6 @@ $(document).ready(function() {
 * -----------------
 * - Adds the option to the selection box
 *
-  s.options.add(new Option(text, text), s.options[0]);
 **********/
 $('#addquizbtn').click(function(){
   var text = document.getElementById('quizname').value;
