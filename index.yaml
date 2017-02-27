@@ -4,3 +4,8 @@ indexes:
   properties:
   - name: date
     direction: desc
+- kind: Quiz
+  properties:
+  - name: name
+  - name: date
+    direction: desc
