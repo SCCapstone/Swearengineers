@@ -5,3 +5,9 @@ indexes:
   - name: date
     direction: desc
   - name: quiz
+- kind: Quiz
+  ancestor: yes
+  properties:
+  - name: date
+    direction: desc
+  - name: name

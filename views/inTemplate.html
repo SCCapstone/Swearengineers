@@ -122,7 +122,7 @@
         </a>
       </li>
       <li id="myproblems">
-        <a class="menu" href="/inMyProblems"><i class="fa fa-fw fa-search"></i>
+        <a class="menu" id="search" href="/inMyProblems"><i class="fa fa-fw fa-search"></i>
           &nbsp;&nbsp;&nbsp;&nbsp;My Problems
         </a>
       </li>
@@ -168,40 +168,15 @@
 
     <!--
     | Page-Header:
-    |   Located on the top-right of each page.
+    |   Located on the top-left of each page.
     -->
     <div class="row">
      <div class="col-lg-12">
-         <h2 style="float:right; "class="page-header">
+         <h2 style="float:left; "class="page-header">
              {% block pageName %}{% endblock %}
          </h2>
      </div>
     </div>
-
-
-    <!--
-    | Select Course Dropdown:
-    |   To be added when option becomes availible
-    -->
-    <!--
-      <div class="row">
-        <div class="col-lg-4">
-          <form role="form">
-            <div class="form-group">
-              <label>Course</label>
-              <select class="form-control">
-                <option selected>Choose a Course</option>
-
-                {% for course in courses %}
-                  <option>{{ course.content }}</option>
-                {% endfor %}
-
-              </select>
-            </div>
-          </form>
-        </div>
-      </div>
-    -->
 
 
 
@@ -211,54 +186,30 @@
     |   Selecting a different quiz POSTs a query to the server
     |   or limits an existing query based on the page-source
     -->
-    <div class="row" style="padding:0;margin:0;width:100%">
+    <div id="quizform" class="row" style="padding:0;margin:0;width:100%">
       <div class="col-lg-4" style="padding:0;margin:0;width:100%">
-       <form style="width:100%; padding:0;margin:0" role="form" >
+       <form style="width:100%; padding:0;margin:0" role="form">
          <div class="form-group">
            <select style="float:left; width:75%; margin-top:2px" onchange="dropdown()" id="selectid" style="width:100%"
                    class="form-control">
-               <option id="selectdefault">Click Here to Select a Quiz</option>
-               <option value="quiz one">quiz one</option>
-
+                   {% if selectdefault == '' or selectdefault == None %}
+                     <option>Click Here to Select a Quiz</option>
+                   {% else %}
+                     <option>{{ selectdefault }}</option>
+                   {% endif %}
                {% for quiz in quizzes %}
-                 <option value="{{ quiz.content }}">{{ quiz.content }}</option>
+                 {% if quiz.name != selectdefault %}
+                   <option value="{{ quiz.name }}">{{ quiz.name }}</option>
+                 {% endif %}
                {% endfor %}
-
            </select>
-           <button id="newquizbtn" style="display: none; float:right; width:20%" class="bluebtn btn btn-primary" data-target="#newquiz"
-             type="button" data-toggle="modal">Create Quiz
-           </button>
+            <button id="newquizbtn" style="display: none; float:right; width:20%" class="bluebtn btn btn-primary" data-target="#newquiz"
+              type="button" data-toggle="modal">Create Quiz
+            </button>
          </div>
        </form>
       </div>
     </div>
-    <br>
-
-
-
-    <!--
-    | New Quiz Modal
-    |   Activated from Settings Menu
-    -->
-    <div class="modal fade" id="newquiz" role="dialog">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">New Quiz</h4>
-          </div>
-          <div class="modal-body">
-            <input type="text" name="newquiz" id="quizname" class="form-control" placeholder="Enter a Unique Quiz Name">
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-              <button id="addquizbtn" type="button" class="bluebtn btn btn-primary" data-dismiss="modal">Submit</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
 
     <!--
     | Main content:
@@ -316,16 +267,6 @@
   })
 
 
-/*******************************************************************************
-* Remove Active Class
-* -------------------
-* - Faster Menu Response, doesn't hang while page loads
-*
-**********/
-  $('.menu').click(function() {
-    a.classList.remove("active");
-  });
-
 
 /*******************************************************************************
 * Close dropdown
@@ -366,6 +307,8 @@
          }
        }
    });
+
+
 </script>
 
 </body>

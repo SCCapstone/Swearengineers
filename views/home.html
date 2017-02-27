@@ -5,27 +5,92 @@
 
 {% block maincontent %}
 
+<!--
+| Select Course Form:
+|   Holds a list of Courses
+-->
+<div id="select course" class="row" style="padding:0;margin:0;width:100%">
+  <div class="col-lg-4" style="padding:0;margin:0;width:100%">
+   <form style="width:100%; padding:0;margin:0" role="form">
+     <div class="form-group">
+       <select style="float:left; width:75%; margin-top:2px" onchange="dropdown()" id="selectid" style="width:100%"
+               class="form-control">
+               {% if selectdefault == '' or selectdefault == None %}
+                 <option>Click Here to Select a Course</option>
+               {% else %}
+                 <option>{{ selectdefault }}</option>
+               {% endif %}
+           {% for course in courses %}
+             {% if quiz.name != selectdefault %}
+               <option value="{{ course.name }}">{{ course.name }}</option>
+             {% endif %}
+           {% endfor %}
+       </select>
+        <button id="newcoursebtn" style="float:right; width:20%" class="bluebtn btn btn-primary" data-target="#newcourse"
+          type="button" data-toggle="modal">Create Course
+        </button>
+     </div>
+   </form>
+  </div>
+</div>
+<br>
 
+<!--
+| New Course Modal
+|   Activated from Create Course Button
+-->
+<div class="modal fade" id="newcourse" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">New Course</h4>
+      </div>
+      <div class="modal-body">
+          <!--           <form action="createQuizFromProblem" method="POST"> -->
+        <form>
+        <input type="text" name="course_name" id="course_name" class="form-control" placeholder="Enter a Course Name">
+        <br>
+        <input type="text" name="course_description" id="course_description" class="form-control" placeholder="Enter a Course Description">
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 
-                                                     <!-- Past Quizzes Table -->
+          <button id="addquizbtn" type="button" class="bluebtn btn btn-primary" data-dismiss="modal">Submit</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+                                                    <!-- Search Output Table -->
 <div class="row">
   <div class="col-lg-12">
     <h3>Quiz Grades</h3>
     <div class="table-responsive">
-      <table class="table table-hover table-striped">
+      <table id="myTable" class="table table-hover table-striped" name="problemsTable">
         <thead>
-          <tr>
-            <th>Assignment</th>
-            <th>Attempted</th>
-            <th>Score</th>
-          </tr>
+         <tr>
+             <th>Quiz Name </th>
+             <th>Average Grade</th>
+             <th>Creation Date</th>
+         </tr>
         </thead>
         <tbody>
+
+        {%for quiz in quizzes %}
           <tr>
-            <td>A1: Addition</td>
-            <td>yes</td>
-            <td>100%</td>
+              <td name="quiz">{{ quiz.name }}</td>
+              <td>.2%</td>
+              <td>{{ quiz.date }}</td>
+              <td>
+                <form action="/deleteQuiz" method="POST">
+                  <button type="submit" name="quiz_key_delete" value="{{ quiz.key.urlsafe }}">Delete quiz</button>
+                </form>
+              </td>
           </tr>
+        {% endfor %}
+
         </tbody>
       </table>
     </div>
@@ -34,9 +99,9 @@
 
 
 
-
 <script>
   document.getElementById("home").className += "active";
+  $('#quizform').css('display', 'none');
 </script>
 {% endblock %}
 

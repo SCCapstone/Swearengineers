@@ -14,12 +14,14 @@
 from google.appengine.ext.webapp import template
 from google.appengine.ext import ndb
 from google.appengine.api import users
+from collections import defaultdict
 
 import logging
 import os.path
 import webapp2
 import urllib
 import time
+import json
 
 
 from webapp2_extras import auth
@@ -43,6 +45,7 @@ class Problem(ndb.Model):
     content = ndb.StringProperty(indexed=False)
     answer = ndb.StringProperty(indexed=False)
     tags = ndb.StringProperty(indexed=False)
+    difficulty = ndb.StringProperty(indexed=False)
     date = ndb.DateTimeProperty(auto_now_add=True)
 
 def get_entity(prob_key):
@@ -59,12 +62,19 @@ def updateEntity(key):
 
 class Quiz(ndb.Model):
     author = ndb.StructuredProperty(Author)
+    name = ndb.StringProperty(indexed=True)
     content = ndb.StringProperty(indexed=False)
     date = ndb.DateTimeProperty(auto_now_add=True)
 
 class Course(ndb.Model):
     author = ndb.StructuredProperty(Author)
     content = ndb.StringProperty(indexed=False)
+    date = ndb.DateTimeProperty(auto_now_add=True)
+
+class Grades(ndb.Model):
+    author = ndb.StructuredProperty(Author)
+    value = ndb.IntegerProperty(indexed=False)
+    quiz = ndb.StringProperty(indexed=False)
     date = ndb.DateTimeProperty(auto_now_add=True)
 
 def user_key(user=DEFAULT_USER):
@@ -343,97 +353,61 @@ class AuthenticatedHandler(BaseHandler):
 class MainHandler(BaseHandler, webapp2.RequestHandler):
    @user_required
    def get(self):
-     self.render_template('home.html')
+     user = self.user
+     quizzes = getQuizList()
+     template_values = {'quizzes': quizzes }
+     self.render_template('home.html', template_values)
 
-
+###########################################################
+# Creation
+###########################################################
 class inProblemHandler(BaseHandler, webapp2.RequestHandler):
    @user_required
    def get(self):
-     self.render_template('inProblem.html')
+        quizzes = getQuizList()
+        self.render_template('inProblem.html', {'quizzes': quizzes})
 
    def post(self):
      user = self.user
      problem_key = self.request.get('problem_key')
+
+     # a test for editing a problem
      if not problem_key:
         problem = Problem(parent=user_key(user.email_address))
         problem.author = Author(
                  identity=user.name,
                  email=user.email_address)
-        problem.content = self.request.get('problem')
-        problem.tags = self.request.get('tags')
-        problem.quiz = self.request.get('quiz')
-        problem.answer = self.request.get('answer')
-        problem.put()
-        self.redirect(self.uri_for('inProblem'))
      else:
         prob_key = ndb.Key(urlsafe=self.request.get('problem_key'))
         problem = prob_key.get()
-        problem.content = self.request.get('problem')
-        problem.tags = self.request.get('tags')
-        problem.quiz = self.request.get('quiz')
-        problem.answer = self.request.get('answer')
-        problem.put()
-        time.sleep(.1)
-        self.redirect(self.uri_for('inMyProblems'))
 
+     # a test for adding a new quiz
+     problem.quiz = self.request.get('quiz_name')
+     if not problem.quiz:
+       self.display_message('Make sure to select a quiz from the dropdown first!')
+       return
+     qq = Quiz.query().order(-Quiz.date)
+     qq = qq.filter(Quiz.name == problem.quiz)
+     test = qq.get()
+     if test is None:
+        quiz = Quiz(parent=user_key(user.email_address))
+        quiz.author = Author(
+                  identity=user.name,
+                  email=user.email_address)
+        quiz.name = problem.quiz
+        quiz.put()
 
+     problem.content = self.request.get('problem')
+     problem.tags = self.request.get('tags')
+     problem.answer = self.request.get('answer')
+     problem.difficulty = self.request.get('difficulty')
+     if not problem.content or not problem.tags or not problem.answer or not problem.quiz:
+       self.display_message('Please fill out all parts of the form')
+       return
+     problem.put()
+     time.sleep(.1)
+     self.render_template('inProblem.html',{'selectdefault': problem.quiz })
 
-class inMyProblemsHandler(BaseHandler):
-   @user_required
-   def get(self):
-     user = self.user
-     problem_query = Problem.query().order(-Problem.date)
-#          ancestor=user_key(user.email_address)).order(-Problem.date)
-     problems = problem_query.fetch()
-     template_values = {'problems': problems }
-     self.render_template('inMyProblems.html', template_values)
-
-   def post(self):
-     quiz = self.request.get('quiz')
-     problem_query = Problem.query().filter(Problem.quiz == quiz)
-     problems = problem_query.fetch()
-     template_values = { 'problems': problems, 'quiz': quiz }
-     self.render_template('inMyProblems.html', template_values)
-
-class deleteHandler(BaseHandler):
-  @user_required
-  def post(self):
-      prob_key = ndb.Key(urlsafe=self.request.get('problem_key_delete'))
-      #problem = prob_key.get()
-      prob_key.delete()
-      time.sleep(0.1)
-
-      self.redirect("/inMyProblems")
-
-class editProblemHanlder(BaseHandler):
-  @user_required
-  def post(self):
-      user = self.user
-      prob_key = ndb.Key(urlsafe=self.request.get('problem_key_edit'))
-      problem = prob_key.get()
-      template_values = {'problem_content': problem.content,
-                         'problem_answer': problem.answer,
-                         'problem_tags': problem.tags,
-                         'problem_key': prob_key}
-      #self.display_message(problem.content)
-      self.render_template('inProblem.html', template_values)
-
-
-
-class inQuizzesHandler(BaseHandler, webapp2.RequestHandler):
-   @user_required
-   def get(self):
-#     quizzes = Problem.query().fetch()
-#     template_values = { 'quizzes': ''}
-#     self.render_template('inQuizzes.html', template_values)
-     self.render_template('inQuizzes.html')
-
-   def post(self):
-     quiz = self.request.get('quiz')
-     problem_query = Problem.query().filter(Problem.quiz == quiz)
-     problems = problem_query.fetch()
-     template_values = { 'problems': problems}
-     self.render_template('inQuizzes.html', template_values)
 
 class inCreateClassHandler(BaseHandler, webapp2.RequestHandler):
    @user_required
@@ -452,6 +426,184 @@ class inCreateClassHandler(BaseHandler, webapp2.RequestHandler):
      # *THEN* problem.put
      course.put()
      self.redirect(self.uri_for('inCreateClass'))
+
+
+###########################################################
+# My Things
+###########################################################
+
+class inMyProblemsHandler(BaseHandler):
+   @user_required
+   def get(self):
+     user = self.user
+     problem_query = Problem.query(ancestor=user_key(user.email_address)).order(-Problem.date)
+#          ancestor=user_key(user.email_address)).order(-Problem.date)
+     problems = problem_query.fetch()
+     quizzes = getQuizList()
+     template_values = {'problems': problems, 'quizzes': quizzes }
+     self.render_template('inMyProblems.html', template_values)
+
+   def post(self):
+     quiz = self.request.get('quiz')
+     quizzes = getQuizList()
+     problem_query = Problem.query().filter(Problem.quiz == quiz)
+     problems = problem_query.fetch()
+     template_values = { 'problems': problems, 'selectdefault': quiz,
+             'quizzes': quizzes}
+     self.render_template('inMyProblems.html', template_values)
+
+class inMyQuizzesHandler(BaseHandler):
+   @user_required
+   def get(self):
+        user = self.user
+        quizzes = getQuizList()
+        template_values = {'quizzes': quizzes }
+        self.render_template('inMyQuizzes.html', template_values)
+
+class inMyGradesHandler(BaseHandler):
+   @user_required
+   def get(self):
+     user = self.user
+     grade_query = Grades.query(ancester=user_key(user.email_address)).order(-Grade.date)
+     grades = grade_query.fetch()
+     template_values = {'grades': grades}
+     self.render_template('inMyGrades.html', template_values)
+
+###########################################################
+# Actions (Taking Quiz/Grading)
+###########################################################
+class inQuizzesHandler(BaseHandler, webapp2.RequestHandler):
+   @user_required
+   def get(self):
+      if self.request.get('quiz_name') is None:
+        quizzes = getQuizList()
+        template_values = {'quizzes': quizzes}
+        self.render_template('inQuizzes.html', template_values)
+      else:
+        quiz_name = self.request.get('quiz_name')
+        quizzes = getQuizList()
+        problem_query = Problem.query().filter(Problem.quiz == quiz_name)
+        problems = problem_query.fetch()
+        template_values = { 'problems': problems,
+                'quizzes': quizzes, 'selectdefault': quiz_name}
+        self.render_template('inQuizzes.html', template_values)
+   def post(self):
+      quiz_name = self.request.get('selected')
+      pq = Problem.query().filter(Problem.quiz == quiz_name)
+      probs = pq.fetch()
+      total=0
+      good=0
+      for p in probs:
+        total += 1
+        my = self.request.get(str(total))
+        self.display_message("solution:  " + str(p.answer))
+        self.display_message("answer:    " + str(my))
+        if my == p.answer:
+           good += 1
+      self.display_message("correct:  " + str(good))
+      self.display_message("total:    " + str(total))
+      grade=100.0*good/total
+      self.display_message("grade:    " + str(grade) + "%")
+#      self.render_template('inQuizzes.html', {'grade': grade})
+
+
+
+
+class gradeQuiz(BaseHandler):
+   @user_required
+   def post(self):
+       user = self.user
+       quiz = self.request.get('quiz')
+       problem_query = Problem.query().filter(Problem.quiz == quiz)
+       problems = problem_query.fetch()
+       right = None
+       wrong = None
+       counter = 1
+       grade = Grades(parent=user_key(user.email_address))
+       grade.author = Author(
+                  identity=user.name,
+                  email=user.email_address)
+       grade.quiz = self.request.get('quizName')
+
+       for problem in problems:
+           total = self.request.get('counter')
+           #answerList += answer
+       self.display_message(total)
+       #self.redirect("/inMyGrades")
+
+###########################################################
+# Deletion/Edit/Extra Functions
+###########################################################
+
+class deleteHandler(BaseHandler):
+  @user_required
+  def post(self):
+      prob_key = ndb.Key(urlsafe=self.request.get('problem_key_delete'))
+      #problem = prob_key.get()
+      prob_key.delete()
+      time.sleep(0.1)
+
+      self.redirect("/inMyProblems")
+
+class deleteQuizHandler(BaseHandler):
+  @user_required
+  def post(self):
+      quiz_key = ndb.Key(urlsafe=self.request.get('quiz_key_delete'))
+      quiz = quiz_key.get()
+      problem_query = Problem.query().filter(Problem.quiz == quiz.name)
+      problems = problem_query.fetch()
+      for problem in problems:
+          problem.key.delete()
+      quiz_key.delete()
+      time.sleep(0.1)
+      self.redirect("/")
+
+class editProblemHanlder(BaseHandler):
+  @user_required
+  def post(self):
+      user = self.user
+      quizzes = getQuizList()
+      prob_key = ndb.Key(urlsafe=self.request.get('problem_key_edit'))
+      problem = prob_key.get()
+      template_values = {'problem_content': problem.content,
+                         'problem_answer': problem.answer,
+                         'problem_tags': problem.tags,
+                         'problem_key': prob_key,
+                         'problem_difficulty': problem.difficulty,
+                         'quizzes': quizzes}
+      #self.display_message(problem.content)
+      self.render_template('inProblem.html', template_values)
+
+def getQuizList():
+   quiz_query = Quiz.query().order(-Quiz.date)
+   quizzes = quiz_query.fetch()
+   return quizzes
+
+
+################################################################################
+# This is the python
+
+# for json
+# python:  loads vs dumps
+# js:  stringify vs parces
+
+all_quizzes = Quiz.query().order(-Quiz.date)
+
+class TestHandler(BaseHandler):
+   @user_required
+   def get(self):
+     if self.request.get('fmt') == 'json':
+         data = defaultdict(list)
+         for q in all_quizzes:
+            probs = Problem.query().filter(Problem.quiz == q.name)
+            for p in probs:
+                data[q.name].append(p.content)
+         self.response.out.headers['Content-Type'] = 'text/json'
+         self.response.out.write(json.dumps(data))
+     else:
+         self.render_template('test.html')
+
+
 
 
 config = {
@@ -479,7 +631,11 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/inQuizzes', inQuizzesHandler, name='inQuizzes'),
     webapp2.Route('/inCreateClass', inCreateClassHandler, name='inCreateClass'),
     webapp2.Route('/deleteProblem', deleteHandler, name='deleteProblem'),
-    webapp2.Route('/editProblem', editProblemHanlder, name='editProblem')   
+    webapp2.Route('/deleteQuiz', deleteQuizHandler, name='deleteQuiz'),
+    webapp2.Route('/editProblem', editProblemHanlder, name='editProblem'),
+    webapp2.Route('/inMyQuizzes', inMyQuizzesHandler, name='inMyQuizzes'),
+    webapp2.Route('/gradeQuiz', gradeQuiz, name='gradeQuiz'),
+    webapp2.Route('/test', TestHandler, name='test')
 # webapp2.Route('/inMain', inMainHandler, name='inMain'),
 # webapp2.Route('/inAssignment', inAssignmentHandler, name='inAssignment'),
 ], debug=True, config=config)

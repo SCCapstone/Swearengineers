@@ -21,8 +21,8 @@
 
 
                                                           <!-- Dropdown Post -->
-<form action="/inQuizzes" method="POST">
-  <input id="hidden" type="hidden" name="quiz">
+<form action="/inQuizzes">
+  <input id="hidden" type="hidden" name="quiz_name">
   <input id="submitthis" type="submit" style="visibility:hidden">
 </form>
 
@@ -31,29 +31,32 @@
                                                       <!-- Quiz Output Table -->
 <div class="row">
   <div class="col-lg-12">
-    <table style="width:80%">
-        {% for problem in problems %}
-          <tr style="text-align:center">
-            <td style="padding-top:50px;padding-bottom:50px;width:10%; background-color:#ccc">{{ forloop.counter }}.</td>
-            <td style="width: 75%"><h3><script type="math/tex">{{ problem.content }}</script></h3></td>
-            <td><input style="width:100%"type="text" name={{  forloop.counter }}><td>
-          <tr>
-          <script>var success = ("{{ forloop.counter }}" > 0)</script>
+    <form action="/inQuizzes" method="POST">
+      <table style="width:80%">
+          {% for problem in problems %}
+            <tr style="text-align:center">
+              <td style="padding-top:50px;padding-bottom:50px;width:10%; background-color:#ccc">{{ forloop.counter }}.</td>
+              <td style="width: 75%"><h3><script type="math/tex">{{ problem.content }}</script></h3></td>
+              <td><input style="width:100%"type="text" name="{{ forloop.counter }}"><td>
+            </tr>
+          <script>quizselected = ("{{ forloop.counter }}" > 0)</script>
         {% endfor %}
-    </table>
-    <button style="float:right; display:none" id ="submit" class="bluebtn btn btn-primary" type="submit">Save</button>
-
+      </table>
+      <button style="float:right; display:none" id ="submit" name="selected" value="{{ selectdefault }}"class="bluebtn btn btn-primary" type="submit">Save</button>
+    </form>
   </div>
 </div>
 
 
-
 <script>
 
+  var quizselected;
   document.getElementById("quizzes").className += "active";
-  if(success){
+
+  if(quizselected){
     $('#submit').css('display', 'inline');
   }
+
 </script>
 
 
