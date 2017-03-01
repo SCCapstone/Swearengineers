@@ -7,6 +7,5 @@ indexes:
 - kind: Quiz
   ancestor: yes
   properties:
-  - name: name
   - name: date
     direction: desc
