@@ -354,7 +354,7 @@ class MainHandler(BaseHandler, webapp2.RequestHandler):
    @user_required
    def get(self):
      user = self.user
-     quizzes = getQuizList()
+     quizzes = getMyQuizList(self)
      template_values = {'quizzes': quizzes }
      self.render_template('home.html', template_values)
 
@@ -364,7 +364,7 @@ class MainHandler(BaseHandler, webapp2.RequestHandler):
 class inProblemHandler(BaseHandler, webapp2.RequestHandler):
    @user_required
    def get(self):
-        quizzes = getQuizList()
+        quizzes = getMyQuizList(self)
         self.render_template('inProblem.html', {'quizzes': quizzes})
 
    def post(self):
@@ -439,7 +439,7 @@ class inMyProblemsHandler(BaseHandler):
      problem_query = Problem.query(ancestor=user_key(user.email_address)).order(-Problem.date)
 #          ancestor=user_key(user.email_address)).order(-Problem.date)
      problems = problem_query.fetch()
-     quizzes = getQuizList()
+     quizzes = getMyQuizList(self)
      template_values = {'problems': problems, 'quizzes': quizzes }
      self.render_template('inMyProblems.html', template_values)
 
@@ -578,6 +578,14 @@ def getQuizList():
    quiz_query = Quiz.query().order(-Quiz.date)
    quizzes = quiz_query.fetch()
    return quizzes
+
+
+def getMyQuizList(self):
+   qq = Quiz.query(ancestor=user_key(self.user.email_address)).order(-Quiz.date)
+   quizzes = qq.fetch()
+   return quizzes
+
+
 
 
 ################################################################################
