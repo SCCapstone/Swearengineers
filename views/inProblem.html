@@ -115,8 +115,8 @@
         <option class="inproblem" name="difficulty" value="Medium"> Medium</option>
         <option class="inproblem" name="difficulty" value="Hard"> Hard</option>
       </select>
-    <button id ="next" class="bluebtn btn btn-primary" data-target="#newquiz"
-      type="submit">Save
+    <button id ="next" class="bluebtn btn btn-primary" data-target="#newquiz" 
+      onclick="return confirm('Your problem has been saved.');" type="submit">Save
     </button>
     <input id="hidden" type="hidden" name="quiz_name" value="{{ selectdefault }}">
   </form>
