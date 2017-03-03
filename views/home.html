@@ -77,21 +77,21 @@
         <thead>
          <tr>
              <th>Quiz Name </th>
-             <th>Average Grade</th>
-             <th>Creation Date</th>
+             <th>My Grades</th>
+             <th>Completion Date</th>
          </tr>
         </thead>
         <tbody>
 
-        {%for quiz in quizzes %}
+        {%for grade in grades %}
           <tr>
-              <td name="quiz">{{ quiz.name }}</td>
-              <td>.2%</td>
-              <td>{{ quiz.date }}</td>
+              <td name="quiz">{{ grade.quiz }}</td>
+              <td>{{ grade.value }}</td>
+              <td>{{ grade.date }}</td>
               <td>
-                <form action="/deleteQuiz" method="POST">
+                <!-- <form action="/deleteQuiz" method="POST">
                   <button type="submit" name="quiz_key_delete" value="{{ quiz.key.urlsafe }}">Delete quiz</button>
-                </form>
+                </form> -->
               </td>
           </tr>
         {% endfor %}

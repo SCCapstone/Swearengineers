@@ -73,7 +73,7 @@ class Course(ndb.Model):
 
 class Grades(ndb.Model):
     author = ndb.StructuredProperty(Author)
-    value = ndb.IntegerProperty(indexed=False)
+    value = ndb.FloatProperty(indexed=False)
     quiz = ndb.StringProperty(indexed=False)
     date = ndb.DateTimeProperty(auto_now_add=True)
 
@@ -354,8 +354,8 @@ class MainHandler(BaseHandler, webapp2.RequestHandler):
    @user_required
    def get(self):
      user = self.user
-     quizzes = getMyQuizList(self)
-     template_values = {'quizzes': quizzes }
+     grades = getMyGradeList(self)
+     template_values = {'grades': grades }
      self.render_template('home.html', template_values)
 
 ###########################################################
@@ -488,22 +488,30 @@ class inQuizzesHandler(BaseHandler, webapp2.RequestHandler):
                 'quizzes': quizzes, 'selectdefault': quiz_name}
         self.render_template('inQuizzes.html', template_values)
    def post(self):
-      quiz_name = self.request.get('selected')
-      pq = Problem.query().filter(Problem.quiz == quiz_name)
-      probs = pq.fetch()
-      total=0
-      good=0
-      for p in probs:
-        total += 1
-        my = self.request.get(str(total))
-        self.display_message("solution:  " + str(p.answer))
-        self.display_message("answer:    " + str(my))
-        if my == p.answer:
-           good += 1
-      self.display_message("correct:  " + str(good))
-      self.display_message("total:    " + str(total))
-      grade=100.0*good/total
-      self.display_message("grade:    " + str(grade) + "%")
+     quiz_name = self.request.get('selected')
+     user = self.user
+     pq = Problem.query().filter(Problem.quiz == quiz_name)
+     probs = pq.fetch()
+     total=0
+     good=0
+     for p in probs:
+       total += 1
+       my = self.request.get(str(total))
+       self.display_message("solution:  " + str(p.answer))
+       self.display_message("answer:    " + str(my))
+       if my == p.answer:
+          good += 1
+     self.display_message("correct:  " + str(good))
+     self.display_message("total:    " + str(total))
+     grade=100.0*good/total
+     gradeRecord = Grades(parent=user_key(user.email_address))
+     gradeRecord.author = Author(
+                identity=user.name,
+                email=user.email_address)
+     gradeRecord.value=grade
+     gradeRecord.quiz=quiz_name
+     gradeRecord.put()
+     self.display_message("grade:    " + str(grade) + "%")
 #      self.render_template('inQuizzes.html', {'grade': grade})
 
 
@@ -584,6 +592,16 @@ def getMyQuizList(self):
    qq = Quiz.query(ancestor=user_key(self.user.email_address)).order(-Quiz.date)
    quizzes = qq.fetch()
    return quizzes
+
+def getGradeList():
+   grade_query = Grades.query().order(-Grades.date)
+   grades = grade_query.fetch()
+   return grades
+
+def getMyGradeList(self):
+   g = Grades.query(ancestor=user_key(self.user.email_address)).order(-Grades.date)
+   grades = g.fetch()
+   return grades
 
 
 
