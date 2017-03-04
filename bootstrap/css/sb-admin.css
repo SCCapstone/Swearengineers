@@ -305,3 +305,10 @@ select {
   -moz-appearance: none;
   appearance: none;
 }
+
+
+.result:hover{
+  color: #337ab7;
+  text-decoration:underline;
+}
+

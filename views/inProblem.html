@@ -110,12 +110,12 @@
     <input class="inproblem" type="hidden" id="keybox" name="problem_key" value="{{ problem_key.urlsafe }}">
     <br>
     <label class="inproblem" for="data">Difficulty:&nbsp;&nbsp;&nbsp;</label>
-      <select>
-        <option class="inproblem" name="difficulty" value="Easy"> Easy</option>
-        <option class="inproblem" name="difficulty" value="Medium"> Medium</option>
-        <option class="inproblem" name="difficulty" value="Hard"> Hard</option>
+      <select name="difficulty">
+        <option class="inproblem" value="Easy"> Easy</option>
+        <option class="inproblem" value="Medium"> Medium</option>
+        <option class="inproblem" value="Hard"> Hard</option>
       </select>
-    <button id ="next" class="bluebtn btn btn-primary" data-target="#newquiz" 
+    <button id ="next" class="bluebtn btn btn-primary" data-target="#newquiz"
       onclick="return confirm('Your problem has been saved.');" type="submit">Save
     </button>
     <input id="hidden" type="hidden" name="quiz_name" value="{{ selectdefault }}">

@@ -1,0 +1,51 @@
+
+{% extends "inTemplate.html" %}
+
+{% block pageName %}Help Topics by Page{% endblock %}
+
+{% block maincontent %}
+
+
+
+<h3>Home</h3>
+<ol>
+    <li>You can view the quizzes you've taken by clicking</li>
+    <li>Sorry,creating a Course is not yet enabled</li>
+</ol>
+<h3>Take a Quiz</h3>
+<ol>
+    <li>All authenticated users can see all quizzes</li>
+    <li>If a quiz is availible, you can select it from the dropdown and complete it</li>
+    <li>Once complete, your grade will be displayed and your Home Page will update</li>
+</ol>
+<h3>Create Problems</h3>
+<ol>
+    <li>All fields must be filled in</li>
+    <li>The question box only allows for LaTeX at this time</li>
+    <li>The answer box will never allow LaTeX</li>
+    <li>Add Keywords you'd like to search by in the My Problems Page</li>
+</ol>
+
+<h3>My Problems</h3>
+<ol>
+    <li>This page displays all the problems you have created</li>
+    <li>You can limit the search using keywords or the quiz dropdown</li>
+</ol>
+
+<h3>My Quizzes</h3>
+<ol>
+    <li>Quizzes you have created are displayed here</li>
+    <li>Under each quiz, you can view any results from other users</li>
+</ol>
+
+
+
+<script>
+  document.getElementById("help").className += "active";
+  $('#quizform').css('display', 'none');
+</script>
+{% endblock %}
+
+
+
+

@@ -60,8 +60,9 @@
       </div>
       <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-
-          <button id="addquizbtn" type="button" class="bluebtn btn btn-primary" data-dismiss="modal">Submit</button>
+<!--
+          <button id="addcourse" type="button" class="bluebtn btn btn-primary" data-dismiss="modal">Submit</button>
+-->
       </div>
       </form>
     </div>
@@ -71,24 +72,25 @@
                                                     <!-- Search Output Table -->
 <div class="row">
   <div class="col-lg-12">
-    <h3>Quiz Grades</h3>
+    <h2>Quiz Grades</h2>
     <div class="table-responsive">
       <table id="myTable" class="table table-hover table-striped" name="problemsTable">
         <thead>
          <tr>
              <th>Quiz Name </th>
-             <th>My Grades</th>
+             <th>My Grade</th>
              <th>Completion Date</th>
          </tr>
         </thead>
         <tbody>
-
         {%for grade in grades %}
-          <tr>
-              <td name="quiz">{{ grade.quiz }}</td>
-              <td>{{ grade.value }}</td>
-              <td>{{ grade.date }}</td>
-              <td>
+          <tr class="result" data-toggle="tooltip" title="Click to View Quiz Results"
+              style="cursor:pointer"
+              onclick="document.location='/inQuizzes?grade={{ grade.key.urlsafe }}';">
+              <td name="quiz"><a href="#"><h4>{{ grade.quiz }}</h4></a></td>
+              <td><h4>{{ grade.stringgrade }}</h4></td>
+              <td><h4>{{ grade.date }}</h4></td>
+
                 <!-- <form action="/deleteQuiz" method="POST">
                   <button type="submit" name="quiz_key_delete" value="{{ quiz.key.urlsafe }}">Delete quiz</button>
                 </form> -->

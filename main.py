@@ -21,6 +21,7 @@ import os.path
 import webapp2
 import urllib
 import time
+import datetime
 import json
 
 
@@ -65,6 +66,7 @@ class Quiz(ndb.Model):
     name = ndb.StringProperty(indexed=True)
     content = ndb.StringProperty(indexed=False)
     date = ndb.DateTimeProperty(auto_now_add=True)
+    jgrades = ndb.JsonProperty(default=[])
 
 class Course(ndb.Model):
     author = ndb.StructuredProperty(Author)
@@ -74,8 +76,10 @@ class Course(ndb.Model):
 class Grades(ndb.Model):
     author = ndb.StructuredProperty(Author)
     value = ndb.FloatProperty(indexed=False)
+    stringgrade = ndb.StringProperty(indexed=False)
     quiz = ndb.StringProperty(indexed=False)
     date = ndb.DateTimeProperty(auto_now_add=True)
+    pag = ndb.JsonProperty()
 
 def user_key(user=DEFAULT_USER):
     """Constructs a Datastore key for a User entity.
@@ -358,6 +362,14 @@ class MainHandler(BaseHandler, webapp2.RequestHandler):
      template_values = {'grades': grades }
      self.render_template('home.html', template_values)
 
+
+class helpHandler(BaseHandler):
+   @user_required
+   def get(self):
+     user = self.user
+     self.render_template('inHelp.html')
+
+
 ###########################################################
 # Creation
 ###########################################################
@@ -456,7 +468,7 @@ class inMyQuizzesHandler(BaseHandler):
    @user_required
    def get(self):
         user = self.user
-        quizzes = getQuizList()
+        quizzes = getMyQuizList(self)
         template_values = {'quizzes': quizzes }
         self.render_template('inMyQuizzes.html', template_values)
 
@@ -475,18 +487,26 @@ class inMyGradesHandler(BaseHandler):
 class inQuizzesHandler(BaseHandler, webapp2.RequestHandler):
    @user_required
    def get(self):
-      if self.request.get('quiz_name') is None:
-        quizzes = getQuizList()
-        template_values = {'quizzes': quizzes}
-        self.render_template('inQuizzes.html', template_values)
-      else:
-        quiz_name = self.request.get('quiz_name')
-        quizzes = getQuizList()
-        problem_query = Problem.query().filter(Problem.quiz == quiz_name)
-        problems = problem_query.fetch()
-        template_values = { 'problems': problems,
-                'quizzes': quizzes, 'selectdefault': quiz_name}
-        self.render_template('inQuizzes.html', template_values)
+      if self.request.get('grade') is not '':
+         grade = ndb.Key(urlsafe=self.request.get('grade'))
+         grade = grade.get()
+         sd=grade.quiz
+         self.render_template('inQuizzes.html', {'grade': grade, 'selectdefault': sd })
+      elif self.request.get('quiz_name') is not None:
+         quiz_name = self.request.get('quiz_name')
+         quizzes = getQuizList()
+         problem_query = Problem.query().filter(Problem.quiz == quiz_name)
+         problems = problem_query.fetch()
+         template_values = {
+                 'problems': problems,
+                 'quizzes': quizzes,
+                 'selectdefault': quiz_name}
+         self.render_template('inQuizzes.html', template_values)
+      elif self.request.get('quiz_name') is None:
+         quizzes = getQuizList()
+         template_values = {'quizzes': quizzes}
+         self.render_template('inQuizzes.html', template_values)
+
    def post(self):
      quiz_name = self.request.get('selected')
      user = self.user
@@ -494,27 +514,53 @@ class inQuizzesHandler(BaseHandler, webapp2.RequestHandler):
      probs = pq.fetch()
      total=0
      good=0
+     problems=[]
+     answers=[]
+     grades=[]
      for p in probs:
        total += 1
        my = self.request.get(str(total))
-       self.display_message("solution:  " + str(p.answer))
-       self.display_message("answer:    " + str(my))
+       answers.append(my)
+       problems.append(p.content)
        if my == p.answer:
           good += 1
-     self.display_message("correct:  " + str(good))
-     self.display_message("total:    " + str(total))
+          grades.append(1)
+       else:
+          grades.append(0)
      grade=100.0*good/total
+     stringgrade=str(round(grade,1))+"%"
+     pag = zip(problems, answers, grades)
      gradeRecord = Grades(parent=user_key(user.email_address))
      gradeRecord.author = Author(
                 identity=user.name,
                 email=user.email_address)
      gradeRecord.value=grade
+     gradeRecord.stringgrade=stringgrade
      gradeRecord.quiz=quiz_name
+     gradeRecord.pag= pag
      gradeRecord.put()
-     self.display_message("grade:    " + str(grade) + "%")
-#      self.render_template('inQuizzes.html', {'grade': grade})
+
+     gdate=gradeRecord.date.strftime("%B %d, %Y, %I:%M%P")
+
+     qq = Quiz.query().filter(Quiz.name == quiz_name)
+     quiz=qq.fetch()
+     for q in quiz:
+         q.jgrades.append([user.name,stringgrade, gradeRecord.key.urlsafe(), gdate])
+         q.put()
+
+     self.render_template('inQuizzes.html', {'selectdefault': quiz_name, 'grade': gradeRecord})
 
 
+class inGradedQuizHandler(BaseHandler, webapp2.RequestHandler):
+   @user_required
+   def get(self):
+      quiz_name = self.request.get('quiz_name')
+      quizzes = getQuizList()
+      problem_query = Problem.query().filter(Problem.quiz == quiz_name)
+      problems = problem_query.fetch()
+      template_values = { 'problems': problems,
+              'quizzes': quizzes, 'selectdefault': quiz_name}
+      self.render_template('inQuizzes.html', template_values)
 
 
 class gradeQuiz(BaseHandler):
@@ -655,12 +701,14 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/inProblem', inProblemHandler, name='inProblem'),
     webapp2.Route('/inMyProblems', inMyProblemsHandler, name='inMyProblems'),
     webapp2.Route('/inQuizzes', inQuizzesHandler, name='inQuizzes'),
+    webapp2.Route('/inGradedQuiz', inGradedQuizHandler, name='inGradedQuiz'),
     webapp2.Route('/inCreateClass', inCreateClassHandler, name='inCreateClass'),
     webapp2.Route('/deleteProblem', deleteHandler, name='deleteProblem'),
     webapp2.Route('/deleteQuiz', deleteQuizHandler, name='deleteQuiz'),
     webapp2.Route('/editProblem', editProblemHanlder, name='editProblem'),
     webapp2.Route('/inMyQuizzes', inMyQuizzesHandler, name='inMyQuizzes'),
     webapp2.Route('/gradeQuiz', gradeQuiz, name='gradeQuiz'),
+    webapp2.Route('/inHelp', helpHandler, name='inHelp'),
     webapp2.Route('/test', TestHandler, name='test')
 # webapp2.Route('/inMain', inMainHandler, name='inMain'),
 # webapp2.Route('/inAssignment', inAssignmentHandler, name='inAssignment'),
