@@ -1,6 +1,6 @@
 '''
 Created on Jan 30, 2017
-Updated on February 25, 2017
+Updated February 25, 2017
 
 @author: Matthew
 '''

@@ -17,7 +17,31 @@
 
 {% block maincontent %}
 
+    <!--
+    | New Quiz Modal
+    |   Activated from Settings Menu
+    -->
+    <div class="modal fade" id="newquiz" role="dialog">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">New Quiz</h4>
+          </div>
+          <div class="modal-body">
+              <!--           <form action="createQuizFromProblem" method="POST"> -->
+            <form>
+            <input type="text" name="newquiz" id="quizname" class="form-control" placeholder="Enter a Unique Quiz Name">
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 
+              <button id="addquizbtn" type="button" class="bluebtn btn btn-primary" data-dismiss="modal">Submit</button>
+          </div>
+          </form>
+        </div>
+      </div>
+    </div>
 
                                                             <!-- Math Display-->
 <h2 id="display"></h2>
@@ -84,10 +108,17 @@
     <label class="inproblem" for="data">Add Keywords:</label>
     <input class="inproblem" type="text" id="tagbox" name="tags" value="{{ problem_tags }}">
     <input class="inproblem" type="hidden" id="keybox" name="problem_key" value="{{ problem_key.urlsafe }}">
+    <br>
+    <label class="inproblem" for="data">Difficulty:&nbsp;&nbsp;&nbsp;</label>
+      <select name="difficulty">
+        <option class="inproblem" value="Easy"> Easy</option>
+        <option class="inproblem" value="Medium"> Medium</option>
+        <option class="inproblem" value="Hard"> Hard</option>
+      </select>
     <button id ="next" class="bluebtn btn btn-primary" data-target="#newquiz"
-      type="submit">Save
+      onclick="return confirm('Your problem has been saved.');" type="submit">Save
     </button>
-    <input id="hidden" type="hidden" name="quiz">
+    <input id="hidden" type="hidden" name="quiz_name" value="{{ selectdefault }}">
   </form>
 </div>
 
@@ -117,7 +148,6 @@ var displayRefreshRate;
 **********/
 window.onload = function(){
   document.getElementById("problem").className += "active";
-
   textbox.focus();
   window.scrollTo(0,0);
 
@@ -131,12 +161,26 @@ window.onload = function(){
 }
 
 
+
+$(document).ready(function() {
+     $('#addquizbtn').attr('disabled',true);
+     $('#quizname').keyup(function() {
+        if($('#quizname').val() != '') {
+           $('#addquizbtn').removeAttr('disabled');
+        }
+     });
+ });
+
+
+
+
+
+
 /*******************************************************************************
 * Add Quiz Function
 * -----------------
 * - Adds the option to the selection box
 *
-  s.options.add(new Option(text, text), s.options[0]);
 **********/
 $('#addquizbtn').click(function(){
   var text = document.getElementById('quizname').value;
