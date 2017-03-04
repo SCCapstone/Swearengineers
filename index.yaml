@@ -9,3 +9,8 @@ indexes:
   properties:
   - name: date
     direction: desc
+- kind: Grades
+  ancestor: yes
+  properties:
+  - name: date
+    direction: desc
