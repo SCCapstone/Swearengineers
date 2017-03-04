@@ -610,7 +610,7 @@ class deleteQuizHandler(BaseHandler):
           problem.key.delete()
       quiz_key.delete()
       time.sleep(0.1)
-      self.redirect("/")
+      self.redirect("inMyQuizzes.html")
 
 class editProblemHanlder(BaseHandler):
   @user_required

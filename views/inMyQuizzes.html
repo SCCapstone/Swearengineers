@@ -41,6 +41,7 @@
               <td></td>
               <td>{{ quiz.date }}</td>
           </tr>
+          {% if quiz.name != '' or quiz.name != None %}
           {%for n, g, u, d in quiz.jgrades %}
           <tr class="result" data-toggle="tooltip" title="Click to View Quiz Results"
               style="cursor:pointer"
@@ -58,6 +59,7 @@
                 </td>
             </tr>
           {% endfor %}
+          {% endif %}
         {% endfor %}
 
         </tbody>
