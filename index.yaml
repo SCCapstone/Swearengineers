@@ -5,8 +5,8 @@ indexes:
   - name: date
     direction: desc
 - kind: Quiz
-  ancestor: yes
   properties:
+  - name: name
   - name: date
     direction: desc
 - kind: Grades
@@ -14,3 +14,11 @@ indexes:
   properties:
   - name: date
     direction: desc
+
+
+
+#- kind: Quiz
+ # ancestor: yes
+  #properties:
+  #- name: date
+   # direction: desc
