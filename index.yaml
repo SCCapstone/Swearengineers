@@ -4,12 +4,17 @@ indexes:
   properties:
   - name: date
     direction: desc
-- kind: Quiz
+- kind: Grades
   ancestor: yes
   properties:
   - name: date
     direction: desc
-- kind: Grades
+- kind: Quiz
+  properties:
+  - name: name
+  - name: date
+    direction: desc
+- kind: Quiz
   ancestor: yes
   properties:
   - name: date
