@@ -13,10 +13,11 @@
   <div class="col-lg-4" style="padding:0;margin:0;width:100%">
    <form style="width:100%; padding:0;margin:0" role="form">
      <div class="form-group">
-       <select style="float:left; width:75%; margin-top:2px" onchange="dropdown()" id="selectid" style="width:100%"
+       <label style="float:left; margin-top:8px; margin-right:15px">Course:</label>
+       <select style="float:left; width:65%; margin-top:2px" onchange="dropdown()" id="selectid" style="width:100%"
                class="form-control">
                {% if selectdefault == '' or selectdefault == None %}
-                 <option>Click Here to Select a Course</option>
+                 <option disabled selected hidden>Click Here to Select a Course</option>
                {% else %}
                  <option>{{ selectdefault }}</option>
                {% endif %}
