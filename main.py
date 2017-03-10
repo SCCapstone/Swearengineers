@@ -418,7 +418,7 @@ class inProblemHandler(BaseHandler, webapp2.RequestHandler):
        return
      problem.put()
      time.sleep(.1)
-     self.render_template('inProblem.html',{'selectdefault': problem.quiz })
+     self.render_template('inProblem.html',{'selectdefault': problem.quiz, 'success': '1' })
 
 
 class inCreateClassHandler(BaseHandler, webapp2.RequestHandler):
