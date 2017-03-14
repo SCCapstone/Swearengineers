@@ -3,6 +3,17 @@
 
 {% block pageName %}Help Topics by Page{% endblock %}
 
+
+{% block header %}
+  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML-full"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]], processEscapes: true}
+    });
+  </script>
+{% endblock %}
+
+
 {% block maincontent %}
 
 
@@ -10,7 +21,7 @@
 <h3>Home</h3>
 <ol>
     <li>You can view the quizzes you've taken by clicking</li>
-    <li>Sorry,creating a Course is not yet enabled</li>
+    <li>Sorry, creating a Course is not yet enabled</li>
 </ol>
 <h3>Take a Quiz</h3>
 <ol>
@@ -21,8 +32,8 @@
 <h3>Create Problems</h3>
 <ol>
     <li>All fields must be filled in</li>
-    <li>The question box only allows for LaTeX at this time</li>
-    <li>The answer box will never allow LaTeX</li>
+    <li>Use '$' symbols to add <script type="math/tex">\ \rm\LaTeX</script></li>
+    <li>The answer box will never allow <script type="math/tex">\ \rm\LaTeX</script></li>
     <li>Add Keywords you'd like to search by in the My Problems Page</li>
 </ol>
 
