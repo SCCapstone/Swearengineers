@@ -286,6 +286,7 @@ function checkfields(){
       || tagbox.value    == ''
       || hidden.value    == ''
     ){
+    window.scrollTo(0,0);
     fieldalert.style.display="block"
     setTimeout(function(){fieldalert.style.display="none";}, 1500);
     return false;
