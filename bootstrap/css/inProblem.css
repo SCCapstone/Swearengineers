@@ -97,6 +97,6 @@ ul.mbttn li:hover {
   background-color:grey;
   display:inline-block;
   width:100%;
-  padding-top:5%;
+  padding-top:10px;
   padding-bottom:5%;
 }
