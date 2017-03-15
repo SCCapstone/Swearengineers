@@ -7,14 +7,18 @@
 #Jory
 #James
 #Nathaniel Polly
-#Test
 
 # [START imports]
 
 from google.appengine.ext.webapp import template
 from google.appengine.ext import ndb
+from google.appengine.api import app_identity
+from google.appengine.api import mail
 from google.appengine.api import users
 from collections import defaultdict
+
+from sympy import *
+from sympy.parsing.sympy_parser import parse_expr
 
 import logging
 import os.path
@@ -23,6 +27,7 @@ import urllib
 import time
 import datetime
 import json
+import re
 
 
 from webapp2_extras import auth
@@ -180,6 +185,16 @@ class BaseHandler(webapp2.RequestHandler):
 #     self.render_template('main.html')
 
 class SignupHandler(BaseHandler):
+
+  def send_approved_mail(self, sender_address, to_address, name):
+    mail.send_mail(sender = sender_address,
+                   to = to_address,
+                   subject = "Your account has been approved",
+                   body = """Dear %s:
+                   Your email account has been approved now you can sign in and
+                   user your new MathQuizzes account to the fullest. """ % name)
+
+    #Customize ot USER
   def get(self):
      self.render_template('signup.html')
 
@@ -190,7 +205,6 @@ class SignupHandler(BaseHandler):
     password = self.request.get('password')
     last_name = self.request.get('lastname')
 
-    # Thanx Austin
     if len(password) < 6:
       self.display_message('Password Length must be at least 6 \
         characters')
@@ -201,11 +215,17 @@ class SignupHandler(BaseHandler):
         12 characters')
       return
 
+    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+        self.display_message('Email is not a valid email format')
+        return
+
+
     unique_properties = ['email_address']
     user_data = self.user_model.create_user(user_name,
       unique_properties,
       email_address=email, name=name, password_raw=password,
       last_name=last_name, verified=False)
+
     if not user_data[0]: #user_data is a tuple
       self.display_message('Unable to create user for email %s because of \
         duplicate keys %s' % (user_name, user_data[1]))
@@ -219,11 +239,13 @@ class SignupHandler(BaseHandler):
     verification_url = self.uri_for('verification', type='v', user_id=user_id,
       signup_token=token, _full=True)
 
+    self.send_approved_mail('{}@appspot.gserviceaccount.com'.format(
+        app_identity.get_application_id()), email, name)
+
     msg = 'Account Created!'
 #    self.display_message(msg.format(url=verification_url))
 
     self.redirect(self.uri_for('home'))
-
 
 class ForgotPasswordHandler(BaseHandler):
   def get(self):
@@ -522,7 +544,9 @@ class inQuizzesHandler(BaseHandler, webapp2.RequestHandler):
        my = self.request.get(str(total))
        answers.append(my)
        problems.append(p.content)
-       if my == p.answer:
+       eq1 = parse_expr(my)
+       eq2 = parse_expr(p.answer)
+       if eq1.equals(eq2):
           good += 1
           grades.append(1)
        else:
