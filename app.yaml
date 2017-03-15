@@ -2,6 +2,10 @@ runtime: python27
 api_version: 1
 threadsafe: true
 
+inbound_services:
+- mail
+- mail_bounce
+
 # [START handlers]
 handlers:
 - url: /favicon\.ico
@@ -34,4 +38,4 @@ handlers:
 libraries:
 - name: webapp2
   version: latest
-# [END libraries]
+
