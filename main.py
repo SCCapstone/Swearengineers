@@ -74,9 +74,14 @@ class Quiz(ndb.Model):
     jgrades = ndb.JsonProperty(default=[])
 
 class Course(ndb.Model):
-    author = ndb.StructuredProperty(Author)
-    content = ndb.StringProperty(indexed=False)
-    date = ndb.DateTimeProperty(auto_now_add=True)
+    teacher = ndb.StructuredProperty(Author)
+    courseName = ndb.StringProperty(indexed=False)
+    dateCreated = ndb.DateTimeProperty(auto_now_add=True)
+
+class coursesActive(ndb.Model):
+	course = ndb.StructuredProperty(Course)
+	student = ndb.StructuredProperty(Author)
+	dateAdded = ndb.DateTimeProperty(auto_now_add=True)
 
 class Grades(ndb.Model):
     author = ndb.StructuredProperty(Author)
@@ -203,7 +208,7 @@ class SignupHandler(BaseHandler):
     email = self.request.get('email')
     name = self.request.get('name')
     password = self.request.get('password')
-    last_name = self.request.get('lastname')
+    last_name = self.request.get('lastName')
 
     if len(password) < 6:
       self.display_message('Password Length must be at least 6 \
@@ -389,7 +394,8 @@ class helpHandler(BaseHandler):
    @user_required
    def get(self):
      user = self.user
-     self.render_template('inHelp.html')
+     template_values = {'email': user.email_address}
+     self.render_template('inHelp.html', template_values)
 
 
 ###########################################################
@@ -399,7 +405,7 @@ class inProblemHandler(BaseHandler, webapp2.RequestHandler):
    @user_required
    def get(self):
         quizzes = getMyQuizList(self)
-        self.render_template('inProblem.html', {'quizzes': quizzes})
+        self.render_template('inProblem.html', {'quizzes': quizzes} )
 
    def post(self):
      user = self.user
@@ -451,13 +457,10 @@ class inCreateClassHandler(BaseHandler, webapp2.RequestHandler):
    def post(self):
      user = self.user
      course = Course(parent=user_key(user.email_address))
-     course.author = Author(
+     course.teacher = Author(
                  identity=user.name,
                  email=user.email_address)
-     course.description = self.request.get('description')
-     #if problem.answer/problem.content == null
-     #  displayMessage = "please enter a value for answer/problem"
-     # *THEN* problem.put
+     course.courseName = self.request.get('className')
      course.put()
      self.redirect(self.uri_for('inCreateClass'))
 
@@ -494,11 +497,23 @@ class inMyQuizzesHandler(BaseHandler):
         template_values = {'quizzes': quizzes }
         self.render_template('inMyQuizzes.html', template_values)
 
+class inMyClassesHandler(BaseHandler):
+   @user_required
+   def get(self):
+        user = self.user
+        course_query = Course.query()
+        courses = course_query.fetch()
+        mycourse_query = coursesActive.query(ancestor=user_key(user.email_address)).order(-coursesActive.course.dateCreated)
+        mycourses = mycourse_query.fetch()
+        template_values = {'mycourses': mycourses,
+        					'courses': courses }
+        self.render_template('inMyClasses.html', template_values)
+
 class inMyGradesHandler(BaseHandler):
    @user_required
    def get(self):
      user = self.user
-     grade_query = Grades.query(ancester=user_key(user.email_address)).order(-Grade.date)
+     grade_query = Grades.query(ancestor=user_key(user.email_address)).order(-Grade.date)
      grades = grade_query.fetch()
      template_values = {'grades': grades}
      self.render_template('inMyGrades.html', template_values)
@@ -608,6 +623,28 @@ class gradeQuiz(BaseHandler):
            #answerList += answer
        self.display_message(total)
        #self.redirect("/inMyGrades")
+
+class joinCourse(BaseHandler):
+	@user_required
+	def post(self):
+		user = self.user
+		course_key = ndb.Key(urlsafe=self.request.get('course_key'))
+		tempCourse = course_key.get()
+		mycourse = coursesActive(parent=user_key(user.email_address))
+		cName = tempCourse.courseName
+		teach = tempCourse.teacher
+		tmpDate = tempCourse.dateCreated
+		mycourse_query = coursesActive.query(ancestor=user_key(user.email_address))
+		mycourseQResult = mycourse_query.fetch()
+		for e in mycourseQResult:
+			if(cName == e.course.courseName):
+				self.display_message("You have already added this course.")
+				return
+		mycourse.course = Course(courseName=cName, teacher=teach, dateCreated=tmpDate)
+		mycourse.student = Author(identity=user.name, email=user.email_address)
+		mycourse.put()
+
+		self.redirect("/inMyClasses")
 
 ###########################################################
 # Deletion/Edit/Extra Functions
@@ -729,8 +766,10 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/inCreateClass', inCreateClassHandler, name='inCreateClass'),
     webapp2.Route('/deleteProblem', deleteHandler, name='deleteProblem'),
     webapp2.Route('/deleteQuiz', deleteQuizHandler, name='deleteQuiz'),
+    webapp2.Route('/joinCourse', joinCourse, name='joinCourse'),
     webapp2.Route('/editProblem', editProblemHanlder, name='editProblem'),
     webapp2.Route('/inMyQuizzes', inMyQuizzesHandler, name='inMyQuizzes'),
+    webapp2.Route('/inMyClasses', inMyClassesHandler, name='inMyClasses'),
     webapp2.Route('/gradeQuiz', gradeQuiz, name='gradeQuiz'),
     webapp2.Route('/inHelp', helpHandler, name='inHelp'),
     webapp2.Route('/test', TestHandler, name='test')
