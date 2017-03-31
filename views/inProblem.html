@@ -32,6 +32,12 @@
               <!--           <form action="createQuizFromProblem" method="POST"> -->
             <form>
             <input type="text" name="newquiz" id="quizname" class="form-control" placeholder="Enter a Unique Quiz Name">
+            <select type="text" name="quizInCourse" id="quizCourse" class="form-control" placeholder="Select a course for this quiz">
+              <option value="" disabled selected=""> Select a Course</option>
+              {%for course in courses %}
+              <option name="course_key_urlsafe" value="{{ course.key.urlsafe }}"> {{ course.courseName }}</option>
+              {% endfor %}
+            </select>
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -40,6 +46,37 @@
           </div>
           </form>
         </div>
+      </div>
+    </div>
+
+
+    <!--
+    | Select Course Form:
+    |   Holds a list of Courses 
+    -->
+    <div id="courseform" class="row" style="padding:0;margin:0;width:100%">
+      <div class="col-lg-4" style="padding:0;margin:0;width:100%">
+       <form style="width:100%; padding:0;margin:0" role="form">
+         <div class="form-group">
+           <label style="float:left; margin-top:8px; margin-right:15px">Course:</label>
+           <select style="float:left; width:70%; margin-top:2px" onchange="dropdown()" id="selectid2" style="width:100%"
+                   class="form-control">
+                   {% if selectdefault == '' or selectdefault == None %}
+                     <option disabled selected hidden>Click Here to Select a Course</option>
+                   {% else %}
+                     <option>{{ selectdefault }}</option>
+                   {% endif %}
+               {% for course in courses %}
+                 {% if course.name != selectdefault %}
+                   <option value="{{ course.courseName }}">{{ course.courseName }}</option>
+                 {% endif %}
+               {% endfor %}
+           </select>
+            <button id="newcoursebtn" style="display: none; float:right; width:20%" class="bluebtn btn btn-primary" data-target="#newcourse"
+              type="button" data-toggle="modal">Create Course
+            </button>
+         </div>
+       </form>
       </div>
     </div>
 
@@ -149,6 +186,7 @@
       type="submit">Save
     </button>
     <input id="hidden" type="hidden" name="quiz_name" value="{{ selectdefault }}">
+    <input id="hidden2" type="hidden" name="course_key_" value="{{ selectdefault }}">
   </form>
 </div>
 
@@ -229,10 +267,12 @@ $(document).ready(function() {
 **********/
 $('#addquizbtn').click(function(){
   var text = document.getElementById('quizname').value;
+  var cText = document.getElementById('quizCourse').value;
   var s= document.getElementById('selectid');
   s.options[0]= new Option(text, text);
   s.value=text;
   hidden.value=text;
+  hidden2.value=cText;
 });
 
 

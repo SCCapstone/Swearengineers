@@ -43,7 +43,7 @@ DEFAULT_USER = "test@email.sc.edu"
 class Author(ndb.Model):
     """Sub model for representing an author."""
     identity = ndb.StringProperty(indexed=False)
-    email = ndb.StringProperty(indexed=False)
+    email = ndb.StringProperty(indexed=True)
 
 class Problem(ndb.Model):
     quiz = ndb.StringProperty(indexed=True)
@@ -75,7 +75,9 @@ class Quiz(ndb.Model):
 
 class Course(ndb.Model):
     teacher = ndb.StructuredProperty(Author)
-    courseName = ndb.StringProperty(indexed=False)
+    courseName = ndb.StringProperty(indexed=True)
+    student = ndb.StructuredProperty(Author, repeated=True)
+    quizzes = ndb.StructuredProperty(Quiz, repeated=True)
     dateCreated = ndb.DateTimeProperty(auto_now_add=True)
 
 class coursesActive(ndb.Model):
@@ -405,7 +407,10 @@ class inProblemHandler(BaseHandler, webapp2.RequestHandler):
    @user_required
    def get(self):
         quizzes = getMyQuizList(self)
-        self.render_template('inProblem.html', {'quizzes': quizzes} )
+        user = self.user
+        course_query = Course.query(ancestor=user_key(user.email_address)).order(-Course.dateCreated)
+        courses = course_query.fetch()
+        self.render_template('inProblem.html', {'quizzes': quizzes, 'courses': courses} )
 
    def post(self):
      user = self.user
@@ -430,12 +435,17 @@ class inProblemHandler(BaseHandler, webapp2.RequestHandler):
      qq = qq.filter(Quiz.name == problem.quiz)
      test = qq.get()
      if test is None:
+     	#self.display_message(self.request.get('course_key_'))
+     	course_key = ndb.Key(urlsafe=self.request.get('course_key_'))
+     	course = course_key.get()
         quiz = Quiz(parent=user_key(user.email_address))
         quiz.author = Author(
                   identity=user.name,
                   email=user.email_address)
         quiz.name = problem.quiz
         quiz.put()
+        course.quizzes.append(quiz)
+        course.put()
 
      problem.content = self.request.get('problem')
      problem.tags = self.request.get('tags')
@@ -449,10 +459,10 @@ class inProblemHandler(BaseHandler, webapp2.RequestHandler):
      self.render_template('inProblem.html',{'selectdefault': problem.quiz, 'success': '1' })
 
 
-class inCreateClassHandler(BaseHandler, webapp2.RequestHandler):
+class inCreateCourseHandler(BaseHandler, webapp2.RequestHandler):
    @user_required
    def get(self):
-     self.render_template('inCreateClass.html')
+     self.render_template('inCreateCourse.html')
 
    def post(self):
      user = self.user
@@ -460,9 +470,9 @@ class inCreateClassHandler(BaseHandler, webapp2.RequestHandler):
      course.teacher = Author(
                  identity=user.name,
                  email=user.email_address)
-     course.courseName = self.request.get('className')
+     course.courseName = self.request.get('courseName')
      course.put()
-     self.redirect(self.uri_for('inCreateClass'))
+     self.redirect(self.uri_for('inCreateCourse'))
 
 
 ###########################################################
@@ -497,17 +507,37 @@ class inMyQuizzesHandler(BaseHandler):
         template_values = {'quizzes': quizzes }
         self.render_template('inMyQuizzes.html', template_values)
 
-class inMyClassesHandler(BaseHandler):
+class inMyCoursesHandler(BaseHandler):
    @user_required
    def get(self):
         user = self.user
         course_query = Course.query()
         courses = course_query.fetch()
-        mycourse_query = coursesActive.query(ancestor=user_key(user.email_address)).order(-coursesActive.course.dateCreated)
-        mycourses = mycourse_query.fetch()
+        #mycourse_query = Course.query(Course.student.email == user.email_address)
+        mycourses = []
+
+        for x in courses:
+        	#self.display_message("                           fdsafa              test")
+        	for student in x.student:
+        		#self.display_message("                    fasd      test2")
+        		if(student.email == user.email_address):
+        			#self.display_message("                    dfasf                     adding")
+        			mycourses.append(x)
+        
+        courses_owned_query = Course.query(ancestor=user_key(user.email_address)).order(-Course.dateCreated)
+        courses_owned = courses_owned_query.fetch()
+
+        #for y in courses_owned:
+        #	numQuizzes = len(y.quizzes)
+        #	self.display_message(y.courseName)
+        #	self.display_message(numQuizzes)
+       # if not courses_owned:
+
+
         template_values = {'mycourses': mycourses,
-        					'courses': courses }
-        self.render_template('inMyClasses.html', template_values)
+        					'courses': courses,
+        					'courses_owned': courses_owned }
+        self.render_template('inMyCourses.html', template_values)
 
 class inMyGradesHandler(BaseHandler):
    @user_required
@@ -629,22 +659,45 @@ class joinCourse(BaseHandler):
 	def post(self):
 		user = self.user
 		course_key = ndb.Key(urlsafe=self.request.get('course_key'))
-		tempCourse = course_key.get()
-		mycourse = coursesActive(parent=user_key(user.email_address))
-		cName = tempCourse.courseName
-		teach = tempCourse.teacher
-		tmpDate = tempCourse.dateCreated
-		mycourse_query = coursesActive.query(ancestor=user_key(user.email_address))
-		mycourseQResult = mycourse_query.fetch()
-		for e in mycourseQResult:
-			if(cName == e.course.courseName):
+		course = course_key.get()
+
+		course_query = Course.query()
+		course_act = course_query.fetch()
+
+		#for x in course_act:
+		#	student_list = x.student
+		#	for y in student_list:
+		#		if(y.email == user.email_address):
+		#			self.display_message("You have already added this course.")
+		#			return
+		#self.display_message(course)
+		for x in course.student:
+			if(x.email == user.email_address):
 				self.display_message("You have already added this course.")
 				return
-		mycourse.course = Course(courseName=cName, teacher=teach, dateCreated=tmpDate)
-		mycourse.student = Author(identity=user.name, email=user.email_address)
-		mycourse.put()
 
-		self.redirect("/inMyClasses")
+		me = Author(identity=user.name, email=user.email_address)
+		course.student.append(me)
+		course.put()
+		#tempCourse = course_key.get()
+		#mycourse = coursesActive(parent=user_key(user.email_address))
+		#cName = tempCourse.courseName
+		#teach = tempCourse.teacher
+		#tmpDate = tempCourse.dateCreated
+		#mycourse_query = coursesActive.query(ancestor=user_key(user.email_address))
+		#mycourseQResult = mycourse_query.fetch()
+		#for e in mycourseQResult:
+		#	if(cName == e.course.courseName):
+		#		self.display_message("You have already added this course.")
+		#		return
+
+		#course.put()	
+
+		#mycourse.course = Course(courseName=cName, teacher=teach, dateCreated=tmpDate)
+		#mycourse.student = Author(identity=user.name, email=user.email_address)
+		#mycourse.put()
+
+		self.redirect("/inMyCourses")
 
 ###########################################################
 # Deletion/Edit/Extra Functions
@@ -688,6 +741,15 @@ class editProblemHanlder(BaseHandler):
                          'quizzes': quizzes, 'selectdefault': problem.quiz}
       #self.display_message(problem.content)
       self.render_template('inProblem.html', template_values)
+
+class deleteCourse(BaseHandler):
+	@user_required
+	def post(self):
+		user = self.user
+		course_key = ndb.Key(urlsafe=self.request.get('course_key_delete'))
+		course_key.delete()
+		time.sleep(0.1)
+		self.redirect("/inMyCourses")
 
 def getQuizList():
    quiz_query = Quiz.query().order(-Quiz.date)
@@ -763,13 +825,14 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/inMyProblems', inMyProblemsHandler, name='inMyProblems'),
     webapp2.Route('/inQuizzes', inQuizzesHandler, name='inQuizzes'),
     webapp2.Route('/inGradedQuiz', inGradedQuizHandler, name='inGradedQuiz'),
-    webapp2.Route('/inCreateClass', inCreateClassHandler, name='inCreateClass'),
+    webapp2.Route('/inCreateCourse', inCreateCourseHandler, name='inCreateCourse'),
     webapp2.Route('/deleteProblem', deleteHandler, name='deleteProblem'),
+    webapp2.Route('/deleteCourse', deleteCourse, name='deleteCourse'),
     webapp2.Route('/deleteQuiz', deleteQuizHandler, name='deleteQuiz'),
     webapp2.Route('/joinCourse', joinCourse, name='joinCourse'),
     webapp2.Route('/editProblem', editProblemHanlder, name='editProblem'),
     webapp2.Route('/inMyQuizzes', inMyQuizzesHandler, name='inMyQuizzes'),
-    webapp2.Route('/inMyClasses', inMyClassesHandler, name='inMyClasses'),
+    webapp2.Route('/inMyCourses', inMyCoursesHandler, name='inMyCourses'),
     webapp2.Route('/gradeQuiz', gradeQuiz, name='gradeQuiz'),
     webapp2.Route('/inHelp', helpHandler, name='inHelp'),
     webapp2.Route('/test', TestHandler, name='test')
