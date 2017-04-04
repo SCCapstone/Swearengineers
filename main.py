@@ -58,9 +58,9 @@ class Quiz(ndb.Model):
   date = ndb.DateTimeProperty(auto_now_add=True)
   isReleased = ndb.BooleanProperty(default=False)
   releaseDate = ndb.DateTimeProperty()
-  easy = ndb.StructuredProperty(Problem, repeated=True)
-  medium = ndb.StructuredProperty(Problem, repeated=True)
-  hard = ndb.StructuredProperty(Problem, repeated=True)
+  easy = ndb.JsonProperty(default=[])
+  medium = ndb.JsonProperty(default=[])
+  hard = ndb.JsonProperty(default=[])
   jgrades = ndb.JsonProperty(default=[])
 
 
@@ -71,7 +71,7 @@ class Course(ndb.Model):
   numberOfStudents = ndb.IntegerProperty()
   numberOfQuizzes = ndb.IntegerProperty()
   studentUrls = ndb.JsonProperty()
-  quizUrls = ndb.JsonProperty()
+  quizUrls = ndb.JsonProperty(default=[])
   selectedQuiz = ndb.StructuredProperty(Quiz)
 
 

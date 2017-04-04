@@ -160,7 +160,6 @@
       type="submit">Save
     </button>
     <input id="hidden" type="hidden" name="quiz_name" value="{{ selectdefault }}">
-    <input id="hidden2" type="hidden" name="newquiz" value="False">
   </form>
 </div>
 
@@ -186,7 +185,6 @@ var fieldalert= document.getElementById('fieldalert');
 var successalert= document.getElementById('successalert');
 var old;
 var displayRefreshRate;
-var newquiz = "{{newquiz}}"
 
 
 
@@ -203,10 +201,7 @@ var newquiz = "{{newquiz}}"
 window.onload = function(){
   document.getElementById("problem").className += "active";
   textbox.focus();
-  if(newquiz) document.getElementById('newquizbtn').click();
   window.scrollTo(0,0);
-
-
   if( "{{ success }}" ) {
     successalert.style.display="block";
     setTimeout(function(){successalert.style.display="none";}, 1500);
