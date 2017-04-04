@@ -24,6 +24,17 @@ Quiz Results
 {% block maincontent %}
 
 
+<div class="row">
+  <div class="col-lg-8"><h2 class="page-header">Take a Quiz</h2></div>
+</div>
+
+
+
+
+{% if user.isTeacher %}
+{% include "instructor/selectquizform.html" %}
+{% endif %}
+
 
                                                           <!-- Dropdown Post -->
 {% if user.isTeacher %}
