@@ -1,5 +1,5 @@
 
-{% extends "inTemplate.html" %}
+{% extends "instructor/inTemplate.html" %}
 
 {% block pageName %}
 {% if grade == None %}
@@ -25,30 +25,44 @@ Quiz Results
 
 
 
-
                                                           <!-- Dropdown Post -->
-<form action="/inQuizzes">
-  <input id="hidden" type="hidden" name="quiz_name">
-  <input id="submitthis" type="submit" style="visibility:hidden">
-</form>
+{% if user.isTeacher %}
+  <form action="/quiz">
+    <input id="hidden" type="hidden" name="quiz_name">
+    <input id="submitthis" type="submit" style="visibility:hidden">
+  </form>
+{% else %}
+  {% if grade == None %}
+    <table class="table" style="width:35%;">
+      <tr>
+        <td style="width:35%">Quiz:</td>
+        <td>{{quiz.name}}</td>
+      </tr>
+      <tr>
+        <td>Instructor:</td>
+        <td>{{quiz.author.identity}}</td>
+      </tr>
+    </table>
+  {% endif %}
+{% endif %}
 
-
+<br>
 
                                                       <!-- Quiz Output Table -->
 <div class="row">
   <div class="col-lg-12">
-    <form action="/inQuizzes" method="POST">
+    <form action="/quiz" method="POST">
       <table style="width:80%">
           {% for problem in problems %}
             <tr style="text-align:center">
-              <td style="padding-top:50px;padding-bottom:50px;width:10%; background-color:#ccc">{{ forloop.counter }}.</td>
+              <td style="padding-top:50px;padding-bottom:50px;width:10%; background-color:#eaeaea">{{ forloop.counter }}.</td>
               <td style="width: 75%"><h3>{{ problem.content }}</h3></td>
               <td><input style="width:100%"type="text" name="{{ forloop.counter }}"><td>
             </tr>
           <script>quizselected = ("{{ forloop.counter }}" > 0)</script>
         {% endfor %}
       </table>
-      <button style="float:right; display:none" id ="submit" name="selected" value="{{ selectdefault }}"class="bluebtn btn btn-primary" type="submit">Save</button>
+      <button style="width:25%;float:right; display:none" id ="submit" name="selected" value="{{ selectdefault }}"class="btn btn-info" type="submit">Save</button>
     </form>
   </div>
 </div>
@@ -91,8 +105,9 @@ Quiz Results
 <script>
 
   var quizselected;
+{% if user.isTeacher %}
   document.getElementById("quizzes").className += "active";
-
+{% endif %}
   if(quizselected){
     $('#submit').css('display', 'inline');
   }

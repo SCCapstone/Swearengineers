@@ -1,0 +1,173 @@
+{% extends "inTemplate.html" %}
+
+{% block maincontent %}
+
+<div class="row" style="margin-bottom:2%">
+  <div class="col-lg-8"><h2 class="page-header">My Courses</h2></div>
+  <div class="col-lg-3">
+    <button id="newcoursebtn"
+      type="button" data-toggle="modal" data-target="#newcourse"
+      style="float:right; width:100%; margin-top:5%;"
+      class="btn btn-info lgbtn">New Course
+    </button>
+  </div>
+</div>
+
+<!--
+| New Course Modal
+|   Activated from Create Course Button
+-->
+<div class="modal fade"
+  {% if newuser %}
+    data-keyboard="false" data-backdrop="static"
+  {% endif %}
+  id="newcourse" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        {% if not newuser %}
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Create a New Course!</h4>
+        {% else %}
+          <h4 class="modal-title">Create a Course to Continue</h4>
+        {% endif %}
+      </div>
+      <br>
+      <form action="/createCourse" method="POST">
+        <div class="modal-body">
+          <p>Enter a Course Name</p>
+          <input type="text" name="course_name" id="course_name" class="form-control" placeholder="Enter a Course Name">
+        </div>
+        <div class="modal-footer">
+        {% if not newuser %}
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        {% endif %}
+          <button id="addcourse" type="submit" class="btn btn-info" >Add Students</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!--
+| Edit Course Modal
+|   Activated from Create Course Button
+-->
+<div class="modal fade" id="editcourse" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Edit your Course Name!</h4>
+      </div>
+      <br>
+      <form id="editurl" method="POST">
+        <div class="modal-body">
+          <p id="cname"></p>
+          <br>
+          <input type="text" name="course_name" id="course_name" class="form-control" placeholder="Enter a Course Name">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button id="editcourse" type="submit" class="btn btn-info" >Edit Course Name</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+<!--
+| Course Output Table
+-->
+<div class="row">
+  <div class="col-lg-1"></div>
+  <div class="col-lg-9">
+    <div class="table-responsive">
+      <table class="borderless table">
+        {% for c in mycourses %}
+          <tr>
+            <td colspan="2" class="lgbtn" style="border-bottom:1px solid #ccc">
+              <h3 style="margin:0; font-weight:bold">{{c.name}}</h3>
+            </td>
+          </tr>
+          <tr>
+            <td rowspan="2" style="padding-top:20px">
+              <table class="borderless table" style="margin-left:5%">
+                <tr>
+                  <td>Created Date:</td>
+                  <td style="font-weight:bold">{{c.date}}</td>
+                </tr>
+                <tr>
+                  <td>Number of Students:</td>
+                  <td style="font-weight:bold">{{c.numberOfStudents}}</td>
+                </tr>
+                <tr>
+                  <td>Number of Quizzes</td>
+                  <td style="font-weight:bold">{{c.numberOfQuizzes}}</td>
+                </tr>
+              </table>
+            </td>
+            <td style="padding-top:20px">
+              <button
+                type="button" data-toggle="modal" data-target="#editcourse"
+                onclick="edit('{{c.key.urlsafe}}','{{c.name}}')"
+                style="float:right; width:100%;"
+                class="blu btn btn-default lgbtn">Rename
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <form action="/deleteCourse" method="POST">
+                <button
+                  type="submit"
+                  style="width:100%;"
+                  name="key"
+                  value="{{c.key.urlsafe}}"
+                  class="rd btn btn-danger lgbtn">Delete
+                </button>
+              </form>
+            </td>
+          </tr>
+          <tr>
+          <td colspan="2" style="padding-bottom:15%">
+          </tr>
+        {% endfor %}
+
+      </table>
+    </div>
+  </div>
+</div>
+
+<!--
+|  js
+-->
+<script>
+  window.onload = function(){
+    $('#quizform').css('display', 'none');
+    document.getElementById("mycourses").className += "active";
+    if("{{newuser}}") document.getElementById("newcoursebtn").click();
+  }
+  var url=document.getElementById("editurl");
+  var cname=document.getElementById("cname");
+  function edit(k, n){
+    cname.innerHTML='The current course name is:&nbsp;&nbsp<b style="text-transform: uppercase">' + n +'</b>';
+    url.action='/editCourse?k='+k;
+  }
+</script>
+{% endblock %}
+
+
+
+

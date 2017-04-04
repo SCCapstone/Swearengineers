@@ -251,7 +251,6 @@ ul.alert-dropdown {
 
 /* The MathQuizzes brand at the top left of each page */
 
-.navbar-inverse .navbar-brand .logo2,
 .navbar-inverse .navbar-brand .logo2 {
   color: #53A3CD;
 }
@@ -262,23 +261,109 @@ ul.alert-dropdown {
 
 
 
-/* The page-header is at top-right of each page */
-
 .page-header {
-  text-align:right;
   margin-top:20px;
+  float:left;
 }
 
 
 /* Dialog box */
 .modal-header {
-  background-color: #53A3CD;
+  background-color: #31b0d5;
   color:#FFF;
+}
+
+.lgbtn{
+  text-transform:uppercase;
+  letter-spacing: 2px;
+  padding:15px;
+  font-weight:bold;
+}
+
+.lgbtn p{
+  margin:15px;
+  font-weight:normal;
+}
+
+
+.btn-info:focus,
+.btn-info {
+  color: #fff;
+  background-color: #5bc0de;
+  border-color: #46b8da;
+  font-weight:normal;
+}
+.btn-info:hover {
+  border-color: #46b8da;
+  background-color: #31b0d5;
+  font-weight:normal;
+}
+
+.rd.btn-danger:focus,
+.rd.btn-danger {
+  color: #a94442;
+  background-color:#fff;
+  border-color: #a94442;
+}
+
+.rd.btn-danger:active:focus,
+.rd.btn-danger:hover {
+  color: #a94442;
+  background-color:#f2dede;
+  font-weight:normal;
+}
+.gn.btn-success:focus,
+.gn.btn-success:active,
+.gn.btn-success.active,
+.gn.btn-success.active:focus,
+.gn.btn-success.focus,
+.gn.btn-success {
+  background-color:#fff;
+  color: #3c763d;
+  border-color: #3c763d;
+}
+.gn.btn-success:active:focus,
+.gn.btn-success:hover {
+  background-color:#dff0d8;
+  border-color: #3c763d;
+  font-weight:normal;
+}
+
+.blu.btn-default:focus,
+.blu.btn-default:active,
+.blu.btn-default.active,
+.blu.btn-default.active:focus,
+.blu.btn-default.focus,
+.blu.btn-default {
+  color: #31708f;
+  background-color:#fff;
+  border-color: #31b0d5;
+  color: #31b0d5;
+}
+.blu.btn-default:active:focus,
+.blu.btn-default:hover {
+  color: #31708f;
+  background-color: #d9edf7;
+  font-weight:normal;
+  border-color: #31708f;
+}
+.blu.btn-default[disabled]{
+  background-color:#CCC;
+  border-color: #CCC;
+  color: #222;
+  font-weight:normal;
+  cursor:default;
+}
+
+
+.clr.btn-default:active:focus,
+.clr.btn-default:hover{
+  background-color: #d9edf7;
 }
 
 
 /* Button */
-.btn {
+.mybtn {
   padding: 10px;
   width:20%;
 }
@@ -300,6 +385,7 @@ ul.alert-dropdown {
 
 /* remove styles added by mozilla */
 :target :active, :focus { outline: none; -moz-outline-style: none; }
+
 select {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -313,3 +399,58 @@ select {
   text-decoration:underline;
 }
 
+
+/* Student Tables */
+#mystudentstable tbody,
+#allstudentstable tbody{
+  font-weight:bold;
+}
+#mystudentstable i,
+#allstudentstable i{
+  color:#eaeaea;
+}
+/* all students */
+#allstudentstable tbody tr:hover i,
+#allstudentstable tbody tr:hover i,
+#allstudentstable tbody tr:hover,
+#allstudentstable tbody tr:focus{
+  color: #31708f;
+  background-color: #d9edf7;
+  cursor:pointer;
+}
+/* my students */
+#mystudentstable tbody tr:hover i,
+#mystudentstable tbody tr:hover i,
+#mystudentstable tbody tr:hover,
+#mystudentstable tbody tr:focus{
+  background-color:#f2dede;
+  color: #a94442;
+  cursor:pointer;
+}
+#myInput:focus{
+  border-color: #CCC;
+  box-shadow: 0 0 8px #eaeaea;
+  outline: 0 none;
+}
+
+/* my  quizzes */
+#myquiztable tbody td{
+  border-color: #CCC;
+  vertical-align:middle;
+}
+
+
+.rosterheading{
+  font-weight:bold;
+  text-transform:uppercase;
+  padding-bottom:20px;
+  margin-top:0;
+}
+
+.table.borderless td{
+    border: none;
+}
+
+.rowsection tr{
+    border-bottom: 1px solid #CCC;
+}

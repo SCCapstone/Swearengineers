@@ -1,8 +1,6 @@
 
 {% extends "inTemplate.html" %}
 
-{% block pageName %}My Problems{% endblock %}
-
 {% block header %}
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({
@@ -13,8 +11,11 @@
 {% endblock %}
 
 
-
 {% block maincontent %}
+
+<div class="row">
+  <div class="col-lg-8"><h2 class="page-header">My Problems</h2></div>
+</div>
 
 
 
@@ -129,7 +130,7 @@ function search() {
 **********/
 function clearSearch() {
   if("{{ selectdefault }}" != ''  || "{{ selectdefault }}" != null ){
-    document.getElementById('search').click();
+    document.getElementById('myprobs').click();
   }
   input.value = "";
   search();
