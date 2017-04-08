@@ -25,100 +25,160 @@ Quiz Results
 
 
 <div class="row">
-  <div class="col-lg-8"><h2 class="page-header">Take a Quiz</h2></div>
+  <div class="col-lg-8"><h2 class="page-header">
+    {% if result %}
+      Quiz Result
+    {% else %}
+      Take a Quiz
+    {% endif %}
+  </h2></div>
 </div>
 
 
 
 
-{% if user.isTeacher %}
-{% include "instructor/selectquizform.html" %}
-{% endif %}
+<div class="row">
+  <div class="col-lg-1"></div>
+  <div class="col-lg-10">
+  </div>
+</div>
 
 
-                                                          <!-- Dropdown Post -->
-{% if user.isTeacher %}
-  <form action="/quiz">
-    <input id="hidden" type="hidden" name="quiz_name">
-    <input id="submitthis" type="submit" style="visibility:hidden">
-  </form>
+
+
+
+
+                                                    <!-- Result Output Table -->
+{% if result %}
+  <div class="row">
+    <div class="col-lg-1"></div>
+    <div class="col-lg-10" style="padding:0; box-shadow: 2px 2px 4px 2px #ccc">
+      <div id="quiztop">
+        <h3 id="quizresulttitle">{{ selectedquiz.name }}&nbsp;&nbsp;{{selectedquiz.description}}</h3>
+        <div class="row" style="background-color:rgba(255, 255, 255, 0.7); padding:20px">
+          <div class="col-lg-5">
+            <table>
+              <tr>
+                <td width="150px">Name:</td>
+                <td>{{ result.student.identity }}</td>
+              </tr>
+              <tr>
+                <td>Instructor:</td>
+                <td>{{ selectedquiz.author.identity }}</td>
+              </tr>
+            </table>
+          </div>
+          <div class="col-lg-2"></div>
+          <div class="col-lg-5">
+            <table>
+              <tr>
+                <td width="150px">Grade:</td>
+                <td style="color: #d9534f; font-weight:bold">{{ result.stringGrade }}</td>
+              </tr>
+              <tr>
+                <td>Date:</td>
+                <td>{{ result.date }}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <form action="/quiz" method="POST">
+        <table id="quizoutputtable">
+            {%for p, s, a, g in result.record %}
+              <tr class="resulttr" title="Click to Edit Grade" id={{forloop.counter}}>
+                <td class="num">{{ forloop.counter }}.</td>
+                <td class="prob" style="width:60%"><h3>{{ p }}</h3></td>
+                <td><h3>{{ a }}</h3></td>
+               <td style="width:45px">
+                 {% if g == 0 %}
+                   <img width="100%" src="./img/red_X.png"/>
+                 {% else %}
+                   <img width="100%" src="./img/green.png"/>
+                 {% endif %}
+               </td>
+               <td style="text-align:center">
+                 {% if g == 0 %}
+                   <h3 style="color:#d9534f; font-style:italic">{{s}}</h3>
+                 {% endif %}
+               </td>
+               <td>
+                 <i style="color:#fafafa; text-shadow:2px 2px 2px #CCC" class="fa fa-cog fa-2x fa-fw"></i>
+                 <span class="sr-only">Loading...</span>
+               </td>
+              </tr>
+          {% endfor %}
+        </table>
+      </form>
+    </div>
+  </div>
+  <br>
+  <br>
+  <br>
+
 {% else %}
-  {% if grade == None %}
-    <table class="table" style="width:35%;">
-      <tr>
-        <td style="width:35%">Quiz:</td>
-        <td>{{quiz.name}}</td>
-      </tr>
-      <tr>
-        <td>Instructor:</td>
-        <td>{{quiz.author.identity}}</td>
-      </tr>
-    </table>
-  {% endif %}
-{% endif %}
-
-<br>
 
                                                       <!-- Quiz Output Table -->
-<div class="row">
-  <div class="col-lg-12">
-    <form action="/quiz" method="POST">
-      <table style="width:80%">
-          {% for problem in problems %}
-            <tr style="text-align:center">
-              <td style="padding-top:50px;padding-bottom:50px;width:10%; background-color:#eaeaea">{{ forloop.counter }}.</td>
-              <td style="width: 75%"><h3>{{ problem.content }}</h3></td>
-              <td><input style="width:100%"type="text" name="{{ forloop.counter }}"><td>
-            </tr>
-          <script>quizselected = ("{{ forloop.counter }}" > 0)</script>
-        {% endfor %}
-      </table>
-      <button style="width:25%;float:right; display:none" id ="submit" name="selected" value="{{ selectdefault }}"class="btn btn-info" type="submit">Save</button>
-    </form>
+  <div class="row">
+    <div class="col-lg-1"></div>
+    <div class="col-lg-10" style="padding:0; box-shadow: 2px 2px 4px 2px #ccc">
+      {% if user.isTeacher %}
+        {% include "instructor/selectquizform.html" %}
+      {% else %}
+        <table class="table" style="width:35%;">
+          <tr>
+            <td style="width:35%">Quiz:</td>
+            <td>{{quiz.name}}</td>
+          </tr>
+          <tr>
+            <td>Instructor:</td>
+            <td>{{quiz.author.identity}}</td>
+          </tr>
+        </table>
+      {% endif %}
+      <form action="/quiz" method="POST">
+        <table id="quizoutputtable">
+            {% for problem in problems reversed%}
+              <tr id={{forloop.counter}}>
+                <td class="num">{{ forloop.counter }}.</td>
+                <td class="prob"><h3>{{ problem.content }}</h3></td>
+                <td class="ans">
+                  <input id="answer{{forloop.counter}}" tabindex="{{forloop.counter}}" type="text" name="{{ forloop.counter }}">
+                <td>
+              </tr>
+            <script>
+              quizselected = ("{{ forloop.counter }}" > 0)
+              $("#answer{{forloop.counter}}").focus(function(){
+                $("#{{forloop.counter}}").addClass('inputbg');
+              });
+              $("#answer{{forloop.counter}}").blur(function(){
+                $("#{{forloop.counter}}").removeClass('inputbg');
+              });
+            </script>
+          {% endfor %}
+        </table>
+        <button
+          style="width:25%;float:right; display:none; margin:5%"
+          id ="submit"
+          class="lgbtn btn btn-info"
+          type="submit">Save</button>
+      </form>
+    </div>
   </div>
-</div>
+  <br>
+  <br>
+  <br>
 
-
-
-{% if grade != None %}
-
-<h2>user:  {{ grade.author.identity }}</h2>
-<h2>{{ grade.date }}</h2>
-
-<h1 style="color: red">Grade:  {{ grade.stringgrade }}</h1>
-<br>
-<br>
-<br>
-
-<div class="row">
-  <div class="col-lg-12">
-    <table style="width:80%">
-      {%for p, a, g in grade.pag %}
-        <tr style="text-align:center">
-          <td style="padding-top:50px;padding-bottom:50px;width:10%; background-color:#ccc">{{ forloop.counter }}.</td>
-          <td style="width:75%"><h3>{{ p }}</h3></td>
-          <td><h3>{{ a }}<h3></td>
-          <td>
-            {% if g == 0 %}
-              <img width="50%" src="./img/red_X.png"/>
-            {% else %}
-              <img width="60%" src="./img/green.png"/>
-            {% endif %}
-          </td>
-        </tr>
-      {% endfor %}
-    </table>
-  </div>
-</div>
 {% endif %}
+
 
 
 <script>
 
   var quizselected;
-{% if user.isTeacher %}
-  document.getElementById("quizzes").className += "active";
-{% endif %}
+  {% if user.isTeacher %}
+    document.getElementById("quizzes").className += "active";
+  {% endif %}
   if(quizselected){
     $('#submit').css('display', 'inline');
   }

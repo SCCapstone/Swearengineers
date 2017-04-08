@@ -43,26 +43,37 @@ class Author(ndb.Model):
 
 class Problem(ndb.Model):
   author = ndb.StructuredProperty(Author)
-  quiz = ndb.StringProperty(indexed=True)
+  quizName = ndb.StringProperty(indexed=True)
+  quizKey = ndb.StringProperty(indexed=True)
   content = ndb.StringProperty(indexed=False)
   answer = ndb.StringProperty(indexed=False)
   tags = ndb.StringProperty(indexed=False)
   difficulty = ndb.StringProperty(indexed=False)
   date = ndb.DateTimeProperty(auto_now_add=True)
+  number = ndb.IntegerProperty()
+
+
+class Result(ndb.Model):
+  student = ndb.StructuredProperty(Author)
+  studentUrl = ndb.StringProperty()
+  floatGrade = ndb.FloatProperty(indexed=False)
+  stringGrade = ndb.StringProperty(indexed=False)
+  date = ndb.DateTimeProperty(auto_now_add=True)
+  record = ndb.JsonProperty()
 
 
 class Quiz(ndb.Model):
   author = ndb.StructuredProperty(Author)
   name = ndb.StringProperty(indexed=True)
-  content = ndb.StringProperty(indexed=False)
+  description = ndb.StringProperty(indexed=True)
   date = ndb.DateTimeProperty(auto_now_add=True)
   isReleased = ndb.BooleanProperty(default=False)
   releaseDate = ndb.DateTimeProperty()
-  easy = ndb.JsonProperty(default=[])
-  medium = ndb.JsonProperty(default=[])
-  hard = ndb.JsonProperty(default=[])
-  jgrades = ndb.JsonProperty(default=[])
-
+  easy = ndb.StructuredProperty(Problem, repeated=True)
+  medium = ndb.StructuredProperty(Problem, repeated=True)
+  hard = ndb.StructuredProperty(Problem, repeated=True)
+  results = ndb.StructuredProperty(Result, repeated=True)
+  numberCompleted = ndb.IntegerProperty(default=0)
 
 
 class Course(ndb.Model):
@@ -72,16 +83,7 @@ class Course(ndb.Model):
   numberOfQuizzes = ndb.IntegerProperty()
   studentUrls = ndb.JsonProperty()
   quizUrls = ndb.JsonProperty(default=[])
-  selectedQuiz = ndb.StructuredProperty(Quiz)
-
-
-class Grades(ndb.Model):
-  author = ndb.StructuredProperty(Author)
-  value = ndb.FloatProperty(indexed=False)
-  stringgrade = ndb.StringProperty(indexed=False)
-  quiz = ndb.StringProperty(indexed=False)
-  date = ndb.DateTimeProperty(auto_now_add=True)
-  pag = ndb.JsonProperty()
+  selectedQuizKey = ndb.StringProperty()
 
 
 class User(ndb.Model):
@@ -244,15 +246,13 @@ class AuthenticatedHandler(BaseHandler):
 class MainHandler(BaseHandler, webapp2.RequestHandler):
   @user_required
   def get(self):
-    g = Grades.query(ancestor=user_key(self.user.email_address))
-    g = g.order(-Grades.date).fetch()
     if self.user.isTeacher:
       if not hasattr(self.user,'selectedCourseKey'):
         self.render_template('instructor/inMyCourses.html', {'newuser': True})
         return
-      self.render_template('instructor/inHome.html', {'grades':g})
+      self.render_template('instructor/inHome.html')
     else:
-      self.render_template('home.html', {'grades': g})
+      self.render_template('home.html')
 
 
 
@@ -272,35 +272,29 @@ class QuizHandler(BaseHandler, webapp2.RequestHandler):
       self.render_template(
         'quiz.html', { 'grade': grade, 'selectdefault': sd }
       )
-    elif self.request.get('k') is not '':
-      quiz = ndb.Key(urlsafe=self.request.get('k')).get()
-      quizzes = getQuizList()
-      problem_query = Problem.query().filter(Problem.quiz == quiz.name)
-      problems = problem_query.fetch()
-      template_values = {
-        'problems': problems,
-        'quizzes': quizzes,
-        'selectdefault': quiz.name,
-        'quiz': quiz
-      }
-      self.render_template('quiz.html', template_values)
-    elif self.request.get('quiz_name') is not None:
-      quiz_name = self.request.get('quiz_name')
-      quizzes = getQuizList()
-      problem_query = Problem.query().filter(Problem.quiz == quiz_name)
-      problems = problem_query.fetch()
-      template_values = {
-        'problems': problems,
-        'quizzes': quizzes,
-        'selectdefault': quiz_name
-      }
-      self.render_template('quiz.html', template_values)
-    elif self.request.get('quiz_name') is None:
-      quizzes = getQuizList()
-      template_values = {'quizzes': quizzes }
-      self.render_template('quiz.html', template_values)
+    else:
+      self.render_template('quiz.html')
+#      quiz = ndb.Key(urlsafe=self.request.get('k')).get()
+#      quizzes = getQuizList()
+#      problem_query = Problem.query().filter(Problem.quiz == quiz.name)
+#      problems = problem_query.fetch()
+#    elif self.request.get('quiz_name') is not None:
+#      quiz_name = self.request.get('quiz_name')
+#      quizzes = getQuizList()
+#      problem_query = Problem.query().filter(Problem.quiz == quiz_name)
+#      problems = problem_query.fetch()
+#      template_values = {
+#        'problems': problems,
+##        'quizzes': quizzes,
+#        'selectdefault': quiz_name
+#      }
+#      self.render_template('quiz.html', template_values)
+#    elif self.request.get('quiz_name') is None:
+##      quizzes = getQuizList()
+##      template_values = {'quizzes': quizzes }
+#      self.render_template('quiz.html')
   def post(self):
-    grade_quiz(self, user_key, Author, Problem, Quiz, Grades)
+    grade_quiz(self, user_key, Author, Problem, Quiz, Result)
 
 
 
@@ -314,9 +308,11 @@ class QuizHandler(BaseHandler, webapp2.RequestHandler):
 class inProblemHandler(BaseHandler, webapp2.RequestHandler):
   @instructor_required
   def get(self):
-    quizzes = getMyQuizList(self)
+#    quizzes = getMyQuizList(self)
     self.render_template('instructor/inProblem.html',
-      {'quizzes': quizzes, 'newquiz': self.request.get('n')})
+      {
+          #'quizzes': quizzes,
+          'newquiz': self.request.get('n')})
   def post(self):
     create_problem(self, Problem, user_key, Author, Quiz)
 
@@ -335,18 +331,19 @@ class inMyProblemsHandler(BaseHandler):
     user = self.user
     problem_query = Problem.query(ancestor=user_key(user.email_address)).order(-Problem.date)
     problems = problem_query.fetch()
-    quizzes = getMyQuizList(self)
-    template_values = {'problems': problems, 'quizzes': quizzes }
+#    quizzes = getMyQuizList(self)
+    template_values = {'problems': problems}
+            #'quizzes': quizzes
     self.render_template('instructor/inMyProblems.html', template_values)
   def post(self):
     quiz = self.request.get('quiz')
-    quizzes = getQuizList()
+#    quizzes = getQuizList()
     problem_query = Problem.query().filter(Problem.quiz == quiz)
     problems = problem_query.fetch()
     template_values = {
        'problems': problems,
        'selectdefault': quiz,
-       'quizzes': quizzes,
+#       'quizzes': quizzes,
     }
     self.render_template('instructor/inMyProblems.html', template_values)
 
@@ -362,9 +359,9 @@ class inMyQuizzesHandler(BaseHandler):
   @instructor_required
   def get(self):
     user = self.user
-    quizzes = getMyQuizList(self)
-    template_values = {'quizzes': quizzes }
-    self.render_template('instructor/inMyQuizzes.html', {'quizzes': quizzes })
+#    quizzes = getMyQuizList(self)
+#    template_values = {'quizzes': quizzes }
+    self.render_template('instructor/inMyQuizzes.html')
 
 
 
@@ -396,7 +393,53 @@ class deleteQuizHandler(BaseHandler):
 
 
 
+################################################################################
+# Function:  Select Quiz
+#   - Called from Create Problem (below)
+################################################################################
+class selectQuizHandler(BaseHandler):
+  @instructor_required
+  def post(self):
+    if hasattr(self.user, 'selectedCourseKey'):
+      course = ndb.Key(urlsafe=self.user.selectedCourseKey).get()
+      course.selectedQuizKey=self.request.get('dropdownselect')
+      course.put()
+    # remove dangleing vars from url on return
+    url, sep, var = self.request.referer.partition('?')
+    self.redirect(url)
 
+
+
+
+################################################################################
+# Function:  Create Quiz
+#   - Called from Create Problem (below)
+################################################################################
+class createQuizHandler(BaseHandler):
+  @instructor_required
+  def post(self):
+    course=ndb.Key(urlsafe=self.user.selectedCourseKey).get()
+    quiz = Quiz(parent=user_key(self.user.email_address))
+    quiz.author = Author(
+      identity=self.user.name,
+      email=self.user.email_address)
+    quiz.name = 'Quiz ' + str(course.numberOfQuizzes + 1)
+    quiz.description = self.request.get('qdescription')
+    quiz.put()
+    course.numberOfQuizzes += 1
+    if not course.quizUrls:
+      course.quizUrls=[]
+    course.quizUrls.append([quiz.name, quiz.description, quiz.key.urlsafe()])
+    course.selectedQuizKey=quiz.key.urlsafe()
+    course.put()
+    self.redirect('instructor/inProblem')
+
+#    course=ndb.Key(urlsafe=self.user.selectedCourseKey).get()
+#    course.quizUrls=[]
+#    course.numberOfQuizzes=0
+#    course.selectedQuizKey=''
+#    course.put()
+#    self.redirect('instructor/inProblem')
 
 
 
@@ -496,7 +539,7 @@ class editProblemHanlder(BaseHandler):
   @instructor_required
   def post(self):
     user = self.user
-    quizzes = getQuizList()
+#    quizzes = getQuizList()
     prob_key = ndb.Key(urlsafe=self.request.get('problem_key_edit'))
     problem = prob_key.get()
     template_values = {
@@ -505,7 +548,7 @@ class editProblemHanlder(BaseHandler):
       'problem_tags': problem.tags,
       'problem_key': prob_key,
       'problem_difficulty': problem.difficulty,
-      'quizzes': quizzes,
+#      'quizzes': quizzes,
       'selectdefault': problem.quiz,
     }
     self.render_template('instructor/inProblem.html', template_values)
@@ -582,20 +625,7 @@ class helpHandler(BaseHandler):
 
 
 
-################################################################################
-# Querey Functions
-################################################################################
 
-def getQuizList():
-  return Quiz.query().order(-Quiz.date).fetch()
-
-def getMyQuizList(self):
-  course=ndb.Key(urlsafe=self.user.selectedCourseKey).get()
-  q=[]
-  if hasattr(course,'quizUrls') and course.quizUrls:
-    for k in course.quizUrls:
-      q.append(ndb.Key(urlsafe=k).get())
-  return q
 
 
 
@@ -641,6 +671,8 @@ app = webapp2.WSGIApplication([
   webapp2.Route('/instructor/inHelp', helpHandler, name='inHelp'),
 
   # edit classes
+  webapp2.Route('/createQuiz', createQuizHandler, name='createQuiz'),
+  webapp2.Route('/selectQuiz', selectQuizHandler, name='selectQuiz'),
   webapp2.Route('/deleteProblem', deleteHandler, name='deleteProblem'),
   webapp2.Route('/editProblem', editProblemHanlder, name='editProblem'),
   webapp2.Route('/addOneStudent', AddOneStudentHandler, name='addOneStudent'),

@@ -48,26 +48,41 @@ class BaseHandler(webapp2.RequestHandler):
   def render_template(self, view_filename, params=None):
 
     vals = {}
-    selectedcourse = ''
-    coursequizzes=[]
-    if hasattr(self.user, 'selectedCourseKey'):
-      selectedcourse = ndb.Key(urlsafe=self.user.selectedCourseKey).get()
-      if hasattr(selectedcourse,'quizUrls') and selectedcourse.quizUrls:
-        for k in selectedcourse.quizUrls:
-          coursequizzes.append(ndb.Key(urlsafe=k).get())
-
-
+    course = ''
+    quiz = ''
     courses=[]
+    quizzes=[]
+    problems=[]
+
     if hasattr(self.user, 'myCourseKeys'):
       for k in self.user.myCourseKeys:
         courses.append(ndb.Key(urlsafe=k).get())
+
+    if hasattr(self.user, 'selectedCourseKey'):
+      course = ndb.Key(urlsafe=self.user.selectedCourseKey).get()
+      if course.quizUrls:
+        for url in course.quizUrls:
+          quizzes.append(ndb.Key(urlsafe=url[2]).get())
+
+      if course.selectedQuizKey:
+        quiz=ndb.Key(urlsafe=course.selectedQuizKey).get()
+        for p in reversed(quiz.hard):
+          problems.append(p)
+        for p in reversed(quiz.medium):
+          problems.append(p)
+        for p in reversed(quiz.easy):
+          problems.append(p)
+
+
 
 
     vals = {
       'user': self.user,
       'mycourses': courses,
-      'selectedcourse': selectedcourse,
-      'coursequizzes': coursequizzes,
+      'selectedcourse': course,
+      'selectedquiz': quiz,
+      'problems': problems,
+      'quizzes': quizzes,
     }
 
     if not params:
@@ -76,7 +91,7 @@ class BaseHandler(webapp2.RequestHandler):
       params.update(vals)
 
     path = os.path.join(os.path.dirname(__file__), 'views', view_filename)
-    self.response.out.write(template.render(path, params))
+    return self.response.out.write(template.render(path, params))
 
   def display_message(self, message):
     # Displays message.html with a unique message

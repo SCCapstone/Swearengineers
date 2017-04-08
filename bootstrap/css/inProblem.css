@@ -1,49 +1,42 @@
 
-*{
-  margin:0;
-  padding:0;
+.inputArea {
+  border: 1px solid #CCC;
+  background-color: #f5f5f5;
+  display:inline-block;
+  width:100%;
+  padding-top:10px;
+  padding-bottom:5%;
 }
 
+p.emc2{
+  margin-left:5%;
+}
+label.inproblem{
+  font-size:110%;
+  font-family: Arial;
+}
+select.inproblem,
 input[type=text].inproblem {
-  width: 90%;
-  margin: 8px 5%;
+  width:100%;
+  float:left;
   padding: 12px 20px;
-  display: inline-block;
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
+  background-color:#fff;
 }
 
-#next {
-  width: 35%;
-  margin: 8px;
-  border:none;
-  padding: 14px 20px;
-  cursor: pointer;
+table.inproblem{
+  width:100%;
 }
-
-/* removed next styles
-  border-radius: 4px;
-  background-color: #4CAF50;
-  color: white;
-// from hover below
-  background-color: #45a049;
-#next:hover {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+td.in{
+  width:90px;
 }
-*/
-
-
-#prev {margin-left:5%; }
-
-#next {float:right; margin-right:5%;}
-
-
-label.inproblem{
-  color:#fff;
-  margin-left: 5%;
-  font-size:110%;
-  font-family: Arial;
+.inproblem td{
+  padding:10px 5%;
+}
+#next{
+  width:100%;
 }
 
 /* display color will changed after mathjax load */
@@ -54,6 +47,7 @@ label.inproblem{
   height: 200px;
   width: 100%;
   padding-top: 30px;
+  text-align:center;
 }
 
 ul.mbttn {
@@ -92,11 +86,73 @@ ul.mbttn li:hover {
   background-color: #555;
   color:#fff;
 }
-
-.inputArea {
-  background-color:grey;
-  display:inline-block;
+.inproblem #quiztop{
+  padding-bottom:0;
+}
+#scrolling{
+  overflow:hidden;
+  overflow-y: auto;
+  max-height:65vh;
+}
+div.problemlist{
+  border-radius: 15px;
+  border:1px solid #CCC;
+  overflow:hidden;
+  box-shadow: 0 0 2px 2px #CCC;
+}
+table.problemlist {
+  margin: 0;
+  padding: 0;
   width:100%;
-  padding-top:10px;
-  padding-bottom:5%;
+  border-bottom:1px solid #CCC;
+}
+table.problemlist tr{
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 100%;
+  border-top:1px solid #CCC;
+  display: block;
+}
+table.problemlist tr:first-child{
+  border:none;
+}
+table.problemlist tr:hover {
+  background-color: #f5f5f5;
+  color:#000;
+}
+div.aproblem{
+  width:60%;
+  display:block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow:hidden;
+}
+td.aproblem{
+  padding:20px;
+  font-size:20px;
+  width:100%;
+}
+td.pnumber{
+  padding-right:20px;
+  border-right:1px solid #ccc;
+}
+td.circle{
+  padding:0 20px;
+}
+div.Easy,
+div.Medium,
+div.Hard{
+  padding: 0 7px;
+  border-radius: 7px;
+  width: 14px;
+  height: 14px;
+}
+div.Easy{
+  background-color:green;
+}
+div.Medium{
+  background-color:orange;
+}
+div.Hard{
+  background-color:red;
 }

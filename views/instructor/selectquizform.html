@@ -4,25 +4,58 @@
 |   Selecting a different quiz POSTs a query to the server
 |   or limits an existing query based on the page-source
 -->
-<div id="quizform" class="row" style="padding:0;margin:0;width:100%">
-  <div class="col-lg-4" style="padding:0;margin:0;width:100%">
-   <form style="width:100%; padding:0;margin:0" role="form">
-     <div class="form-group">
-       <label style="float:left; margin-top:8px; margin-right:15px">Quiz:</label>
-       <select style="float:left; width:90%; margin-top:2px" onchange="dropdown()" id="selectid" style="width:100%"
-               class="form-control">
-               {% if not selectedcourse.selectedQuiz %}
-                 <option disabled selected hidden>Click Here to Select a Quiz</option>
-               {% else %}
-                 <option>{{ selectedcourse.selectedQuiz.name }}</option>
-               {% endif %}
-           {% for quiz in coursequizzes %}
-             {% if quiz.name != selectedcourse.selectedQuiz.name %}
-               <option value="{{ quiz.key.urlsafe }}">{{ quiz.name }}</option>
-             {% endif %}
-           {% endfor %}
-       </select>
-     </div>
-   </form>
-  </div>
+<div id="quiztop">
+  <form id="selectform" action="/selectQuiz" method="POST">
+    <label>Select Quiz:</label>
+    <select onchange="dropdown()" id="selectid"
+      class="form-control">
+      {% if not selectedquiz %}
+        <option selected>Select a Quiz</option>
+      {% else %}
+        <option selected style="display:none">
+          {{ selectedquiz.name }}
+          {% if selectedquiz.description %}
+            :&nbsp;&nbsp;{{selectedquiz.description}}
+          {% endif %}
+        </option>
+      {% endif %}
+      {% for name, desc, url in selectedcourse.quizUrls reversed %}
+        {% if selectedquiz.name != name %}
+          <option value="{{ url }}">
+            {{ name }}
+            {% if desc %}
+              :&nbsp;&nbsp;{{desc}}
+            {% endif %}
+        </option>
+        {% endif %}
+      {% endfor %}
+      {% for quiz in coursequizzes %}
+        {% if quiz.name != selectedcourse.selectedQuiz.name %}
+          <option value="{{ quiz.key.urlsafe }}">{{ quiz.name }}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+    <input id="hidden" type="hidden" name="dropdownselect">
+    <input id="submitthis" type="submit" style="visibility:hidden">
+  </form>
 </div>
+
+
+<script>
+/*******************************************************************************
+* Dropdown Function
+* -----------------
+* - Changes selectedquiz
+*
+**********/
+  function dropdown(){
+    var hidden = document.getElementById("hidden");
+    hidden.value = document.getElementById("selectid").value;
+    var submitthis = document.getElementById('submitthis');
+    if (submitthis != null) submitthis.click();
+  }
+</script>
+
+
+
+

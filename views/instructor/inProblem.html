@@ -13,156 +13,215 @@
 
 {% block maincontent %}
 
-<div class="row">
-  <div class="col-lg-8"><h2 class="page-header">Create Problems</h2></div>
-  <div class="col-lg-3">
-    <button id="newquizbtn"
-      class="btn btn-info lgbtn"
-      style="float:right; width:100%; margin-top:5%;"
-      data-target="#newquiz"
-      type="button" data-toggle="modal">New Quiz
-    </button>
+
+<!--
+| New Quiz Modal
+|   Activated from Settings Menu
+-->
+<div class="modal fade" id="newquiz" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">New Quiz</h4>
+      </div>
+      <form action="/createQuiz" method="POST">
+       <div class="modal-body">
+         <h3>Quiz {{selectedcourse.numberOfQuizzes|add:"+1"}}</h3>
+         <br>
+         <input type="text" name="qdescription" id="quizdescription" class="form-control" placeholder="Enter a Quiz Description">
+       </div>
+       <div class="modal-footer">
+         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+         <button id="addquizbtn" type="submit" class="btn btn-info">Submit</button>
+       </div>
+     </form>
+    </div>
   </div>
 </div>
 
 
-{% include "selectquizform.html" %}
+<div class="row">
+<div class="col-lg-7">
+  <div class="row">
+    <div class="col-lg-4"><h2 class="page-header">Create Problems</h2></div>
+    <div class="col-lg-5">
+      <!--
+      |  Successful Submission Alert
+      |   Activated by Page Load
+      -->
+      <div id="successalert" style="visibility:hidden; margin-top:20px" class="alert alert-success fade in">
+          <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+          <strong>Success!</strong> &nbsp;&nbsp; The last problem was succesfully saved!
+      </div>
 
-    <!--
-    | New Quiz Modal
-    |   Activated from Settings Menu
-    -->
-    <div class="modal fade" id="newquiz" role="dialog">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">New Quiz</h4>
-          </div>
-          <div class="modal-body">
-              <!--           <form action="createQuizFromProblem" method="POST"> -->
-            <form>
-            <input type="text" name="newquiz" id="quizname" class="form-control" placeholder="Enter a Unique Quiz Name">
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-
-              <button id="addquizbtn" type="button" class="bluebtn btn btn-primary" data-dismiss="modal">Submit</button>
-          </div>
-          </form>
-        </div>
+      <!--
+      |  Null Field Alert
+      |   Activated by Submit Button
+      -->
+      <div id="fieldalert" style="display:none; margin-top:20px" class="alert alert-danger fade in">
+          <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+          <strong>Error!</strong>&nbsp;&nbsp;Please fill in all the fields
       </div>
     </div>
 
+    <div class="col-lg-3">
+      <button id="newquizbtn"
+        class="btn btn-info lgbtn"
+        style="width:100%; margin-top:20px"
+        data-target="#newquiz"
+        type="button" data-toggle="modal">New Quiz
+      </button>
+    </div>
+  </div>
 
 
 
-<!--
-|  Successful Submission Alert
-|   Activated by Page Load
--->
-<div style="display:none; position:absolute; width:85vw; margin-top:20px; " id="successalert" class="alert alert-success fade in">
-    <strong>Success!</strong> The last problem was succesfully saved!
+
+
+
+
+
+
+  <div class="row">
+    <div class="col-lg-12">
+                                                              <!-- Math Display-->
+      <h2 id="display"></h2>
+
+                                                              <!-- Math Buttons-->
+      <ul class="mbttn">
+        <li onclick="addLaTex('$\\frac{x}{y}$ ')">
+          <script type="math/tex">\frac{x}{y}</script>
+        </li>
+        <li onclick="addLaTex('$x\\cdot y$ ')">
+          <script type="math/tex">x\cdot y</script>
+        </li>
+        <li onclick="addLaTex('$x^{xy}$ ')">
+          <script type="math/tex">x^{xy}</script>
+        </li>
+        <li onclick="addLaTex('$\\sqrt{x}$ ')">
+          <script type="math/tex">\sqrt{x}</script>
+        </li>
+        <li onclick="addLaTex('$\\sqrt[3]{x}$ ')">
+          <script type="math/tex">\sqrt[3]{x}</script>
+        </li>
+        <li onclick="addLaTex('$|x|$ ')">
+          <script type="math/tex">|x|</script>
+        </li>
+        <li onclick="addLaTex('$\\alpha$ ')">
+          <script type="math/tex">\alpha</script>
+        </li>
+        <li onclick="addLaTex('$\\beta$ ')">
+          <script type="math/tex">\beta</script>
+        </li>
+        <li onclick="addLaTex('$\\Delta$ ')">
+          <script type="math/tex">\Delta</script>
+        </li>
+        <li onclick="addLaTex('$\\Omega$ ')">
+          <script type="math/tex">\Omega</script>
+        </li>
+        <li onclick="addLaTex('$\\ge$ ')">
+          <script type="math/tex">\ge</script>
+        </li>
+        <li onclick="addLaTex('$\\ne$ ')">
+          <script type="math/tex">\ne</script>
+        </li>
+        <li onclick="addLaTex('$\\infty$ ')">
+          <script type="math/tex">\infty</script>
+        </li>
+        <li onclick="addLaTex('$\\sum_{i=0}^n$ ')">
+          <script type="math/tex">\sum_{i=0}^n</script>
+        </li>
+      </ul>
+
+
+
+                                                                <!-- Input Form-->
+      <div class="inputArea">
+        <form action="/instructor/inProblem" method="POST" onsubmit="return checkfields();">
+          <p class="emc2">
+            Use <span style="font-size:large">\$</span> symblols to add
+            <script type="math/tex">\ \rm\LaTeX</script>
+             as in \$E=mc^2$
+          </p>
+          <table class="inproblem">
+            <tr>
+              <td class="in">
+                <label class="inproblem" for="data">Problem:</label>
+              </td>
+              <td colspan="2">
+                <input class="inproblem" type="text" id="textbox" name="problem" value="{{ problem_content }}">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label class="inproblem" for="data">Answer:</label>
+              </td>
+              <td colspan="2">
+                <input class="inproblem" type="text" id="answerbox" name="answer" value="{{ problem_answer }}">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label class="inproblem" for="data">Keywords:</label>
+              </td>
+              <td colspan="2">
+                <input class="inproblem" type="text" id="tagbox" name="tags" value="{{ problem_tags }}">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label class="inproblem" for="data">Difficulty:&nbsp;&nbsp;&nbsp;</label>
+              </td>
+              <td style="padding-right:20%">
+                <select name="difficulty" class="inproblem">
+                  <option class="inproblem" value="Easy"> Easy</option>
+                  <option class="inproblem" value="Medium"> Medium</option>
+                  <option class="inproblem" value="Hard"> Hard</option>
+                </select>
+              </td>
+              <td>
+                <button id ="next" class="lgbtn btn btn-info" data-target="#newquiz"
+                  type="submit">Save
+                </button>
+              </td>
+            </tr>
+          </table>
+          <!--          <input id="hidden" type="hidden" name="quiz_name" value="{{ selectdefault }}"> -->
+          <input class="inproblem" type="hidden" id="keybox" name="problem_key" value="{{ problem_key.urlsafe }}">
+        </form>
+      </div> <!--end input-->
+    </div><!-- end col 12-->
+  </div><!-- end row -->
+</div><!--end col 7 -->
+
+<div class="col-lg-5" style="height:100vh">
+
+  {% if problems %}
+    <div class="problemlist">
+      <div class="inproblem">
+        {% include "selectquizform.html" %}
+      </div>
+      <div id="scrolling">
+        <table class="problemlist">
+          {%for p in problems reversed%}
+            <tr>
+              <td class="circle"><div class="{{p.difficulty}}"></div></td>
+              <td class="pnumber">{{forloop.counter}}.</td>
+              <td class="aproblem"><div class="aproblem">{{p.content}}</div></td>
+            </tr>
+          {%endfor%}
+        </table>
+      </div>
+    </div>
+  {% else %}
+    <hr>
+    <p style="text-align:center; font-style:italic">Your saved problems for this quiz will be displayed here.</p>
+  {% endif %}
+
 </div>
 
-<!--
-|  Null Field Alert
-|   Activated by Submit Button
--->
-<div style="display:none; position:absolute; width:85vw; margin-top:20px;" id="fieldalert" class="alert alert-danger" role="alert">
-  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-  <span class="sr-only">Error:</span>
-  Please fill in all the fields!
-</div>
-
-
-
-                                                            <!-- Math Display-->
-<h2 id="display"></h2>
-
-
-
-                                                            <!-- Math Buttons-->
-<ul class="mbttn">
-  <li onclick="addLaTex('$\\frac{x}{y}$ ')">
-    <script type="math/tex">\frac{x}{y}</script>
-  </li>
-  <li onclick="addLaTex('$x\\cdot y$ ')">
-    <script type="math/tex">x\cdot y</script>
-  </li>
-  <li onclick="addLaTex('$x^{xy}$ ')">
-    <script type="math/tex">x^{xy}</script>
-  </li>
-  <li onclick="addLaTex('$\\sqrt{x}$ ')">
-    <script type="math/tex">\sqrt{x}</script>
-  </li>
-  <li onclick="addLaTex('$\\sqrt[3]{x}$ ')">
-    <script type="math/tex">\sqrt[3]{x}</script>
-  </li>
-  <li onclick="addLaTex('$|x|$ ')">
-    <script type="math/tex">|x|</script>
-  </li>
-  <li onclick="addLaTex('$\\alpha$ ')">
-    <script type="math/tex">\alpha</script>
-  </li>
-  <li onclick="addLaTex('$\\beta$ ')">
-    <script type="math/tex">\beta</script>
-  </li>
-  <li onclick="addLaTex('$\\Delta$ ')">
-    <script type="math/tex">\Delta</script>
-  </li>
-  <li onclick="addLaTex('$\\Omega$ ')">
-    <script type="math/tex">\Omega</script>
-  </li>
-  <li onclick="addLaTex('$\\ge$ ')">
-    <script type="math/tex">\ge</script>
-  </li>
-  <li onclick="addLaTex('$\\ne$ ')">
-    <script type="math/tex">\ne</script>
-  </li>
-  <li onclick="addLaTex('$\\infty$ ')">
-    <script type="math/tex">\infty</script>
-  </li>
-  <li onclick="addLaTex('$\\sum_{i=0}^n$ ')">
-    <script type="math/tex">\sum_{i=0}^n</script>
-  </li>
-</ul>
-
-
-
-                                                              <!-- Input Form-->
-<div class="inputArea">
-    <form action="/instructor/inProblem" method="POST" onsubmit="return checkfields();">
-    <label class="inproblem" for="data">
-      <span style="font-weight:normal">
-        Use <span style="font-size:large">\$</span> symblols to add
-        <script type="math/tex">\ \rm\LaTeX</script>
-        as in \$E=mc^2$
-        <br>
-        <br>
-      </span>
-      Problem:
-    </label>
-    <input class="inproblem" type="text" id="textbox" name="problem" value="{{ problem_content }}">
-    <label class="inproblem" for="data">Answer:</label>
-    <input class="inproblem" type="text" id="answerbox" name="answer" value="{{ problem_answer }}">
-    <label class="inproblem" for="data">Add Keywords:</label>
-    <input class="inproblem" type="text" id="tagbox" name="tags" value="{{ problem_tags }}">
-    <input class="inproblem" type="hidden" id="keybox" name="problem_key" value="{{ problem_key.urlsafe }}">
-    <br>
-    <label class="inproblem" for="data">Difficulty:&nbsp;&nbsp;&nbsp;</label>
-      <select name="difficulty">
-        <option class="inproblem" value="Easy"> Easy</option>
-        <option class="inproblem" value="Medium"> Medium</option>
-        <option class="inproblem" value="Hard"> Hard</option>
-      </select>
-    <button id ="next" class="bluebtn btn btn-primary" data-target="#newquiz"
-      type="submit">Save
-    </button>
-    <input id="hidden" type="hidden" name="quiz_name" value="{{ selectdefault }}">
-  </form>
-</div>
-
+</div> <!-- end row -->
 
 
 
@@ -179,8 +238,7 @@ var textbox = document.getElementById("textbox");
 var display = document.getElementById("display");
 var answerbox = document.getElementById("answerbox");
 var tagbox = document.getElementById("tagbox");
-var hidden= document.getElementById('hidden');
-var hidden2 = document.getElementById('hidden2');
+/* var hidden= document.getElementById('hidden'); */
 var fieldalert= document.getElementById('fieldalert');
 var successalert= document.getElementById('successalert');
 var old;
@@ -203,8 +261,8 @@ window.onload = function(){
   textbox.focus();
   window.scrollTo(0,0);
   if( "{{ success }}" ) {
-    successalert.style.display="block";
-    setTimeout(function(){successalert.style.display="none";}, 1500);
+    successalert.style.visibility="visible";
+    setTimeout(function(){successalert.style.visibility="hidden";}, 3000);
   }
 
   $('#newquizbtn').css('display', 'inline');
@@ -218,19 +276,6 @@ window.onload = function(){
 
 
 
-$(document).ready(function() {
-     $('#addquizbtn').attr('disabled',true);
-     $('#quizname').keyup(function() {
-        if($('#quizname').val() != '') {
-           $('#addquizbtn').removeAttr('disabled');
-        }
-     });
- });
-
-
-
-
-
 
 /*******************************************************************************
 * Add Quiz Function
@@ -239,12 +284,11 @@ $(document).ready(function() {
 *
 **********/
 $('#addquizbtn').click(function(){
-  var text = document.getElementById('quizname').value;
+  var q = 'Quiz {{selectedcourse.numberOfQuizzes|add:"+1"}}';
   var s= document.getElementById('selectid');
-  s.options[0]= new Option(text, text);
-  s.value=text;
-  hidden.value=text;
-  hidden2.value='True';
+  s.options[0]= new Option(q, q);
+  s.value=q;
+  hidden.value=q;
 });
 
 
@@ -296,11 +340,16 @@ function checkfields(){
   if(    textbox.value   == ''
       || answerbox.value == ''
       || tagbox.value    == ''
-      || hidden.value    == ''
     ){
     window.scrollTo(0,0);
-    fieldalert.style.display="block"
-    setTimeout(function(){fieldalert.style.display="none";}, 1500);
+    successalert.style.display="none";
+    fieldalert.style.display="block";
+    fieldalert.style.visibility="visible";
+    setTimeout(function(){
+      fieldalert.style.visibility="hidden";
+      fieldalert.style.display="none";
+      successalert.style.display="block";
+    }, 3000);
     return false;
   }
   else return true;

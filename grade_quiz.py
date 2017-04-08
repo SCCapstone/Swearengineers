@@ -2,53 +2,66 @@
 from main import *
 from sympy import *
 from sympy.parsing.sympy_parser import parse_expr
+from sympy.parsing.sympy_parser import standard_transformations,\
+  implicit_multiplication_application
 
 ################################################################################
 # Function:  Grade Quiz
 #   - Called from the class inQuizzesHandler in main.py
 #   - Grades / Records / Shows Results
 ################################################################################
-def grade_quiz(self, user_key, Author, Problem, Quiz, Grades):
-   quiz_name = self.request.get('selected')
-   user = self.user
-   pq = Problem.query().filter(Problem.quiz == quiz_name)
-   probs = pq.fetch()
-   total=0
-   good=0
-   problems=[]
-   answers=[]
-   grades=[]
-   for p in probs:
-     total += 1
-     my = self.request.get(str(total))
-     answers.append(my)
-     problems.append(p.content)
-     eq1 = parse_expr(my)
-     eq2 = parse_expr(p.answer)
-     if eq1.equals(eq2):
-        good += 1
-        grades.append(1)
-     else:
-        grades.append(0)
-   grade=100.0*good/total
-   stringgrade=str(round(grade,1))+"%"
-   pag = zip(problems, answers, grades)
-   gradeRecord = Grades(parent=user_key(user.email_address))
-   gradeRecord.author = Author(
-              identity=user.name,
-              email=user.email_address)
-   gradeRecord.value=grade
-   gradeRecord.stringgrade=stringgrade
-   gradeRecord.quiz=quiz_name
-   gradeRecord.pag= pag
-   gradeRecord.put()
+def grade_quiz(self, user_key, Author, Problem, Quiz, Result):
 
-   gdate=gradeRecord.date.strftime("%B %d, %Y, %I:%M%P")
+  posted=self.request.POST.items()
+  course = ndb.Key(urlsafe=self.user.selectedCourseKey).get()
+  quiz=ndb.Key(urlsafe=course.selectedQuizKey).get()
+  transformations = (standard_transformations +
+    (implicit_multiplication_application,))
+  good=0
+  problems=[]
+  solutions=[]
+  answers=[]
+  grades=[]
 
-   qq = Quiz.query().filter(Quiz.name == quiz_name)
-   quiz=qq.fetch()
-   for q in quiz:
-       q.jgrades.append([user.name,stringgrade, gradeRecord.key.urlsafe(), gdate])
-       q.put()
+  for p in posted:
+    answers.append(p[1])
+  for p in reversed(quiz.hard):
+    problems.append(p.content)
+    solutions.append(p.answer)
+  for p in reversed(quiz.medium):
+    problems.append(p.content)
+    solutions.append(p.answer)
+  for p in reversed(quiz.easy):
+    problems.append(p.content)
+    solutions.append(p.answer)
 
-   self.render_template('quiz.html', {'selectdefault': quiz_name, 'grade': gradeRecord})
+  for s, a in zip(solutions,answers):
+    eq1 = parse_expr(a, transformations=transformations)
+    eq2 = parse_expr(s, transformations=transformations)
+    if eq1.equals(eq2):
+      good += 1
+      grades.append(1)
+    else:
+      grades.append(0)
+
+  grade=100.0*good/len(problems)
+  stringgrade=str(round(grade,1))+"%"
+  record = zip(problems, solutions, answers, grades)
+
+  result = Result(parent=user_key(self.user.email_address))
+  result.student = Author( identity=self.user.name, email=self.user.email_address)
+  result.studentUrl = self.user.key.urlsafe()
+  result.floatGrade = grade
+  result.stringGrade = stringgrade
+  result.record = record
+  result.put()
+
+  quiz.numberCompleted += 1
+  quiz.results.append(result)
+  quiz.put()
+
+
+#  self.render_template('quiz.html')
+  self.render_template('quiz.html', {'result': result })
+
+

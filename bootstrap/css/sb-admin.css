@@ -259,13 +259,15 @@ ul.alert-dropdown {
  color: #99D2F0;
 }
 
-
-
 .page-header {
   margin-top:20px;
-  float:left;
+  border:none;
+  margin-right:0;
 }
 
+.alert{
+  margin:0;
+}
 
 /* Dialog box */
 .modal-header {
@@ -383,16 +385,6 @@ ul.alert-dropdown {
 
 
 
-/* remove styles added by mozilla */
-:target :active, :focus { outline: none; -moz-outline-style: none; }
-
-select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  box-sizing: border-box;
-}
-
 
 .result:hover{
   color: #337ab7;
@@ -454,3 +446,96 @@ select {
 .rowsection tr{
     border-bottom: 1px solid #CCC;
 }
+
+#selectform label{
+  color:#fff;
+}
+#selectid{
+  font-size:25px;
+  font-weight:bold;
+  text-transform:uppercase;
+  height:100%;
+  width:100%;
+  outline:none;
+  background: url(/img/selectArrow.png) no-repeat right #fff;
+  background-size: 50px 100%;
+}
+#quizresulttitle{
+  color:#fff;
+  font-size:25px;
+  font-weight:bold;
+  text-transform:uppercase;
+  text-align:center;
+  text-shadow: 2px 2px 2px #222;
+  margin:0;
+  padding:0;
+  margin-bottom:20px;
+}
+#selectid:focus{
+  box-shadow: 0 0 0 0 #fff;
+  border:1px solid #ccc;
+}
+
+:target :active, :focus { outline: none; -moz-outline-style: none; }
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+select:focus{outline:0;}
+select:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 #000;
+}
+
+#quiztop{
+  background:#5bc0de;
+  padding:2% 5%;
+}
+#quizoutputtable{
+  width:100%;
+  border-top:1px solid #f5f5f5;
+  border-bottom:1px solid #f5f5f5;
+}
+#quizoutputtable td.num{
+  text-align:right;
+  font-size:18px;
+  min-width: 8%;
+  padding-left:5%;
+  border-right:1px solid #5bc0de;
+  border-left:5px solid #fff;
+  padding-right:20px;
+}
+#quizoutputtable td.prob{
+  width: 70%;
+  padding:2% 5%;
+}
+#quizoutputtable td.ans{
+  padding:0 5%;
+}
+#quizoutputtable input{
+  width:100%;
+  padding: 12px 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background:#fafafa;
+}
+#quizoutputtable .inputbg input{
+  background-color:#fff;
+  border:1px solid #5bc0de;
+  box-shadow:0 0 2px 0 #5bc0de;
+}
+#quizoutputtable .inputbg .num{
+  border-left:5px solid #5bc0de;
+}
+#quizoutputtable .inputbg{
+  background:#fafafa;
+  color:black;
+}
+.resulttr:hover{
+  background:#fafafa;
+  cursor:pointer;
+}
+
