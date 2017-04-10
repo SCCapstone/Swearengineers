@@ -202,7 +202,9 @@
   {% if problems %}
     <div class="problemlist">
       <div class="inproblem">
-        {% include "selectquizform.html" %}
+        {% with 1 as blue %}
+          {% include "selectquizform.html" %}
+        {% endwith %}
       </div>
       <div id="scrolling">
         <table class="problemlist">

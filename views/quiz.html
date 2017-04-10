@@ -125,7 +125,9 @@ Quiz Results
     <div class="col-lg-1"></div>
     <div class="col-lg-10" style="padding:0; box-shadow: 2px 2px 4px 2px #ccc">
       {% if user.isTeacher %}
-        {% include "instructor/selectquizform.html" %}
+        {% with 1 as blue %}
+          {% include "instructor/selectquizform.html" %}
+        {% endwith %}
       {% else %}
         <table class="table" style="width:35%;">
           <tr>

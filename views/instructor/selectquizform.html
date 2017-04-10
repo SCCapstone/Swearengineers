@@ -4,7 +4,9 @@
 |   Selecting a different quiz POSTs a query to the server
 |   or limits an existing query based on the page-source
 -->
+{% if blue %}
 <div id="quiztop">
+{% endif %}
   <form id="selectform" action="/selectQuiz" method="POST">
     <label>Select Quiz:</label>
     <select onchange="dropdown()" id="selectid"
@@ -33,7 +35,10 @@
     <input id="hidden" type="hidden" name="dropdownselect">
     <input id="submitthis" type="submit" style="visibility:hidden">
   </form>
+
+{% if blue %}
 </div>
+{% endif %}
 
 
 <script>
