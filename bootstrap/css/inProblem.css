@@ -130,20 +130,33 @@ div.aproblem{
 td.aproblem{
   padding:20px;
   font-size:20px;
-  width:100%;
+  width:80%;
 }
 td.pnumber{
-  padding-right:20px;
   border-right:1px solid #ccc;
+  padding-left:15px;
 }
-td.Easy i{
-  padding:20px;
-  padding-top:40px;
-  color:green;
+td.pnumber div{
+  width:30px;
 }
-td.Medium i{
-  color:orange;
+td.pnumber.Easy{
+  border-left:10px solid #62ae43;
 }
-td.Hard i{
+td.pnumber.Medium{
+  border-left:10px solid orange;
+}
+td.pnumber.Hard{
+  border-left:10px solid red;
+}
+i.delete{
+  color:#CCC;
+  padding-top:20px;
+}
+i.delete:hover{
   color:red;
 }
+.editprob{
+  background: #d9edf7;
+}
+
+

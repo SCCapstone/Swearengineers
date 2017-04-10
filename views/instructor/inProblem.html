@@ -219,19 +219,15 @@
             <tr data-toggle="tooltip" title="Click to Edit"
               {%if problem_key.urlsafe == p.url %} class="editprob"{%else%}class="resulttr"{%endif%}
               style="cursor:pointer">
-              <td class="circle {{p.difficulty}}"
+              <td class="pnumber {{p.difficulty}}"
                 onclick="document.location='inProblem?p={{ p.url }}';">
-                <i class="fa fa-fw fa-circle "></i>&nbsp;&nbsp;
-              </td>
-              <td class="pnumber"
-                onclick="document.location='inProblem?p={{ p.url }}';">
-                {{forloop.counter}}.</td>
+                <div>{{forloop.counter}}.</div></td>
               <td class="aproblem"
                 onclick="document.location='inProblem?p={{ p.url }}';">
                 <div class="aproblem">{{p.content}}</div></td>
               <td title="Delete"
                 onclick="document.location='/deleteProblem?p={{ p.url }}';">
-                <i style="color:red" class="fa fa-fw fa-times-circle fa-2x"></i>&nbsp;&nbsp;
+                <i class="delete fa fa-fw fa-times-circle fa-2x"></i>&nbsp;&nbsp;
               </td>
             </tr>
           {%endfor%}
