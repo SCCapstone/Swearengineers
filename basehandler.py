@@ -56,13 +56,13 @@ class BaseHandler(webapp2.RequestHandler):
 
     if hasattr(self.user, 'myCourseKeys'):
       for k in self.user.myCourseKeys:
-        courses.append(ndb.Key(urlsafe=k).get())
+        courses.insert(0, ndb.Key(urlsafe=k).get())
 
     if hasattr(self.user, 'selectedCourseKey'):
       course = ndb.Key(urlsafe=self.user.selectedCourseKey).get()
       if course.quizUrls:
         for url in course.quizUrls:
-          quizzes.append(ndb.Key(urlsafe=url[2]).get())
+          quizzes.insert(0, ndb.Key(urlsafe=url[2]).get())
 
       if course.selectedQuizKey:
         quiz=ndb.Key(urlsafe=course.selectedQuizKey).get()
@@ -72,6 +72,8 @@ class BaseHandler(webapp2.RequestHandler):
           problems.append(p)
         for p in reversed(quiz.easy):
           problems.append(p)
+
+
 
 
 

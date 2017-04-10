@@ -19,19 +19,14 @@
           {% endif %}
         </option>
       {% endif %}
-      {% for name, desc, url in selectedcourse.quizUrls reversed %}
-        {% if selectedquiz.name != name %}
-          <option value="{{ url }}">
-            {{ name }}
-            {% if desc %}
-              :&nbsp;&nbsp;{{desc}}
+      {% for q in quizzes %}
+        {% if selectedquiz.name != q.name %}
+          <option value="{{ q.key.urlsafe }}">
+            {{ q.name }}
+            {% if q.desc %}
+              :&nbsp;&nbsp;{{q.desc}}
             {% endif %}
         </option>
-        {% endif %}
-      {% endfor %}
-      {% for quiz in coursequizzes %}
-        {% if quiz.name != selectedcourse.selectedQuiz.name %}
-          <option value="{{ quiz.key.urlsafe }}">{{ quiz.name }}</option>
         {% endif %}
       {% endfor %}
     </select>

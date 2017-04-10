@@ -31,7 +31,6 @@ from grade_quiz import *
 
 
 
-
 ################################################################################
 # Four NDB Classes
 #   - DB objects used by the MathQuizzes App
@@ -45,6 +44,7 @@ class Problem(ndb.Model):
   author = ndb.StructuredProperty(Author)
   quizName = ndb.StringProperty(indexed=True)
   quizKey = ndb.StringProperty(indexed=True)
+  url = ndb.StringProperty(indexed=True)
   content = ndb.StringProperty(indexed=False)
   answer = ndb.StringProperty(indexed=False)
   tags = ndb.StringProperty(indexed=False)
@@ -56,6 +56,8 @@ class Problem(ndb.Model):
 class Result(ndb.Model):
   student = ndb.StructuredProperty(Author)
   studentUrl = ndb.StringProperty()
+  quizName = ndb.StringProperty()
+  quizUrl = ndb.StringProperty()
   floatGrade = ndb.FloatProperty(indexed=False)
   stringGrade = ndb.StringProperty(indexed=False)
   date = ndb.DateTimeProperty(auto_now_add=True)
@@ -79,8 +81,9 @@ class Quiz(ndb.Model):
 class Course(ndb.Model):
   name = ndb.StringProperty()
   date = ndb.DateTimeProperty(auto_now_add=True)
-  numberOfStudents = ndb.IntegerProperty()
-  numberOfQuizzes = ndb.IntegerProperty()
+  numberOfStudents = ndb.IntegerProperty(default=0)
+  numberOfQuizzes = ndb.IntegerProperty(default=0)
+  numberOfAssigned = ndb.IntegerProperty(default=0)
   studentUrls = ndb.JsonProperty()
   quizUrls = ndb.JsonProperty(default=[])
   selectedQuizKey = ndb.StringProperty()
@@ -89,6 +92,7 @@ class Course(ndb.Model):
 class User(ndb.Model):
   isTeacher = ndb.BooleanProperty()
   selectedCourseKey = ndb.StringProperty()
+  myCourseKeys = ndb.JsonProperty()
 
 
 
@@ -238,7 +242,6 @@ class AuthenticatedHandler(BaseHandler):
 
 
 
-
 ################################################################################
 # Class:  Main
 #   - The home page
@@ -252,7 +255,26 @@ class MainHandler(BaseHandler, webapp2.RequestHandler):
         return
       self.render_template('instructor/inHome.html')
     else:
-      self.render_template('home.html')
+      s = self.user.key.urlsafe()
+      r = Result.query().filter(Result.studentUrl == s).fetch()
+      self.render_template('home.html', {'grades': r})
+
+
+
+
+################################################################################
+# Class:  My Grades
+#
+################################################################################
+class inMyGradesHandler(BaseHandler):
+  @instructor_required
+  def get(self):
+    r=[]
+#    course = ndb.Key(urlsafe=self.user.selectedCourseKey).get()
+#    if course.selectedQuizKey:
+#      quiz=ndb.Key(urlsafe=course.selectedQuizKey).get()
+#      r=Result.query.filter(Result.quizUrl == quiz.key.urlsafe()).fetch())
+    self.render_template('instructor/inMyGrades.html', {'results':r})
 
 
 
@@ -266,33 +288,10 @@ class QuizHandler(BaseHandler, webapp2.RequestHandler):
   @user_required
   def get(self):
     if self.request.get('grade') is not '':
-      grade = ndb.Key(urlsafe=self.request.get('grade'))
-      grade = grade.get()
-      sd=grade.quiz
-      self.render_template(
-        'quiz.html', { 'grade': grade, 'selectdefault': sd }
-      )
+      g = ndb.Key(urlsafe=self.request.get('grade')).get()
+      self.render_template('quiz.html', {'result':g})
     else:
       self.render_template('quiz.html')
-#      quiz = ndb.Key(urlsafe=self.request.get('k')).get()
-#      quizzes = getQuizList()
-#      problem_query = Problem.query().filter(Problem.quiz == quiz.name)
-#      problems = problem_query.fetch()
-#    elif self.request.get('quiz_name') is not None:
-#      quiz_name = self.request.get('quiz_name')
-#      quizzes = getQuizList()
-#      problem_query = Problem.query().filter(Problem.quiz == quiz_name)
-#      problems = problem_query.fetch()
-#      template_values = {
-#        'problems': problems,
-##        'quizzes': quizzes,
-#        'selectdefault': quiz_name
-#      }
-#      self.render_template('quiz.html', template_values)
-#    elif self.request.get('quiz_name') is None:
-##      quizzes = getQuizList()
-##      template_values = {'quizzes': quizzes }
-#      self.render_template('quiz.html')
   def post(self):
     grade_quiz(self, user_key, Author, Problem, Quiz, Result)
 
@@ -308,11 +307,18 @@ class QuizHandler(BaseHandler, webapp2.RequestHandler):
 class inProblemHandler(BaseHandler, webapp2.RequestHandler):
   @instructor_required
   def get(self):
-#    quizzes = getMyQuizList(self)
-    self.render_template('instructor/inProblem.html',
-      {
-          #'quizzes': quizzes,
-          'newquiz': self.request.get('n')})
+    template_values={}
+    if self.request.get('p') is not '':
+      prob_key = ndb.Key(urlsafe=self.request.get('p'))
+      problem = prob_key.get()
+      template_values = {
+        'problem_content': problem.content,
+        'problem_answer': problem.answer,
+        'problem_tags': problem.tags,
+        'problem_key': prob_key,
+        'problem_difficulty': problem.difficulty,
+      }
+    self.render_template('instructor/inProblem.html', template_values)
   def post(self):
     create_problem(self, Problem, user_key, Author, Quiz)
 
@@ -374,12 +380,14 @@ class inMyQuizzesHandler(BaseHandler):
 class ReleaseQuizHandler(BaseHandler):
   @instructor_required
   def post(self):
+    course = ndb.Key(urlsafe=self.user.selectedCourseKey).get()
+    course.numberOfAssigned += 1
+    course.put()
     q = ndb.Key(urlsafe=self.request.get('k')).get()
     q.isReleased = True
     q.releaseDate=datetime.datetime.now()
     q.put()
-    self.redirect('instructor/inMyQuizzes')
-
+    self.redirect('/')
 
 
 ################################################################################
@@ -388,8 +396,19 @@ class ReleaseQuizHandler(BaseHandler):
 class deleteQuizHandler(BaseHandler):
   @instructor_required
   def post(self):
-    ndb.Key(urlsafe=self.request.get('k')).delete()
-    self.redirect("instructor/inMyQuizzes")
+    course=ndb.Key(urlsafe=self.user.selectedCourseKey).get()
+    course.numberOfQuizzes -= 1
+    k=self.request.get('k')
+    quiz=ndb.Key(urlsafe=k).get()
+    if quiz.isReleased:
+      course.numberOfAssigned -= 1
+    course.quizUrls.remove([quiz.name, quiz.description, quiz.key.urlsafe()])
+    if course.selectedQuizKey == k:
+      course.selectedQuizKey=''
+    course.put()
+    ndb.Key(urlsafe=k).delete()
+    self.redirect('/')
+
 
 
 
@@ -421,7 +440,7 @@ class createQuizHandler(BaseHandler):
     course=ndb.Key(urlsafe=self.user.selectedCourseKey).get()
     quiz = Quiz(parent=user_key(self.user.email_address))
     quiz.author = Author(
-      identity=self.user.name,
+      identity=self.user.last_name,
       email=self.user.email_address)
     quiz.name = 'Quiz ' + str(course.numberOfQuizzes + 1)
     quiz.description = self.request.get('qdescription')
@@ -434,12 +453,6 @@ class createQuizHandler(BaseHandler):
     course.put()
     self.redirect('instructor/inProblem')
 
-#    course=ndb.Key(urlsafe=self.user.selectedCourseKey).get()
-#    course.quizUrls=[]
-#    course.numberOfQuizzes=0
-#    course.selectedQuizKey=''
-#    course.put()
-#    self.redirect('instructor/inProblem')
 
 
 
@@ -486,7 +499,8 @@ class AddOneStudentHandler(BaseHandler):
   @instructor_required
   def get(self):
     url=self.request.get('s')
-    course=ndb.Key(urlsafe=self.user.selectedCourseKey).get()
+    k=self.user.selectedCourseKey
+    course=ndb.Key(urlsafe=k).get()
     if not course.studentUrls:
       course.studentUrls = []
     course.studentUrls.append(url)
@@ -494,6 +508,16 @@ class AddOneStudentHandler(BaseHandler):
     course.put()
     added = ndb.Key(urlsafe=url).get()
     added = added.name + " " + added.last_name
+
+    student=ndb.Key(urlsafe=url).get()
+    if not hasattr(student, 'myCourseKeys'):
+      student.myCourseKeys = []
+    if not hasattr(student, 'selectedCourseKey'):
+      student.myCourseKeys = []
+    student.selectedCourseKey=k
+    student.myCourseKeys.append(k)
+    student.put()
+
     self.redirect("instructor/inAddStudents?added=" + added)
 
 
@@ -537,10 +561,8 @@ class deleteHandler(BaseHandler):
 
 class editProblemHanlder(BaseHandler):
   @instructor_required
-  def post(self):
-    user = self.user
-#    quizzes = getQuizList()
-    prob_key = ndb.Key(urlsafe=self.request.get('problem_key_edit'))
+  def get(self):
+    prob_key = ndb.Key(urlsafe=self.request.get('p'))
     problem = prob_key.get()
     template_values = {
       'problem_content': problem.content,
@@ -548,8 +570,6 @@ class editProblemHanlder(BaseHandler):
       'problem_tags': problem.tags,
       'problem_key': prob_key,
       'problem_difficulty': problem.difficulty,
-#      'quizzes': quizzes,
-      'selectdefault': problem.quiz,
     }
     self.render_template('instructor/inProblem.html', template_values)
 
@@ -663,6 +683,7 @@ app = webapp2.WSGIApplication([
     handler=VerificationHandler, name='verification'),
 
   # instructor pages
+  webapp2.Route('/instructor/inMyGrades', inMyGradesHandler, name='inMyGrades'),
   webapp2.Route('/instructor/inProblem', inProblemHandler, name='inProblem'),
   webapp2.Route('/instructor/inMyProblems', inMyProblemsHandler, name='inMyProblems'),
   webapp2.Route('/instructor/inMyQuizzes', inMyQuizzesHandler, name='inMyQuizzes'),

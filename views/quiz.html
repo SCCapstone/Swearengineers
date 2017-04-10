@@ -24,15 +24,15 @@ Quiz Results
 {% block maincontent %}
 
 
-<div class="row">
-  <div class="col-lg-8"><h2 class="page-header">
-    {% if result %}
-      Quiz Result
-    {% else %}
-      Take a Quiz
-    {% endif %}
-  </h2></div>
-</div>
+{% if not result %}
+  <div class="row">
+    <div class="col-lg-8">
+      <h2 class="page-header">Take a Quiz</h2>
+    </div>
+  </div>
+{% else %}
+  <br>
+{% endif %}
 
 
 
@@ -52,10 +52,11 @@ Quiz Results
 {% if result %}
   <div class="row">
     <div class="col-lg-1"></div>
-    <div class="col-lg-10" style="padding:0; box-shadow: 2px 2px 4px 2px #ccc">
+    <div class="col-lg-10" style="padding:0; box-shadow: 2px 2px 4px 2px #ccc; border:1px solid #ccc">
       <div id="quiztop">
-        <h3 id="quizresulttitle">{{ selectedquiz.name }}&nbsp;&nbsp;{{selectedquiz.description}}</h3>
-        <div class="row" style="background-color:rgba(255, 255, 255, 0.7); padding:20px">
+        <h3 id="quizresulttitle">{{ selectedquiz.name }} Result</h3>
+        <p style="text-align:center; font-weight:bold">{{selectedquiz.description}}</p>
+        <div class="row" style="background:#d9edf7; padding:20px">
           <div class="col-lg-5">
             <table>
               <tr>
@@ -73,7 +74,7 @@ Quiz Results
             <table>
               <tr>
                 <td width="150px">Grade:</td>
-                <td style="color: #d9534f; font-weight:bold">{{ result.stringGrade }}</td>
+                <td style="color: red; font-weight:bold">{{ result.stringGrade }}</td>
               </tr>
               <tr>
                 <td>Date:</td>
@@ -86,25 +87,26 @@ Quiz Results
       <form action="/quiz" method="POST">
         <table id="quizoutputtable">
             {%for p, s, a, g in result.record %}
-              <tr class="resulttr" title="Click to Edit Grade" id={{forloop.counter}}>
+              <tr class="gradetr" id={{forloop.counter}}>
                 <td class="num">{{ forloop.counter }}.</td>
-                <td class="prob" style="width:60%"><h3>{{ p }}</h3></td>
-                <td><h3>{{ a }}</h3></td>
+                <td class="prob" style="width:60%"><h4>{{ p }}</h4></td>
+                <td><h4>{{ a }}</h4></td>
                <td style="width:45px">
                  {% if g == 0 %}
-                   <img width="100%" src="./img/red_X.png"/>
+                   <img width="100%" src="./img/red_X2.png"/>
                  {% else %}
                    <img width="100%" src="./img/green.png"/>
                  {% endif %}
                </td>
                <td style="text-align:center">
                  {% if g == 0 %}
-                   <h3 style="color:#d9534f; font-style:italic">{{s}}</h3>
+                   <h4 style="color:red; font-style:italic; font-weight:bold">{{s}}</h4>
                  {% endif %}
                </td>
-               <td>
-                 <i style="color:#fafafa; text-shadow:2px 2px 2px #CCC" class="fa fa-cog fa-2x fa-fw"></i>
-                 <span class="sr-only">Loading...</span>
+               <td style="min-width:10%; padding:20px; text-align:center">
+                 {%if user.isTeacher %}
+                 <button disabled type="button" class="btn btn-default">Edit Grade</button>
+                 {%endif%}
                </td>
               </tr>
           {% endfor %}
@@ -140,7 +142,7 @@ Quiz Results
         <table id="quizoutputtable">
             {% for problem in problems reversed%}
               <tr id={{forloop.counter}}>
-                <td class="num">{{ forloop.counter }}.</td>
+                <td class="num2">{{ forloop.counter }}.</td>
                 <td class="prob"><h3>{{ problem.content }}</h3></td>
                 <td class="ans">
                   <input id="answer{{forloop.counter}}" tabindex="{{forloop.counter}}" type="text" name="{{ forloop.counter }}">

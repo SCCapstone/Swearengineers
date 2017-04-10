@@ -173,27 +173,29 @@
               <td>
                 <label class="inproblem" for="data">Difficulty:&nbsp;&nbsp;&nbsp;</label>
               </td>
-              <td style="padding-right:20%">
+              <td style="padding-right:10%">
                 <select name="difficulty" class="inproblem">
                   <option class="inproblem" value="Easy"> Easy</option>
                   <option class="inproblem" value="Medium"> Medium</option>
                   <option class="inproblem" value="Hard"> Hard</option>
                 </select>
               </td>
-              <td>
-                <button id ="next" class="lgbtn btn btn-info" data-target="#newquiz"
+              <td width="40%">
+                <button id="next" class="lgbtn btn btn-info" data-target="#newquiz"
                   type="submit">Save
                 </button>
               </td>
             </tr>
           </table>
-          <!--          <input id="hidden" type="hidden" name="quiz_name" value="{{ selectdefault }}"> -->
           <input class="inproblem" type="hidden" id="keybox" name="problem_key" value="{{ problem_key.urlsafe }}">
         </form>
       </div> <!--end input-->
     </div><!-- end col 12-->
   </div><!-- end row -->
 </div><!--end col 7 -->
+
+
+
 
 <div class="col-lg-5" style="height:100vh">
 
@@ -205,7 +207,10 @@
       <div id="scrolling">
         <table class="problemlist">
           {%for p in problems reversed%}
-            <tr>
+            <tr data-toggle="tooltip" title="Click to Edit"
+              {%if problem_key.urlsafe == p.url %} class="editprob"{%else%}class="resulttr"{%endif%}
+              style="cursor:pointer"
+              onclick="document.location='inProblem?p={{ p.url }}';">
               <td class="circle"><div class="{{p.difficulty}}"></div></td>
               <td class="pnumber">{{forloop.counter}}.</td>
               <td class="aproblem"><div class="aproblem">{{p.content}}</div></td>
@@ -222,7 +227,6 @@
 </div>
 
 </div> <!-- end row -->
-
 
 
 

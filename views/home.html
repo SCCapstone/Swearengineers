@@ -25,9 +25,10 @@
 
                                                   <!-- New Quiz Output Table -->
 <div id="assignedoutput" class="row">
-  <div class="col-lg-12">
+  <div class="col-lg-2"></div>
+  <div class="col-lg-8">
     <h2>Assigned Quizzes</h2>
-    {% if not quizzes %}
+    {% if selectedcourse.numberOfAssigned == 0 %}
       <hr>
       <br>
       <h4 style="text-align:center"><em>Sorry, no assigned quizzes at the moment.</em></h4>
@@ -37,19 +38,23 @@
           <thead>
            <tr>
              <th>Quiz Name </th>
-             <th>Instructor</th>
              <th>Date Assigned</th>
+             <th>Instructor</th>
+             <th>Description </th>
            </tr>
           </thead>
           <tbody>
             {%for q in quizzes %}
-              <tr class="result" data-toggle="tooltip" title="Click to Start Quiz"
-                    style="cursor:pointer"
-                    onclick="document.location='/quiz?k={{ q.key.urlsafe }}';">
-                <td name="quiz"><a href="#"><h4>{{ q.name }}</h4></a></td>
-                <td><h4>{{ q.author.identity }}</h4></td>
-                <td><h4>{{ q.finaldate }}</h4></td>
-              </tr>
+              {% if q.isReleased %}
+                <tr class="result" data-toggle="tooltip" title="Click to Start Quiz"
+                      style="cursor:pointer"
+                      onclick="document.location='/quiz?k={{ q.key.urlsafe }}';">
+                  <td name="quiz"><a href="#"><h4>{{ q.name }}</h4></a></td>
+                  <td><h4>{{ q.releaseDate }}</h4></td>
+                  <td><h4>{{ q.author.identity }}</h4></td>
+                  <td><h4>{{ q.description }}</h4></td>
+                </tr>
+              {% endif %}
             {% endfor %}
           </tbody>
         </table>
@@ -61,12 +66,9 @@
 
 
 
-
-
-                                                    <!-- Grade Output Table -->
-
 <div class="row" id="gradesoutput" style="display:none">
-  <div class="col-lg-12">
+  <div class="col-lg-2"></div>
+  <div class="col-lg-8">
     <h2>Quiz Grades</h2>
     {% if not grades %}
       <hr>
@@ -84,13 +86,15 @@
           </thead>
           <tbody>
             {%for grade in grades %}
-              <tr class="result" data-toggle="tooltip" title="Click to View Quiz Results"
-                    style="cursor:pointer"
-                    onclick="document.location='/quiz?grade={{ grade.key.urlsafe }}';">
-                <td name="quiz"><a href="#"><h4>{{ grade.quiz }}</h4></a></td>
-                <td><h4>{{ grade.stringgrade }}</h4></td>
-                <td><h4>{{ grade.date }}</h4></td>
-              </tr>
+              {%if grade.quizName %}
+                <tr class="result" data-toggle="tooltip" title="Click to View Quiz Results"
+                      style="cursor:pointer"
+                      onclick="document.location='/quiz?grade={{ grade.key.urlsafe }}';">
+                  <td name="quiz"><a href="#"><h4>{{ grade.quizName }}</h4></a></td>
+                  <td><h4>{{ grade.stringGrade }}</h4></td>
+                  <td><h4>{{ grade.date }}</h4></td>
+                </tr>
+              {% endif %}
             {% endfor %}
           </tbody>
         </table>
@@ -98,7 +102,6 @@
     {% endif %}
   </div>
 </div>
-
 
 <script>
 

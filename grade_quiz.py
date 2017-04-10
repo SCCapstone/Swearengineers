@@ -35,7 +35,7 @@ def grade_quiz(self, user_key, Author, Problem, Quiz, Result):
     problems.append(p.content)
     solutions.append(p.answer)
 
-  for s, a in zip(solutions,answers):
+  for s, a in zip(reversed(solutions),answers):
     eq1 = parse_expr(a, transformations=transformations)
     eq2 = parse_expr(s, transformations=transformations)
     if eq1.equals(eq2):
@@ -46,22 +46,24 @@ def grade_quiz(self, user_key, Author, Problem, Quiz, Result):
 
   grade=100.0*good/len(problems)
   stringgrade=str(round(grade,1))+"%"
-  record = zip(problems, solutions, answers, grades)
+  record = zip(reversed(problems), reversed(solutions), answers, grades)
 
-  result = Result(parent=user_key(self.user.email_address))
+  result = Result(parent=quiz.key)
   result.student = Author( identity=self.user.name, email=self.user.email_address)
   result.studentUrl = self.user.key.urlsafe()
   result.floatGrade = grade
   result.stringGrade = stringgrade
   result.record = record
-  result.put()
+  result.quizName = quiz.name
+  result.quizUrl = quiz.key.urlsafe()
 
   quiz.numberCompleted += 1
   quiz.results.append(result)
-  quiz.put()
 
+  if not self.user.isTeacher:
+    result.put()
+    quiz.put()
 
-#  self.render_template('quiz.html')
   self.render_template('quiz.html', {'result': result })
 
 
