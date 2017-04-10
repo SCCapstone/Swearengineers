@@ -225,7 +225,7 @@
     </div>
 
 
-  {%if not selectedcourse%}
+  {%if not selectedcourse and user.isTeacher %}
     <h1 style="color:red">Please add a course</h1>
   {%endif%}
 
