@@ -60,11 +60,11 @@ class BaseHandler(webapp2.RequestHandler):
 
     if hasattr(self.user, 'selectedCourseKey'):
       course = ndb.Key(urlsafe=self.user.selectedCourseKey).get()
-      if course.quizUrls:
+      if course and course.quizUrls:
         for url in course.quizUrls:
           quizzes.insert(0, ndb.Key(urlsafe=url[2]).get())
 
-      if course.selectedQuizKey:
+      if course and course.selectedQuizKey:
         quiz=ndb.Key(urlsafe=course.selectedQuizKey).get()
         for p in reversed(quiz.hard):
           problems.append(p)

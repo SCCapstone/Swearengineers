@@ -65,14 +65,16 @@
       </div>
     </div>
 
-    <div class="col-lg-3">
-      <button id="newquizbtn"
-        class="btn btn-info lgbtn"
-        style="width:100%; margin-top:20px"
-        data-target="#newquiz"
-        type="button" data-toggle="modal">New Quiz
-      </button>
-    </div>
+    {%if selectedcourse%}
+      <div class="col-lg-3">
+        <button id="newquizbtn"
+          class="btn btn-info lgbtn"
+          style="width:100%; margin-top:20px"
+          data-target="#newquiz"
+          type="button" data-toggle="modal">New Quiz
+        </button>
+      </div>
+    {%endif%}
   </div>
 
 
@@ -181,9 +183,12 @@
                 </select>
               </td>
               <td width="40%">
-                <button id="next" class="lgbtn btn btn-info" data-target="#newquiz"
-                  type="submit">Save
-                </button>
+
+                {%if selectedcourse%}
+                  <button id="next" class="lgbtn btn btn-info" data-target="#newquiz"
+                    type="submit">Save
+                  </button>
+                {%endif%}
               </td>
             </tr>
           </table>
@@ -241,8 +246,6 @@
 </div>
 
 </div> <!-- end row -->
-
-
 
 
 

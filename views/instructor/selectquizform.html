@@ -14,7 +14,7 @@
       {% if not selectedquiz %}
         <option selected>Select a Quiz</option>
       {% else %}
-        <option selected style="display:none">
+        <option selected {%if selectedcourse.numberOfQuizzes != 1%} style="display:none"{%endif%}>
           {{ selectedquiz.name }}
           {% if selectedquiz.description %}
             :&nbsp;&nbsp;{{selectedquiz.description}}
