@@ -19,6 +19,8 @@ from collections import defaultdict
 
 from sympy import *
 from sympy.parsing.sympy_parser import parse_expr
+from sympy.parsing.sympy_parser import standard_transformations,\
+    implicit_multiplication_application
 
 import logging
 import os.path
@@ -577,13 +579,17 @@ class inQuizzesHandler(BaseHandler, webapp2.RequestHandler):
        my = self.request.get(str(total))
        answers.append(my)
        problems.append(p.content)
-       eq1 = parse_expr(my)
-       eq2 = parse_expr(p.answer)
+       #print(eq1)
+       transformations = (standard_transformations +
+                          (implicit_multiplication_application,))
+       eq1 = parse_expr(my, transformations=transformations)
+       eq2 = parse_expr(p.answer, transformations=transformations)
        if eq1.equals(eq2):
           good += 1
           grades.append(1)
        else:
           grades.append(0)
+
      grade=100.0*good/total
      stringgrade=str(round(grade,1))+"%"
      pag = zip(problems, answers, grades)
