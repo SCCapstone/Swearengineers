@@ -136,23 +136,14 @@ td.pnumber{
   padding-right:20px;
   border-right:1px solid #ccc;
 }
-td.circle{
-  padding:0 20px;
+td.Easy i{
+  padding:20px;
+  padding-top:40px;
+  color:green;
 }
-div.Easy,
-div.Medium,
-div.Hard{
-  padding: 0 7px;
-  border-radius: 7px;
-  width: 14px;
-  height: 14px;
+td.Medium i{
+  color:orange;
 }
-div.Easy{
-  background-color:green;
-}
-div.Medium{
-  background-color:orange;
-}
-div.Hard{
-  background-color:red;
+td.Hard i{
+  color:red;
 }

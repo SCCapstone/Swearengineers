@@ -199,29 +199,41 @@
 
 <div class="col-lg-5" style="height:100vh">
 
-  {% if problems %}
+  {% if selectedquiz %}
     <div class="problemlist">
       <div class="inproblem">
         {% with 1 as blue %}
           {% include "selectquizform.html" %}
         {% endwith %}
       </div>
+  {% endif %}
+  {% if problems %}
       <div id="scrolling">
         <table class="problemlist">
           {%for p in problems reversed%}
             <tr data-toggle="tooltip" title="Click to Edit"
               {%if problem_key.urlsafe == p.url %} class="editprob"{%else%}class="resulttr"{%endif%}
-              style="cursor:pointer"
-              onclick="document.location='inProblem?p={{ p.url }}';">
-              <td class="circle"><div class="{{p.difficulty}}"></div></td>
-              <td class="pnumber">{{forloop.counter}}.</td>
-              <td class="aproblem"><div class="aproblem">{{p.content}}</div></td>
+              style="cursor:pointer">
+              <td class="circle {{p.difficulty}}"
+                onclick="document.location='inProblem?p={{ p.url }}';">
+                <i class="fa fa-fw fa-circle "></i>&nbsp;&nbsp;
+              </td>
+              <td class="pnumber"
+                onclick="document.location='inProblem?p={{ p.url }}';">
+                {{forloop.counter}}.</td>
+              <td class="aproblem"
+                onclick="document.location='inProblem?p={{ p.url }}';">
+                <div class="aproblem">{{p.content}}</div></td>
+              <td title="Delete"
+                onclick="document.location='/deleteProblem?p={{ p.url }}';">
+                <i style="color:red" class="fa fa-fw fa-times-circle fa-2x"></i>&nbsp;&nbsp;
+              </td>
             </tr>
           {%endfor%}
         </table>
       </div>
-    </div>
   {% else %}
+    </div>
     <hr>
     <p style="text-align:center; font-style:italic">Your saved problems for this quiz will be displayed here.</p>
   {% endif %}

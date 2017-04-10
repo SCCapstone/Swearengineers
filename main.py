@@ -549,16 +549,33 @@ class RemoveOneStudentHandler(BaseHandler):
 #   - MyQuizzes:   delete quiz class
 ################################################################################
 
-class deleteHandler(BaseHandler):
+class deleteProblemHandler(BaseHandler):
   @instructor_required
-  def post(self):
-    prob_key = ndb.Key(urlsafe=self.request.get('problem_key_delete'))
-    #problem = prob_key.get()
-    prob_key.delete()
-    time.sleep(0.1)
-    self.redirect("instructor/inMyProblems")
+  def get(self):
+    course = ndb.Key(urlsafe=self.user.selectedCourseKey).get()
+    quiz = ndb.Key(urlsafe=course.selectedQuizKey).get()
+    url = self.request.get('p')
+    problem = ndb.Key(urlsafe=url).get()
+    if problem.difficulty == 'Easy':
+      for p in quiz.easy:
+        if p.url == url:
+          quiz.easy.remove(p)
+    if problem.difficulty == 'Medium':
+      for p in quiz.medium:
+        if p.url == url:
+          quiz.medium.remove(p)
+    if problem.difficulty == 'Hard':
+      for p in quiz.hard:
+        if p.url == url:
+          quiz.hard.remove(p)
+    quiz.put()
+    ndb.Key(urlsafe=url).delete()
+    self.redirect("instructor/inProblem")
 
 
+# not currently used because this must redirect.
+# the course dropdown will cause error
+# edit is called from inProblemHandler
 class editProblemHanlder(BaseHandler):
   @instructor_required
   def get(self):
@@ -694,7 +711,7 @@ app = webapp2.WSGIApplication([
   # edit classes
   webapp2.Route('/createQuiz', createQuizHandler, name='createQuiz'),
   webapp2.Route('/selectQuiz', selectQuizHandler, name='selectQuiz'),
-  webapp2.Route('/deleteProblem', deleteHandler, name='deleteProblem'),
+  webapp2.Route('/deleteProblem', deleteProblemHandler, name='deleteProblem'),
   webapp2.Route('/editProblem', editProblemHanlder, name='editProblem'),
   webapp2.Route('/addOneStudent', AddOneStudentHandler, name='addOneStudent'),
   webapp2.Route('/removeOneStudent', RemoveOneStudentHandler, name='removeOneStudent'),
