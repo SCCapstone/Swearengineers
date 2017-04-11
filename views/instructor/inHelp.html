@@ -8,6 +8,11 @@
       tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]], processEscapes: true}
     });
   </script>
+  <style>
+    .col-lg-7 ul{ border-top: 1px solid #ccc; padding-top:15px; margin-left:55px}
+    .col-lg-7 ul li{ margin-left:-20px}
+    .col-lg-7 h3 i{ margin-right:20px;}
+  </style>
 {% endblock %}
 
 
@@ -20,53 +25,62 @@
 
 <div class="row">
 <div class="col-lg-1"></div>
-<div class="col-lg-8">
-<h3>Home</h3>
-<ol>
-  <li>You can view the quizzes you've taken by clicking</li>
-  <li>Sorry, creating a Course is not yet enabled</li>
-</ol>
+<div class="col-lg-7">
 
-<h3>Take a Quiz</h3>
-<ol>
-  <li>All authenticated users can see all quizzes</li>
-  <li>If a quiz is available, you can select it from the dropdown and complete it</li>
-  <li>Once complete, your grade will be displayed and your Home Page will update</li>
-</ol>
-
-<h3>Create Problems</h3>
-<ol>
+<h3><i class="fa fa-fw fa-home"></i>Home</h3>
+<ul>
+  <li>This page has general quiz info for the selected course</li>
+  <li>The assign button will make the quiz available to your student list</li>
+  <li>The delete button will delete the quiz, but not the problems</li>
+</ul>
+<br>
+<h3><i class="fa fa-fw fa-graduation-cap"></i>Create Problems</h3>
+<ul>
+  <li>Use this page to create quiz problems</li>
   <li>All fields must be filled in</li>
   <li>Use '$' symbols to add <script type="math/tex">\ \rm\LaTeX</script></li>
   <li>Add Keywords you'd like to search by in the My Problems Page</li>
-</ol>
-
-<h3>My Problems</h3>
-<ol>
-  <li>This page displays all the problems you have created</li>
-  <li>You can limit the search using keywords or the quiz drop down</li>
-</ol>
-
-<h3>My Quizzes</h3>
-<ol>
-  <li>Quizzes you have created are displayed here</li>
-  <li>There is an option to Release the Quiz to Stuents</li>
-  <li>There is an option to delete the Quiz</li>
-</ol>
-
-<h3>My Students</h3>
-<ol>
-  <li>Click to Add and Remove Students from the course.</li>
-</ol>
-
-<h3>My Courses</h3>
-<ol>
+  <li>Functions to edit and delete problems have been added</li>
+</ul>
+<br>
+<h3><i class="fa fa-fw fa-pencil"></i>Take a Quiz</h3>
+<ul>
+  <li>You can test your quizzes here</li>
+  <li>This quiz view should match the student view</li>
+  <li>Once complete, your grade will be displayed</li>
+  <li>Editing Grades is not yet enabled</li>
+</ul>
+<br>
+<h3><i class="fa fa-fw fa-search"></i>My Problems</h3>
+<ul>
+  <li>This page will display all the problems in the database and allow keyword search</li>
+  <li>The page is currently under construction and has been remove from the RC1 release</li>
+</ul>
+<br>
+<h3><i class="fa fa-fw fa-calculator"></i>My Grades</h3>
+<ul>
+  <li>Any quizzes completed by students will be displayed here</li>
+  <li>Clicking on the quiz will show the result</li>
+  <li>Editing Grades is not yet enabled</li>
+</ul>
+<br>
+<h3><i class="fa fa-fw fa-users"></i>My Students</h3>
+<ul>
+  <li>Two lists are displayed:  Your Students and All Students</li>
+  <li>Click to Add and Remove Students from your course</li>
+</ul>
+<br>
+<h3><i class="fa fa-fw fa-book"></i>My Courses</h3>
+<ul>
   <li>Courses you have created are displayed here</li>
-  <li>Under each quiz, you can view any results from other users</li>
-</ol>
+  <li>There are options to delete and rename</li>
+</ul>
 </div>
 </div>
-
+<br>
+<br>
+<br>
+<br>
 <script>
   document.getElementById("help").className += "active";
   $('#quizform').css('display', 'none');
