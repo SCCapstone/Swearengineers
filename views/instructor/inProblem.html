@@ -44,8 +44,8 @@
 <div class="row">
 <div class="col-lg-7">
   <div class="row">
-    <div class="col-lg-4"><h2 class="page-header">Create Problems</h2></div>
-    <div class="col-lg-5">
+    <div class="col-lg-3"><h2 class="page-header">Problems</h2></div>
+    <div class="col-lg-6">
       <!--
       |  Successful Submission Alert
       |   Activated by Page Load
@@ -156,7 +156,7 @@
               </td>
             </tr>
             <tr>
-              <td>
+              <td class="in">
                 <label class="inproblem" for="data">Answer:</label>
               </td>
               <td colspan="2">
@@ -164,7 +164,7 @@
               </td>
             </tr>
             <tr>
-              <td>
+              <td class="in">
                 <label class="inproblem" for="data">Keywords:</label>
               </td>
               <td colspan="2">
@@ -172,18 +172,20 @@
               </td>
             </tr>
             <tr>
-              <td>
+              <td class="in">
                 <label class="inproblem" for="data">Difficulty:&nbsp;&nbsp;&nbsp;</label>
               </td>
               <td style="padding-right:10%">
-                <select name="difficulty" class="inproblem">
-                  <option class="inproblem" value="Easy"> Easy</option>
+                <select id="diffselect" onchange="diff()" name="difficulty" class="inproblem" style="width:70%">
+                  <option class="inproblem" value="Easy" selected> Easy</option>
                   <option class="inproblem" value="Medium"> Medium</option>
                   <option class="inproblem" value="Hard"> Hard</option>
                 </select>
+                &nbsp;
+                &nbsp;
+                <i id="circle" class="fa fa-fw fa-circle" style="width:10%;color:#62ae43"></i>
               </td>
               <td width="40%">
-
                 {%if selectedcourse%}
                   <button id="next" class="lgbtn btn btn-info" data-target="#newquiz"
                     type="submit">Save
@@ -197,6 +199,15 @@
       </div> <!--end input-->
     </div><!-- end col 12-->
   </div><!-- end row -->
+
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+
+
+
 </div><!--end col 7 -->
 
 
@@ -291,6 +302,18 @@ window.onload = function(){
 
 }
 
+
+
+function diff(){
+  var circle = document.getElementById("circle");
+  var diff = document.getElementById("diffselect").value;
+  if(diff == "Easy")
+    circle.style.color = "#62ae43";
+  if(diff == "Medium")
+    circle.style.color = "orange";
+  if(diff == "Hard")
+    circle.style.color = "red";
+}
 
 
 
