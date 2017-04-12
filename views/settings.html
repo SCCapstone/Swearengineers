@@ -1,0 +1,64 @@
+{% extends "instructor/inTemplate.html" %}
+
+
+
+
+{% block maincontent %}
+
+<div class="row">
+  <div class="col-lg-8">
+  <h2 class="page-header">Account Home</h2>
+  </div>
+</div>
+<h3>User Info:</h3>
+<div class="row">
+  <div class="col-lg-1"></div>
+  <div class="col-lg-5">
+    <table width="100%" style="font-size:20px">
+      <tr>
+        <td width="50%">User Name</td>
+        <td>{{user.name}}</td>
+      </tr>
+      <tr>
+        <td>Email</td>
+        <td>{{user.email_address}}</td>
+      </tr>
+    </table>
+  </div>
+</div>
+<br>
+<br>
+<br>
+<h3>Password Reset:</h3>
+<div class="row">
+  <div class="col-lg-1"></div>
+  <div class="col-lg-5">
+    <form action="/settings" method="POST">
+      <table width="100%" style="font-size:20px">
+        <tr>
+          <td width="50%">Current Password</td>
+          <td>
+            <input type="password" class"form-control" name="currentPass" id="currentPass" placeholder="Current Password">
+          </td>
+        </tr>
+        <tr>
+          <td>New Password</td>
+          <td>
+            <input type="password" class"form-control" name="newPass" id="newPass" placeholder="New Password">
+          </td>
+        </tr>
+      </table>
+      <br>
+      <br>
+      <br>
+      <button type="submit" style="float:right" class="btn btn-info">Change Password</button>
+    </form>
+  </div>
+</div>
+
+
+<script>
+  document.getElementById("help").className += "active";
+  $('#quizform').css('display', 'none');
+</script>
+{% endblock %}

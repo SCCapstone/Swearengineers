@@ -1,0 +1,61 @@
+<!--
+| Select Quiz Form:
+|   Holds a list of Quizzes for the corresponding course
+|   Selecting a different quiz POSTs a query to the server
+|   or limits an existing query based on the page-source
+-->
+{% if blue %}
+<div id="quiztop">
+{% endif %}
+  <form id="selectform" action="/selectQuiz" method="POST">
+    <label>Select Quiz:</label>
+    <select onchange="dropdown()" id="selectid"
+      class="form-control">
+      {% if not selectedquiz %}
+        <option selected>Select a Quiz</option>
+      {% else %}
+        <option selected {%if selectedcourse.numberOfQuizzes != 1%} style="display:none"{%endif%}>
+          {{ selectedquiz.name }}
+          {% if selectedquiz.description %}
+            :&nbsp;&nbsp;{{selectedquiz.description}}
+          {% endif %}
+        </option>
+      {% endif %}
+      {% for q in quizzes %}
+        {% if selectedquiz.name != q.name %}
+          <option value="{{ q.key.urlsafe }}">
+            {{ q.name }}
+            {% if q.desc %}
+              :&nbsp;&nbsp;{{q.desc}}
+            {% endif %}
+        </option>
+        {% endif %}
+      {% endfor %}
+    </select>
+    <input id="hidden" type="hidden" name="dropdownselect">
+    <input id="submitthis" type="submit" style="visibility:hidden">
+  </form>
+
+{% if blue %}
+</div>
+{% endif %}
+
+
+<script>
+/*******************************************************************************
+* Dropdown Function
+* -----------------
+* - Changes selectedquiz
+*
+**********/
+  function dropdown(){
+    var hidden = document.getElementById("hidden");
+    hidden.value = document.getElementById("selectid").value;
+    var submitthis = document.getElementById('submitthis');
+    if (submitthis != null) submitthis.click();
+  }
+</script>
+
+
+
+
