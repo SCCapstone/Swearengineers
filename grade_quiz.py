@@ -24,7 +24,10 @@ def grade_quiz(self, user_key, Author, Problem, Quiz, Result):
   grades=[]
 
   for p in posted:
-    answers.append(p[1])
+    if not p[1]:
+      answers.append('blank')
+    else:
+      answers.append(p[1])
   for p in reversed(quiz.hard):
     problems.append(p.content)
     solutions.append(p.answer)
@@ -36,6 +39,8 @@ def grade_quiz(self, user_key, Author, Problem, Quiz, Result):
     solutions.append(p.answer)
 
   for s, a in zip(reversed(solutions),answers):
+    a=a.lower()
+    s=s.lower()
     eq1 = parse_expr(a, transformations=transformations)
     eq2 = parse_expr(s, transformations=transformations)
     if eq1.equals(eq2):
