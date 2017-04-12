@@ -37,10 +37,9 @@
           </thead>
           <tbody>
             {% for grade in selectedquiz.results reversed %}
-            <h1>{{grade.key.urlsafe}}</h1>
                 <tr class="result" data-toggle="tooltip" title="Click to View Quiz Results"
                       style="cursor:pointer"
-                      onclick="document.location='../quiz?grade={{ grade.key.urlsafe }}';">
+                      onclick="document.location='../quiz?grade={{ grade.url }}';">
                   <td name="quiz"><a href="#"><h4>{{ grade.student.identity }}</h4></a></td>
                   <td><h4>{{ grade.stringGrade }}</h4></td>
                   <td><h4>{{ grade.date }}</h4></td>

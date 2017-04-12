@@ -58,6 +58,7 @@ class Result(ndb.Model):
   studentUrl = ndb.StringProperty()
   quizName = ndb.StringProperty()
   quizUrl = ndb.StringProperty()
+  url = ndb.StringProperty()
   floatGrade = ndb.FloatProperty(indexed=False)
   stringGrade = ndb.StringProperty(indexed=False)
   date = ndb.DateTimeProperty(auto_now_add=True)

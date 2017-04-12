@@ -62,8 +62,12 @@ def grade_quiz(self, user_key, Author, Problem, Quiz, Result):
 
   if not self.user.isTeacher:
     result.put()
+    result.url = result.key.urlsafe()
+    result.put()
     quiz.put()
 
+
+  print result.url
   self.render_template('quiz.html', {'result': result })
 
 
