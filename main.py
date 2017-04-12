@@ -205,7 +205,7 @@ class SignupHandler(BaseHandler):
     email = self.request.get('email')
     name = self.request.get('name')
     password = self.request.get('password')
-    last_name = self.request.get('lastname')
+    last_name = self.request.get('lastName')
 
     if len(password) < 6:
       self.display_message('Password Length must be at least 6 \
@@ -392,6 +392,39 @@ class helpHandler(BaseHandler):
    def get(self):
      user = self.user
      self.render_template('inHelp.html')
+
+class accountSummaryHandler(BaseHandler):
+   @user_required
+   def get(self):
+     user = self.user
+     email = {'email': user.email_address}
+
+
+     self.render_template('account.html', email)
+
+   def post(self):
+    logging.info("\ntesting account handler post\n")
+    user = self.user
+    keyHolder = user.key.get()
+    # currentPass = keyHolder.password
+
+    currentPassCheck = self.request.get('currentPass')
+    newPass = self.request.get('newPass')
+    if(user.validate_password(currentPassCheck)):
+      logging.info("\nwe made it\n")
+      logging.info(currentPassCheck)
+      keyHolder.set_password(newPass)
+      keyHolder.put()
+    else:
+      logging.info("\nwe failed to pass\n")
+
+    print "\n"
+    #logging.info(keyHolder)
+    #logging.info(currentPass)
+    logging.info(currentPassCheck)
+    logging.info(newPass)
+    self.redirect("/account")
+
 
 
 ###########################################################
@@ -679,6 +712,15 @@ def getMyGradeList(self):
    grades = g.fetch()
    return grades
 
+# class passwordResetHandler(BaseHandler):
+#   @user_required
+#   def post(self):
+#       testValue = self.request.get("testValue")
+#       print "\n"
+#       print testValue
+
+#       self.redirect("/account")
+
 
 
 
@@ -739,7 +781,8 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/inMyQuizzes', inMyQuizzesHandler, name='inMyQuizzes'),
     webapp2.Route('/gradeQuiz', gradeQuiz, name='gradeQuiz'),
     webapp2.Route('/inHelp', helpHandler, name='inHelp'),
-    webapp2.Route('/test', TestHandler, name='test')
+    webapp2.Route('/test', TestHandler, name='test'),
+    webapp2.Route('/account', accountSummaryHandler, name='account'),
 # webapp2.Route('/inMain', inMainHandler, name='inMain'),
 # webapp2.Route('/inAssignment', inAssignmentHandler, name='inAssignment'),
 ], debug=True, config=config)

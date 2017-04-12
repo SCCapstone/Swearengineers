@@ -8,7 +8,7 @@
   <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML-full"></script>
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
-      tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+      tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]], processEscapes: true}
     });
   </script>
 {% endblock %}
@@ -73,46 +73,46 @@
 
                                                             <!-- Math Buttons-->
 <ul class="mbttn">
-  <li onclick="addLaTex('\\frac{x}{y} ')">
+  <li onclick="addLaTex('$\\frac{x}{y}$ ')">
     <script type="math/tex">\frac{x}{y}</script>
   </li>
-  <li onclick="addLaTex('x\\cdot y')">
+  <li onclick="addLaTex('$x\\cdot y$ ')">
     <script type="math/tex">x\cdot y</script>
   </li>
-  <li onclick="addLaTex('x^{xy}')">
+  <li onclick="addLaTex('$x^{xy}$ ')">
     <script type="math/tex">x^{xy}</script>
   </li>
-  <li onclick="addLaTex('\\sqrt{x} ')">
+  <li onclick="addLaTex('$\\sqrt{x}$ ')">
     <script type="math/tex">\sqrt{x}</script>
   </li>
-  <li onclick="addLaTex('\\sqrt[3]{x}')">
+  <li onclick="addLaTex('$\\sqrt[3]{x}$ ')">
     <script type="math/tex">\sqrt[3]{x}</script>
   </li>
-  <li onclick="addLaTex('|x| ')">
+  <li onclick="addLaTex('$|x|$ ')">
     <script type="math/tex">|x|</script>
   </li>
-  <li onclick="addLaTex('\\alpha ')">
+  <li onclick="addLaTex('$\\alpha$ ')">
     <script type="math/tex">\alpha</script>
   </li>
-  <li onclick="addLaTex('\\beta ')">
+  <li onclick="addLaTex('$\\beta$ ')">
     <script type="math/tex">\beta</script>
   </li>
-  <li onclick="addLaTex('\\Delta ')">
+  <li onclick="addLaTex('$\\Delta$ ')">
     <script type="math/tex">\Delta</script>
   </li>
-  <li onclick="addLaTex('\\Omega ')">
+  <li onclick="addLaTex('$\\Omega$ ')">
     <script type="math/tex">\Omega</script>
   </li>
-  <li onclick="addLaTex('\\ge ')">
+  <li onclick="addLaTex('$\\ge$ ')">
     <script type="math/tex">\ge</script>
   </li>
-  <li onclick="addLaTex('\\ne ')">
+  <li onclick="addLaTex('$\\ne$ ')">
     <script type="math/tex">\ne</script>
   </li>
-  <li onclick="addLaTex('\\infty ')">
+  <li onclick="addLaTex('$\\infty$ ')">
     <script type="math/tex">\infty</script>
   </li>
-  <li onclick="addLaTex('\\sum_{i=0}^n ')">
+  <li onclick="addLaTex('$\\sum_{i=0}^n$ ')">
     <script type="math/tex">\sum_{i=0}^n</script>
   </li>
 </ul>
@@ -123,7 +123,14 @@
 <div class="inputArea">
     <form action="/inProblem" method="POST" onsubmit="return checkfields();">
     <label class="inproblem" for="data">
-      Add <script type="math/tex">\rm\LaTeX</script>:
+      <span style="font-weight:normal">
+        Use <span style="font-size:large">\$</span> symblols to add
+        <script type="math/tex">\ \rm\LaTeX</script>
+        as in \$E=mc^2$
+        <br>
+        <br>
+      </span>
+      Problem:
     </label>
     <input class="inproblem" type="text" id="textbox" name="problem" value="{{ problem_content }}">
     <label class="inproblem" for="data">Answer:</label>
@@ -240,7 +247,7 @@ function match() {
   if( old != textbox.value ){
     clearInterval(displayRefreshRate);
     display.style.color = "white";
-    display.innerHTML = '$${' + textbox.value + '}$$';
+    display.innerHTML = textbox.value;
     MathJax.Hub.Queue(["Typeset",MathJax.Hub,display]);
     old = this.textbox.value;
     setTimeout(
@@ -279,6 +286,7 @@ function checkfields(){
       || tagbox.value    == ''
       || hidden.value    == ''
     ){
+    window.scrollTo(0,0);
     fieldalert.style.display="block"
     setTimeout(function(){fieldalert.style.display="none";}, 1500);
     return false;

@@ -42,7 +42,7 @@ Quiz Results
           {% for problem in problems %}
             <tr style="text-align:center">
               <td style="padding-top:50px;padding-bottom:50px;width:10%; background-color:#ccc">{{ forloop.counter }}.</td>
-              <td style="width: 75%"><h3><script type="math/tex">{{ problem.content }}</script></h3></td>
+              <td style="width: 75%"><h3>{{ problem.content }}</h3></td>
               <td><input style="width:100%"type="text" name="{{ forloop.counter }}"><td>
             </tr>
           <script>quizselected = ("{{ forloop.counter }}" > 0)</script>
@@ -71,7 +71,7 @@ Quiz Results
       {%for p, a, g in grade.pag %}
         <tr style="text-align:center">
           <td style="padding-top:50px;padding-bottom:50px;width:10%; background-color:#ccc">{{ forloop.counter }}.</td>
-          <td style="width:75%"><h3><script type="math/tex">{{ p }}</script></h3></td>
+          <td style="width:75%"><h3>{{ p }}</h3></td>
           <td><h3>{{ a }}<h3></td>
           <td>
             {% if g == 0 %}
