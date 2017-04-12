@@ -3,27 +3,13 @@
 
 {% block pageName %}Help Topics by Page{% endblock %}
 
-
-{% block header %}
-  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML-full"></script>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]], processEscapes: true}
-    });
-  </script>
-{% endblock %}
-
-
 {% block maincontent %}
 
 
 
 <h3>Home</h3>
 <ol>
-
-    <li>You can create a course by clicking Create Course on the top right.</li>
-    <li>You can view the quizzes that have been created, make more quizzes, and post the quiz for students to take.</li>
-
+    <li>You can view the quizzes you've taken by clicking.</li>
 </ol>
 <h3>Take a Quiz</h3>
 <ol>
@@ -33,12 +19,10 @@
 </ol>
 <h3>Create Problems</h3>
 <ol>
-
     <li>All fields must be filled in.</li>
     <li>The question box only allows for LaTeX at this time.</li>
     <li>The answer box will never allow LaTeX.</li>
     <li>Add Keywords you'd like to search by in the My Problems Page.</li>
-
 </ol>
 
 <h3>My Problems</h3>
@@ -50,7 +34,7 @@
 <h3>My Quizzes</h3>
 <ol>
     <li>Quizzes you have created are displayed here.</li>
-    <li>Under each quiz, you can view any results from other users.</li>
+    <li>Under each quiz, you can view your results.</li>
 </ol>
 
 <h3>Confirmation Email</h3>
