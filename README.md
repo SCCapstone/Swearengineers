@@ -1,3 +1,8 @@
+To create a teacher you will need the teacher authentication code:
+
+# teacher1
+
+
 ****
 # Math Quizzes Project Description
 
