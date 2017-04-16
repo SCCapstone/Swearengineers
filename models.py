@@ -11,8 +11,15 @@ class User(webapp2_extras.appengine.auth.models.User):
 
     :param raw_password:
         The raw password which will be hashed and stored
-    """   
+    """
     self.password = security.generate_password_hash(raw_password, length=12)
+
+  def validate_password(self, new_raw_password):
+    testHash = security.check_password_hash(new_raw_password, self.password)
+    if (testHash):
+      return True
+    else:
+      return False
 
   @classmethod
   def get_by_auth_token(cls, user_id, token, subject='auth'):
