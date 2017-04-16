@@ -27,7 +27,7 @@ Quiz Results
 {% if not result %}
   <div class="row">
     <div class="col-lg-8">
-      <h2 class="page-header">Take a Quiz</h2>
+      <h2 class="page-header">Test My Quiz</h2>
     </div>
   </div>
 {% else %}
@@ -140,18 +140,28 @@ Quiz Results
           </tr>
         </table>
       {% endif %}
+
+        <!--
+        |  Invalid Answer Alert
+        |   Activated by Submit Button
+        -->
+        <div style="visibility:hidden; width:100%; border-radius:0px;" class="alert alert-danger fade in invalidansweralert">
+            <i class="fa fa-fw fa-exclamation-triangle"></i>&nbsp;&nbsp;
+            <strong>Error!</strong>&nbsp;&nbsp;There are invlid characters in an answer field.
+        </div>
+
       <form action="/quiz" method="POST">
         <table id="quizoutputtable">
-            {% for problem in problems reversed%}
-              <tr id={{forloop.counter}}>
-                <td class="num2">{{ forloop.counter }}.</td>
-                <td class="prob"><h3>{{ problem.content }}</h3></td>
-                <td class="ans">
-                  <input id="answer{{forloop.counter}}" tabindex="{{forloop.counter}}" type="text" name="{{ forloop.counter }}">
-                <td>
-              </tr>
+          {% for problem in problems reversed%}
+            <tr id={{forloop.counter}}>
+              <td class="num2">{{ forloop.counter }}.</td>
+              <td class="prob"><h3>{{ problem.content }}</h3></td>
+              <td class="ans">
+                <input class="answerbox" autocomplete="off" id="answer{{forloop.counter}}" tabindex="{{forloop.counter}}" type="text" name="{{ forloop.counter }}">
+              <td>
+            </tr>
             <script>
-              quizselected = ("{{ forloop.counter }}" > 0)
+              quizselected = ("{{ forloop.counter }}" > 0);
               $("#answer{{forloop.counter}}").focus(function(){
                 $("#{{forloop.counter}}").addClass('inputbg');
               });
@@ -161,17 +171,17 @@ Quiz Results
             </script>
           {% endfor %}
         </table>
-        <button
-          style="width:25%;float:right; display:none; margin:5%"
-          id ="submit"
-          class="lgbtn btn btn-info"
-          type="submit">Save</button>
+        <div style="text-align:right">
+          <button
+            style="width:25%;display:none; margin:5%"
+            id ="submit"
+            class="lgbtn btn btn-info"
+            type="submit">Save
+          </button>
+        </div>
       </form>
     </div>
   </div>
-  <br>
-  <br>
-  <br>
 
 {% endif %}
 
@@ -179,13 +189,58 @@ Quiz Results
 
 <script>
 
-  var quizselected;
   {% if user.isTeacher %}
     document.getElementById("quizzes").className += "active";
   {% endif %}
-  if(quizselected){
-    $('#submit').css('display', 'inline');
+
+  /* django defined:*/
+  var quizselected;
+  if(quizselected){ $('#submit').css('display', 'inline');}
+
+  var fieldalert= document.getElementById('fieldalert');
+  var savebtn = document.getElementById("submit");
+
+
+
+
+/*******************************************************************************
+* Invalid Solution Color Box
+* --------------------------
+* - Textboxes are all filled in
+* - Yes, more js by J.S.
+**********/
+
+var isBad = false;
+
+$(".answerbox").keyup(function(){if(! isBad) colorbox(this)});
+
+function colorbox(answerbox){
+  isBad = (/[{}#$%!&@`~,<>;':"\\|\[\]\_?]/.test(answerbox.value));
+  if (isBad){
+    answerbox.style.background = "#f2dede";
+    $(answerbox).css("box-shadow","0 0 2px 0 #ebccd1");
+    $(answerbox).css("border","1px solid #a94442");
+    $(answerbox).css("color","#a94442");
+    $(answerbox).css("font-weight","bold");
+    $(".invalidansweralert").css("visibility","visible");
+    $(savebtn).removeClass("btn-info");
+    $(savebtn).addClass("btn-danger");
+    $(savebtn).css("font-weight","normal");
+    setTimeout(function(){colorbox(answerbox)}, 250);
+  } else{
+    $(answerbox).css("box-shadow","none");
+    $(answerbox).css("border","1px solid #CCC");
+    $(answerbox).css("color","#000");
+    $(answerbox).css("font-weight","normal");
+    $(".invalidansweralert").css("visibility","hidden");
+    answerbox.style.background = "#fff";
+    $(savebtn).removeClass("btn-danger");
+    $(savebtn).addClass("btn-info");
   }
+  savebtn.disabled = isBad;
+}
+
+
 
 </script>
 

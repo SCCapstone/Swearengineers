@@ -25,6 +25,11 @@ input[type=text].inproblem {
   background-color:#fff;
 }
 
+select.inproblem{
+  background: url(/img/selectArrow2.png) no-repeat right #fff;
+  background-size: 30px 60%;
+}
+
 table.inproblem{
   width:100%;
 }
@@ -48,8 +53,7 @@ td.in{
   display:block;
   height: 200px;
   width: 100%;
-  padding-top: 30px;
-  text-align:center;
+  padding: 30px;
 }
 
 ul.mbttn {

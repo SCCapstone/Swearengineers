@@ -55,5 +55,10 @@ def create_problem(self, Problem, user_key, Author, Quiz):
     quiz.hard.append(problem)
 
   quiz.put()
+  template_values = {
+    'success':1,
+    'problem_tags': problem.tags,
+    'problem_difficulty': problem.difficulty,
+   }
+  self.render_template('instructor/inProblem.html', template_values)
 
-  self.render_template('instructor/inProblem.html',{'success': '1'})

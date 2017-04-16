@@ -251,13 +251,24 @@ ul.alert-dropdown {
 
 /* The MathQuizzes brand at the top left of each page */
 
-.navbar-inverse .navbar-brand .logo2 {
-  color: #53A3CD;
+.navbar-inverse .navbar-brand{
+/*  color: #FFF;*/
+  color:#EDEDED;
 }
+.navbar-inverse .navbar-brand:hover{
+  text-shadow: 0 0 10px #bababa;
+}
+.navbar-inverse .navbar-brand .logo2 {
+/*  color: #53A3CD;*/
+  color:#5bc0de;
+}
+
+/*
 .navbar-inverse .navbar-brand:hover span,
 .navbar-inverse .navbar-brand:focus span{
  color: #99D2F0;
 }
+*/
 
 .page-header {
   margin-top:20px;
@@ -525,8 +536,10 @@ select:-moz-focusring {
 }
 #quizoutputtable .inputbg input{
   background-color:#fff;
+  /*
   border:1px solid #5bc0de;
   box-shadow:0 0 2px 0 #5bc0de;
+  */
 }
 #quizoutputtable .inputbg .num{
   border-left:5px solid #5bc0de;
