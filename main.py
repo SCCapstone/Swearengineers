@@ -85,6 +85,7 @@ class Course(ndb.Model):
   date = ndb.DateTimeProperty(auto_now_add=True)
   numberOfStudents = ndb.IntegerProperty(default=0)
   numberOfQuizzes = ndb.IntegerProperty(default=0)
+  nextQuizNum = ndb.IntegerProperty(default=1)
   numberOfAssigned = ndb.IntegerProperty(default=0)
   studentUrls = ndb.JsonProperty()
   quizUrls = ndb.JsonProperty(default=[])
@@ -407,6 +408,9 @@ class deleteQuizHandler(BaseHandler):
   @instructor_required
   def post(self):
     course=ndb.Key(urlsafe=self.user.selectedCourseKey).get()
+    # We can decrament the quiz number if it's at the end of the stack
+    if course.numberOfQuizzes == (course.nextQuizNum - 1):
+      course.nextQuizNum -=1
     course.numberOfQuizzes -= 1
     k=self.request.get('k')
     quiz=ndb.Key(urlsafe=k).get()
@@ -452,10 +456,11 @@ class createQuizHandler(BaseHandler):
     quiz.author = Author(
       identity=self.user.last_name,
       email=self.user.email_address)
-    quiz.name = 'Quiz ' + str(course.numberOfQuizzes + 1)
+    quiz.name = 'Quiz ' + str(course.nextQuizNum)
     quiz.description = self.request.get('qdescription')
     quiz.put()
     course.numberOfQuizzes += 1
+    course.nextQuizNum += 1
     if not course.quizUrls:
       course.quizUrls=[]
     course.quizUrls.append([quiz.name, quiz.description, quiz.key.urlsafe()])

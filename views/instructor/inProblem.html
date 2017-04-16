@@ -27,7 +27,7 @@
       </div>
       <form action="/createQuiz" method="POST">
        <div class="modal-body">
-         <h3>Quiz {{selectedcourse.numberOfQuizzes|add:"+1"}}</h3>
+         <h3>Quiz {{selectedcourse.nextQuizNum}}</h3>
          <br>
          <input type="text" name="qdescription" id="quizdescription" class="form-control" placeholder="Enter a Quiz Description">
        </div>
@@ -187,7 +187,9 @@
               </td>
               <td width="40%">
                 {%if selectedcourse%}
-                  <button id="next" class="lgbtn btn btn-info" data-target="#newquiz"
+                  <button id="next"
+                      {% if not selectedquiz %}disabled{% endif %}
+                    class="lgbtn btn btn-info" data-target="#newquiz"
                     type="submit">Save
                   </button>
                 {%endif%}
@@ -222,6 +224,17 @@
           {% include "selectquizform.html" %}
         {% endwith %}
       </div>
+  {% else %}
+    <!--
+    |  Null Field Alert
+    |   Activated by Submit Button
+    -->
+    <div id="fieldalert" style="margin-top:20px" class="alert alert-danger fade in">
+        <i class="fa fa-fw fa-arrow-circle-left fa-2x"></i>&nbsp;&nbsp;
+        <p style="display:inline;position:relative; bottom:5px"><strong>This Course has No Quizzes!</strong></p>
+        <p style="position:relative; bottom:5px; left:50px;">Please create a quiz to continue.</p>
+    </div>
+  </div>
   {% endif %}
   {% if problems %}
       <div id="scrolling">
@@ -245,9 +258,11 @@
         </table>
       </div>
   {% else %}
-    </div>
-    <hr>
-    <p style="text-align:center; font-style:italic">Your saved problems for this quiz will be displayed here.</p>
+    {% if selectedquiz %}
+      </div>
+      <hr>
+      <p style="text-align:center; font-style:italic">Your saved problems for this quiz will be displayed here.</p>
+    {% endif %}
   {% endif %}
 
 </div>
