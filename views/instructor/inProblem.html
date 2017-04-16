@@ -1,0 +1,430 @@
+
+{% extends "inTemplate.html" %}
+
+{% block header %}
+  <link href="../bootstrap/css/inProblem.css" rel="stylesheet" >
+  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML-full"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]], processEscapes: true}
+    });
+  </script>
+{% endblock %}
+
+{% block maincontent %}
+
+
+<!--
+| New Quiz Modal
+|   Activated from Settings Menu
+-->
+<div class="modal fade" id="newquiz" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">New Quiz</h4>
+      </div>
+      <form action="/createQuiz" method="POST">
+       <div class="modal-body">
+         <h3>Quiz {{selectedcourse.numberOfQuizzes|add:"+1"}}</h3>
+         <br>
+         <input type="text" name="qdescription" id="quizdescription" class="form-control" placeholder="Enter a Quiz Description">
+       </div>
+       <div class="modal-footer">
+         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+         <button id="addquizbtn" type="submit" class="btn btn-info">Submit</button>
+       </div>
+     </form>
+    </div>
+  </div>
+</div>
+
+
+<div class="row">
+<div class="col-lg-7">
+  <div class="row">
+    <div class="col-lg-3"><h2 class="page-header">Problems</h2></div>
+    <div class="col-lg-6">
+      <!--
+      |  Successful Submission Alert
+      |   Activated by Page Load
+      -->
+      <div id="successalert" style="visibility:hidden; margin-top:20px" class="alert alert-success fade in">
+          <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+          <strong>Success!</strong> &nbsp;&nbsp; The last problem was succesfully saved!
+      </div>
+
+      <!--
+      |  Null Field Alert
+      |   Activated by Submit Button
+      -->
+      <div id="fieldalert" style="display:none; margin-top:20px" class="alert alert-danger fade in">
+          <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+          <strong>Error!</strong>&nbsp;&nbsp;Please fill in all the fields
+      </div>
+    </div>
+
+    {%if selectedcourse%}
+      <div class="col-lg-3">
+        <button id="newquizbtn"
+          class="btn btn-info lgbtn"
+          style="width:100%; margin-top:20px"
+          data-target="#newquiz"
+          type="button" data-toggle="modal">New Quiz
+        </button>
+      </div>
+    {%endif%}
+  </div>
+
+
+
+
+
+
+
+
+
+  <div class="row">
+    <div class="col-lg-12">
+                                                              <!-- Math Display-->
+      <h2 id="display"></h2>
+
+                                                              <!-- Math Buttons-->
+      <ul class="mbttn">
+        <li onclick="addLaTex('$\\frac{x}{y}$ ')">
+          <script type="math/tex">\frac{x}{y}</script>
+        </li>
+        <li onclick="addLaTex('$x\\cdot y$ ')">
+          <script type="math/tex">x\cdot y</script>
+        </li>
+        <li onclick="addLaTex('$x^{xy}$ ')">
+          <script type="math/tex">x^{xy}</script>
+        </li>
+        <li onclick="addLaTex('$\\sqrt{x}$ ')">
+          <script type="math/tex">\sqrt{x}</script>
+        </li>
+        <li onclick="addLaTex('$\\sqrt[3]{x}$ ')">
+          <script type="math/tex">\sqrt[3]{x}</script>
+        </li>
+        <li onclick="addLaTex('$|x|$ ')">
+          <script type="math/tex">|x|</script>
+        </li>
+        <li onclick="addLaTex('$\\alpha$ ')">
+          <script type="math/tex">\alpha</script>
+        </li>
+        <li onclick="addLaTex('$\\beta$ ')">
+          <script type="math/tex">\beta</script>
+        </li>
+        <li onclick="addLaTex('$\\Delta$ ')">
+          <script type="math/tex">\Delta</script>
+        </li>
+        <li onclick="addLaTex('$\\Omega$ ')">
+          <script type="math/tex">\Omega</script>
+        </li>
+        <li onclick="addLaTex('$\\ge$ ')">
+          <script type="math/tex">\ge</script>
+        </li>
+        <li onclick="addLaTex('$\\ne$ ')">
+          <script type="math/tex">\ne</script>
+        </li>
+        <li onclick="addLaTex('$\\infty$ ')">
+          <script type="math/tex">\infty</script>
+        </li>
+        <li onclick="addLaTex('$\\sum_{i=0}^n$ ')">
+          <script type="math/tex">\sum_{i=0}^n</script>
+        </li>
+      </ul>
+
+
+
+                                                                <!-- Input Form-->
+      <div class="inputArea">
+        <form action="/instructor/inProblem" method="POST" onsubmit="return checkfields();">
+          <p class="emc2">
+            Use <span style="font-size:large">\$</span> symblols to add
+            <script type="math/tex">\ \rm\LaTeX</script>
+             as in \$E=mc^2$
+          </p>
+          <table class="inproblem">
+            <tr>
+              <td class="in">
+                <label class="inproblem" for="data">Problem:</label>
+              </td>
+              <td colspan="2">
+                <input class="inproblem" type="text" id="textbox" name="problem" value="{{ problem_content }}">
+              </td>
+            </tr>
+            <tr>
+              <td class="in">
+                <label class="inproblem" for="data">Answer:</label>
+              </td>
+              <td colspan="2">
+                <input class="inproblem" type="text" id="answerbox" name="answer" value="{{ problem_answer }}">
+              </td>
+            </tr>
+            <tr>
+              <td class="in">
+                <label class="inproblem" for="data">Keywords:</label>
+              </td>
+              <td colspan="2">
+                <input class="inproblem" type="text" id="tagbox" name="tags" value="{{ problem_tags }}">
+              </td>
+            </tr>
+            <tr>
+              <td class="in">
+                <label class="inproblem" for="data">Difficulty:&nbsp;&nbsp;&nbsp;</label>
+              </td>
+              <td style="padding-right:10%">
+                <select id="diffselect" onchange="diff()" name="difficulty" class="inproblem" style="width:70%">
+                  <option class="inproblem" value="Easy" selected> Easy</option>
+                  <option class="inproblem" value="Medium"> Medium</option>
+                  <option class="inproblem" value="Hard"> Hard</option>
+                </select>
+                &nbsp;
+                &nbsp;
+                <i id="circle" class="fa fa-fw fa-circle" style="width:10%;color:#62ae43"></i>
+              </td>
+              <td width="40%">
+                {%if selectedcourse%}
+                  <button id="next" class="lgbtn btn btn-info" data-target="#newquiz"
+                    type="submit">Save
+                  </button>
+                {%endif%}
+              </td>
+            </tr>
+          </table>
+          <input class="inproblem" type="hidden" id="keybox" name="problem_key" value="{{ problem_key.urlsafe }}">
+        </form>
+      </div> <!--end input-->
+    </div><!-- end col 12-->
+  </div><!-- end row -->
+
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+
+
+
+</div><!--end col 7 -->
+
+
+
+
+<div class="col-lg-4" style="height:100vh">
+
+  {% if selectedquiz %}
+    <div class="problemlist">
+      <div class="inproblem">
+        {% with 1 as blue %}
+          {% include "selectquizform.html" %}
+        {% endwith %}
+      </div>
+  {% endif %}
+  {% if problems %}
+      <div id="scrolling">
+        <table class="problemlist">
+          {%for p in problems reversed%}
+            <tr data-toggle="tooltip" title="Click to Edit"
+              {%if problem_key.urlsafe == p.url %} class="editprob"{%else%}class="resulttr"{%endif%}
+              style="cursor:pointer">
+              <td class="pnumber {{p.difficulty}}"
+                onclick="document.location='inProblem?p={{ p.url }}';">
+                <div>{{forloop.counter}}.</div></td>
+              <td class="aproblem"
+                onclick="document.location='inProblem?p={{ p.url }}';">
+                <div class="aproblem">{{p.content}}</div></td>
+              <td title="Delete" class="delete"
+                onclick="document.location='/deleteProblem?p={{ p.url }}';">
+                <i class="delete fa fa-fw fa-times-circle fa-2x"></i>&nbsp;&nbsp;
+              </td>
+            </tr>
+          {%endfor%}
+        </table>
+      </div>
+  {% else %}
+    </div>
+    <hr>
+    <p style="text-align:center; font-style:italic">Your saved problems for this quiz will be displayed here.</p>
+  {% endif %}
+
+</div>
+
+</div> <!-- end row -->
+
+
+
+
+<script>
+/*******************************************************************************
+* Variables set to match ids of elements:
+*
+**********/
+var textbox = document.getElementById("textbox");
+var display = document.getElementById("display");
+var answerbox = document.getElementById("answerbox");
+var tagbox = document.getElementById("tagbox");
+/* var hidden= document.getElementById('hidden'); */
+var fieldalert= document.getElementById('fieldalert');
+var successalert= document.getElementById('successalert');
+var old;
+var displayRefreshRate;
+
+
+
+
+/*******************************************************************************
+* Page Load
+* ---------
+*  - Focus the textbox
+*  - Then, scroll back to the top
+*  - Django success allows the alert to display
+*  - Mathjax buttons show up later to avoid jittery behaivior
+*
+**********/
+window.onload = function(){
+  document.getElementById("problem").className += "active";
+  textbox.focus();
+  window.scrollTo(0,0);
+  if( "{{ success }}" ) {
+    successalert.style.visibility="visible";
+    setTimeout(function(){successalert.style.visibility="hidden";}, 3000);
+  }
+
+  $('#newquizbtn').css('display', 'inline');
+
+  setTimeout(function(){
+    $("ul.mbttn li").css("color", "#f2f2f2");
+  }, 400);
+  displayRefreshRate = setInterval(match, 800);
+
+}
+
+
+
+function diff(){
+  var circle = document.getElementById("circle");
+  var diff = document.getElementById("diffselect").value;
+  if(diff == "Easy")
+    circle.style.color = "#62ae43";
+  if(diff == "Medium")
+    circle.style.color = "orange";
+  if(diff == "Hard")
+    circle.style.color = "red";
+}
+
+
+
+/*******************************************************************************
+* Add Quiz Function
+* -----------------
+* - Adds the option to the selection box
+*
+**********/
+$('#addquizbtn').click(function(){
+  var q = 'Quiz {{selectedcourse.numberOfQuizzes|add:"+1"}}';
+  var s= document.getElementById('selectid');
+  s.options[0]= new Option(q, q);
+  s.value=q;
+  hidden.value=q;
+});
+
+
+/*******************************************************************************
+* Display Function
+* ----------------
+* - Make the math display match the textbox
+* - A timeout where the text is invisible allows the mathjax to render
+*
+**********/
+function match() {
+  if( old != textbox.value ){
+    clearInterval(displayRefreshRate);
+    display.style.color = "white";
+    display.innerHTML = textbox.value;
+    MathJax.Hub.Queue(["Typeset",MathJax.Hub,display]);
+    old = this.textbox.value;
+    setTimeout(
+      function visible(){ display.style.color = "black";}, 300
+    );
+    displayRefreshRate = setInterval(match, 100);
+  }
+}
+
+
+
+
+/*******************************************************************************
+* LaTeX Button Function
+* ---------------------
+* - Put the Latex in the textbox
+* - Re-focus the textbox
+*
+**********/
+function addLaTex(latex){
+  textbox.value=textbox.value.concat(latex);
+  textbox.focus();
+}
+
+
+
+
+/*******************************************************************************
+* Check Fields
+* ------------
+* - Textboxes are all filled in
+**********/
+function checkfields(){
+  if(    textbox.value   == ''
+      || answerbox.value == ''
+      || tagbox.value    == ''
+    ){
+    window.scrollTo(0,0);
+    successalert.style.display="none";
+    fieldalert.style.display="block";
+    fieldalert.style.visibility="visible";
+    setTimeout(function(){
+      fieldalert.style.visibility="hidden";
+      fieldalert.style.display="none";
+      successalert.style.display="block";
+    }, 3000);
+    return false;
+  }
+  else return true;
+}
+
+
+
+/*******************************************************************************
+* Offline Functions:
+* -----------------
+* Only used to test js while server is not running
+* 1.)  Clear the textbox
+*      - called by <enter>, next, or prev buttons
+*
+* 2.)  <Enter> key event listener
+*
+**********/
+function nextFun() {
+  textbox.value = "";
+}
+textbox.addEventListener("keyup",
+  function(event) {
+    event.preventDefault();
+    if (event.keyCode == 13) {
+        document.getElementById("next").click();
+    }
+});
+
+
+
+
+</script>
+
+{% endblock %}
+
+
+
+

@@ -116,33 +116,30 @@
           &nbsp;&nbsp;&nbsp;&nbsp;Take a Quiz
         </a>
       </li>
-      <li id="problem">
-        <a class="menu" href="/inProblem"><i class="fa fa-fw fa-graduation-cap"></i>
-          &nbsp;&nbsp;&nbsp;&nbsp;Create Problems
-        </a>
-      <li id="courses">
-        <a class="menu" href="/inCreateCourse"><i class="fa fa-fw fa-graduation-cap"></i>
-          &nbsp;&nbsp;&nbsp;&nbsp;Create Course
+      <li>
+        <a href="javascript:;" data-toggle="collapse" data-target="#demo"><i class="fa fa-fw fa-gavel"></i> &nbsp;&nbsp;&nbsp;&nbsp;Create <i class="fa fa-fw fa-caret-down"></i></a>
+          <ul id="demo" class="collapse">
+            <li>
+              <a href="/inProblem"><i class="fa fa-fw fa-graduation-cap"></i>
+                &nbsp;&nbsp;&nbsp;&nbsp;Create Problem
+              </a>
+            </li>
+            <li>
+              <a href="/inProblem"><i class="fa fa-fw fa-graduation-cap"></i>
+                &nbsp;&nbsp;&nbsp;&nbsp;Create Quiz
+              </a>
+            </li>
+            <li>
+              <a href="/inCreateClass"><i class="fa fa-fw fa-graduation-cap"></i>
+                &nbsp;&nbsp;&nbsp;&nbsp;Create Class
+              </a>
+            </li>
+          </ul>
         </a>
       </li>
       <li id="myproblems">
-        <a class="menu" id="search" href="/inMyProblems"><i class="fa fa-fw fa-search"></i>
+        <a class="menu" href="/inMyProblems"><i class="fa fa-fw fa-search"></i>
           &nbsp;&nbsp;&nbsp;&nbsp;My Problems
-        </a>
-      </li>
-      <li id="myquizzes">
-        <a class="menu" id="search" href="/inMyQuizzes"><i class="fa fa-fw fa-book"></i>
-          &nbsp;&nbsp;&nbsp;&nbsp;My Quizzes
-        </a>
-      </li>
-      <li id="mycourses">
-        <a class="menu" id="search" href="/inMyCourses"><i class="fa fa-fw fa-book"></i>
-          &nbsp;&nbsp;&nbsp;&nbsp;My Courses
-        </a>
-      </li>
-      <li id="help">
-        <a class="menu" id="search" href="/inHelp"><i class="fa fa-fw fa-question-circle"></i>
-          &nbsp;&nbsp;&nbsp;&nbsp;Help Topics
         </a>
       </li>
     </ul>
@@ -176,9 +173,8 @@
             <input type="password" name="confirmpassword" id="confirmpassword" tabindex="2" class="form-control" placeholder="Retype Your New Password">
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Coming Soon!</button>
-            <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> -->
-            <!--<button type="button" class="bluebtn btn btn-primary" data-dismiss="modal">Save</button> -->
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button" class="bluebtn btn btn-primary" data-dismiss="modal">Save</button>
           </div>
         </div>
       </div>
@@ -188,7 +184,7 @@
 
     <!--
     | Page-Header:
-    |   Located on the top-left of each page.
+    |   Located on the top-right of each page.
     -->
     <div class="row">
      <div class="col-lg-12">
@@ -199,6 +195,30 @@
     </div>
 
 
+    <!--
+    | Select Course Dropdown:
+    |   To be added when option becomes availible
+    -->
+    <!--
+      <div class="row">
+        <div class="col-lg-4">
+          <form role="form">
+            <div class="form-group">
+              <label>Course</label>
+              <select class="form-control">
+                <option selected>Choose a Course</option>
+
+                {% for course in courses %}
+                  <option>{{ course.content }}</option>
+                {% endfor %}
+
+              </select>
+            </div>
+          </form>
+        </div>
+      </div>
+    -->
+
 
 
     <!--
@@ -207,31 +227,54 @@
     |   Selecting a different quiz POSTs a query to the server
     |   or limits an existing query based on the page-source
     -->
-    <div id="quizform" class="row" style="padding:0;margin:0;width:100%">
+    <div class="row" style="padding:0;margin:0;width:100%">
       <div class="col-lg-4" style="padding:0;margin:0;width:100%">
-       <form style="width:100%; padding:0;margin:0" role="form">
+       <form style="width:100%; padding:0;margin:0" role="form" >
          <div class="form-group">
-           <label style="float:left; margin-top:8px; margin-right:15px">Quiz:</label>
-           <select style="float:left; width:70%; margin-top:2px" onchange="dropdown()" id="selectid" style="width:100%"
+           <select style="float:left; width:75%; margin-top:2px" onchange="dropdown()" id="selectid" style="width:100%"
                    class="form-control">
-                   {% if selectdefault == '' or selectdefault == None %}
-                     <option disabled selected hidden>Click Here to Select a Quiz</option>
-                   {% else %}
-                     <option>{{ selectdefault }}</option>
-                   {% endif %}
+               <option id="selectdefault">Click Here to Select a Quiz</option>
+               <option value="quiz one">quiz one</option>
+
                {% for quiz in quizzes %}
-                 {% if quiz.name != selectdefault %}
-                   <option value="{{ quiz.name }}">{{ quiz.name }}</option>
-                 {% endif %}
+                 <option value="{{ quiz.content }}">{{ quiz.content }}</option>
                {% endfor %}
+
            </select>
-            <button id="newquizbtn" style="display: none; float:right; width:20%" class="bluebtn btn btn-primary" data-target="#newquiz"
-              type="button" data-toggle="modal">Create Quiz
-            </button>
+           <button id="newquizbtn" style="display: none; float:right; width:20%" class="bluebtn btn btn-primary" data-target="#newquiz"
+             type="button" data-toggle="modal">Create Quiz
+           </button>
          </div>
        </form>
       </div>
     </div>
+    <br>
+
+
+
+    <!--
+    | New Quiz Modal
+    |   Activated from Settings Menu
+    -->
+    <div class="modal fade" id="newquiz" role="dialog">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">New Quiz</h4>
+          </div>
+          <div class="modal-body">
+            <input type="text" name="newquiz" id="quizname" class="form-control" placeholder="Enter a Unique Quiz Name">
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+              <button id="addquizbtn" type="button" class="bluebtn btn btn-primary" data-dismiss="modal">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
 
     <!--
     | Main content:
@@ -289,6 +332,16 @@
   })
 
 
+/*******************************************************************************
+* Remove Active Class
+* -------------------
+* - Faster Menu Response, doesn't hang while page loads
+*
+**********/
+  $('.menu').click(function() {
+    a.classList.remove("active");
+  });
+
 
 /*******************************************************************************
 * Close dropdown
@@ -329,8 +382,6 @@
          }
        }
    });
-
-
 </script>
 
 </body>

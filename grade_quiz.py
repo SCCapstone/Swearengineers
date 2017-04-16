@@ -13,7 +13,8 @@ from sympy.parsing.sympy_parser import standard_transformations,\
 def grade_quiz(self, user_key, Author, Problem, Quiz, Result):
 
   posted=self.request.POST.items()
-  course = ndb.Key(urlsafe=self.user.selectedCourseKey).get()
+  courseUrl=self.user.selectedCourseKey
+  course = ndb.Key(urlsafe=courseUrl).get()
   quiz=ndb.Key(urlsafe=course.selectedQuizKey).get()
   transformations = (standard_transformations +
     (implicit_multiplication_application,))
@@ -61,6 +62,7 @@ def grade_quiz(self, user_key, Author, Problem, Quiz, Result):
   result.record = record
   result.quizName = quiz.name
   result.quizUrl = quiz.key.urlsafe()
+  result.courseUrl=courseUrl
 
   quiz.numberCompleted += 1
   quiz.results.append(result)
