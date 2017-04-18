@@ -52,6 +52,7 @@ def grade_quiz(self, user_key, Author, Problem, Quiz, Result):
   grade=100.0*good/len(problems)
   stringgrade=str(round(grade,1))+"%"
   record = zip(reversed(problems), reversed(solutions), answers, grades)
+  dateHolder = datetime.datetime.now()
 
   result = Result(parent=quiz.key)
   result.student = Author( identity=self.user.name, email=self.user.email_address)
@@ -61,6 +62,7 @@ def grade_quiz(self, user_key, Author, Problem, Quiz, Result):
   result.record = record
   result.quizName = quiz.name
   result.quizUrl = quiz.key.urlsafe()
+  result.date = dateHolder
 
   quiz.numberCompleted += 1
   quiz.results.append(result)
