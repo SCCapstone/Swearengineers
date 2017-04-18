@@ -25,6 +25,11 @@ input[type=text].inproblem {
   background-color:#fff;
 }
 
+select.inproblem{
+  background: url(/img/selectArrow2.png) no-repeat right #fff;
+  background-size: 30px 60%;
+}
+
 table.inproblem{
   width:100%;
 }
@@ -48,8 +53,7 @@ td.in{
   display:block;
   height: 200px;
   width: 100%;
-  padding-top: 30px;
-  text-align:center;
+  padding: 30px;
 }
 
 ul.mbttn {
@@ -101,12 +105,13 @@ div.problemlist{
   border:1px solid #CCC;
   overflow:hidden;
   box-shadow: 0 0 2px 2px #CCC;
-  width:500px;
+  width:450px;
 }
 table.problemlist {
   margin: 0;
   padding: 0;
   border-bottom:1px solid #CCC;
+  background:#fff;
 }
 table.problemlist tr{
   cursor: pointer;
@@ -124,7 +129,7 @@ table.problemlist tr:hover {
 }
 div.aproblem{
   width:100%;
-  max-width:360px;
+  max-width:310px;
   display:block;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -153,10 +158,10 @@ td.pnumber.Hard{
 }
 i.delete{
   padding-top:15px;
-  color:#CCC;
+  color: #ebccd1;
 }
 i.delete:hover{
-  color:red;
+  color: #a94442;
 }
 .editprob{
   background: #d9edf7;

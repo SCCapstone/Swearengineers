@@ -4,6 +4,16 @@ from basehandler import *
 import re
 TEACHER_AUTH_CODE = "teacher1"
 
+
+def signupError(self, error):
+  vals={'error':error}
+  vals.update(self.request.POST.items())
+  self.render_template('public/signup.html', vals)
+
+
+
+
+
 ################################################################################
 # Class:  Signup
 #   - Creates new user
@@ -34,24 +44,21 @@ class SignupHandler(BaseHandler):
     if teacherRequest:
        teachercode = self.request.get('teachercode')
        if teachercode != TEACHER_AUTH_CODE:
-         self.display_message('You are NOT a teacher!')
+         signupError(self,'Authorization Error!')
          return
-       else:
-         teacherbool = True
+       teacherbool = True
 
     if len(password) < 6:
-      self.display_message('Password Length must be at least 6 \
-        characters')
+      signupError(self, 'Password length must be at least 6 characters.')
       return
 
     if len(password) >= 12:
-      self.display_message('Password Length cannot be more than \
-        12 characters')
+      signupError(self, 'Password length cannot be more than 12 characters.')
       return
 
     if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-        self.display_message('Email is not a valid email format')
-        return
+      signupError(self, 'Email is not a valid email format')
+      return
 
 
     unique_properties = ['email_address']
@@ -67,8 +74,7 @@ class SignupHandler(BaseHandler):
     )
 
     if not user_data[0]: #user_data is a tuple
-      self.display_message('Unable to create user for email %s because of \
-        duplicate keys %s' % (user_name, user_data[1]))
+      signupError(self, 'Email associated with another account.')
       return
 
     user = user_data[1]

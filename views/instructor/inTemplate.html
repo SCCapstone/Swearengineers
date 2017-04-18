@@ -154,7 +154,7 @@
       </li>
       <li id="quizzes">
         <a class="menu" href="../quiz"><i class="fa fa-fw fa-pencil"></i>
-          &nbsp;&nbsp;&nbsp;&nbsp;Take a Quiz
+          &nbsp;&nbsp;&nbsp;&nbsp;Test My Quiz
         </a>
       </li>
       <!--
@@ -264,48 +264,6 @@
     $('#newpassword').val("");
     $('#confirmpassword').val("");
   })
-
-
-
-/*******************************************************************************
-* Close dropdown
-* --------------
-* - These functions close the dropdown if another link is hovered
-* - Avoids need to double click
-* - Will come up with something more concise later
-*
-**********/
-  var open = false;
-
-  $('.menu').hover(function() {
-    if (open){
-      $('#selectid').css('display', 'none');
-      setTimeout(function() {
-        $("#selectid").css("display", "inline");
-      }, 1);
-      open = !open;
-    }
-  });
-
-   // on each click toggle the "open" variable
-   $("#selectid").on("click", function() {
-         open = !open;
-   });
-
-   // on each blur toggle the "open" variable
-   $("#selectid").on("blur", function() {
-         if(open){
-            open = !open;
-         }
-   });
-   // if escape is pressed
-   $(document).keyup(function(e) {
-       if (e.keyCode == 27) {
-         if(open){
-            open = !open;
-         }
-       }
-   });
 
 
 </script>

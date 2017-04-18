@@ -13,7 +13,8 @@ from sympy.parsing.sympy_parser import standard_transformations,\
 def grade_quiz(self, user_key, Author, Problem, Quiz, Result):
 
   posted=self.request.POST.items()
-  course = ndb.Key(urlsafe=self.user.selectedCourseKey).get()
+  courseUrl=self.user.selectedCourseKey
+  course = ndb.Key(urlsafe=courseUrl).get()
   quiz=ndb.Key(urlsafe=course.selectedQuizKey).get()
   transformations = (standard_transformations +
     (implicit_multiplication_application,))
@@ -41,12 +42,15 @@ def grade_quiz(self, user_key, Author, Problem, Quiz, Result):
   for s, a in zip(reversed(solutions),answers):
     a=a.lower()
     s=s.lower()
-    eq1 = parse_expr(a, transformations=transformations)
-    eq2 = parse_expr(s, transformations=transformations)
-    if eq1.equals(eq2):
-      good += 1
-      grades.append(1)
-    else:
+    try:
+      eq1 = parse_expr(a, transformations=transformations)
+      eq2 = parse_expr(s, transformations=transformations)
+      if eq1.equals(eq2):
+        good += 1
+        grades.append(1)
+      else:
+        grades.append(0)
+    except:
       grades.append(0)
 
   grade=100.0*good/len(problems)

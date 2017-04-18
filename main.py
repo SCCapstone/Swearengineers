@@ -58,6 +58,7 @@ class Result(ndb.Model):
   studentUrl = ndb.StringProperty()
   quizName = ndb.StringProperty()
   quizUrl = ndb.StringProperty()
+  courseUrl = ndb.StringProperty()
   url = ndb.StringProperty()
   floatGrade = ndb.FloatProperty(indexed=False)
   stringGrade = ndb.StringProperty(indexed=False)
@@ -84,6 +85,7 @@ class Course(ndb.Model):
   date = ndb.DateTimeProperty(auto_now_add=True)
   numberOfStudents = ndb.IntegerProperty(default=0)
   numberOfQuizzes = ndb.IntegerProperty(default=0)
+  nextQuizNum = ndb.IntegerProperty(default=1)
   numberOfAssigned = ndb.IntegerProperty(default=0)
   studentUrls = ndb.JsonProperty()
   quizUrls = ndb.JsonProperty(default=[])
@@ -256,9 +258,17 @@ class MainHandler(BaseHandler, webapp2.RequestHandler):
         return
       self.render_template('instructor/inHome.html')
     else:
-      s = self.user.key.urlsafe()
-      r = Result.query().filter(Result.studentUrl == s).fetch()
-      self.render_template('home.html', {'grades': r})
+      if hasattr(self.user,'selectedCourseKey'):
+        r=[]
+        courseUrl = self.user.selectedCourseKey
+        s = self.user.key.urlsafe()
+        allr = Result.query().filter(Result.studentUrl == s).fetch()
+        for result in allr:
+          if result.courseUrl==courseUrl:
+            r.append(result)
+        self.render_template('home.html', {'grades': r})
+      else:
+        self.render_template('home.html')
 
 
 
@@ -406,6 +416,9 @@ class deleteQuizHandler(BaseHandler):
   @instructor_required
   def post(self):
     course=ndb.Key(urlsafe=self.user.selectedCourseKey).get()
+    # We can decrament the quiz number if it's at the end of the stack
+    if course.numberOfQuizzes == (course.nextQuizNum - 1):
+      course.nextQuizNum -=1
     course.numberOfQuizzes -= 1
     k=self.request.get('k')
     quiz=ndb.Key(urlsafe=k).get()
@@ -451,7 +464,7 @@ class createQuizHandler(BaseHandler):
     quiz.author = Author(
       identity=self.user.last_name,
       email=self.user.email_address)
-    quiz.name = 'Quiz ' + str(course.numberOfQuizzes + 1)
+    quiz.name = 'Quiz ' + str(course.nextQuizNum)
     quiz.description = self.request.get('qdescription')
     #utc = pytz.timezone('UTC')
     #aware_date = utc.localize(datetime.datetime.now())
@@ -464,6 +477,7 @@ class createQuizHandler(BaseHandler):
     #quiz.date = eastern_date
     quiz.put()
     course.numberOfQuizzes += 1
+    course.nextQuizNum += 1
     if not course.quizUrls:
       course.quizUrls=[]
     course.quizUrls.append([quiz.name, quiz.description, quiz.key.urlsafe()])
@@ -550,12 +564,27 @@ class RemoveOneStudentHandler(BaseHandler):
   @instructor_required
   def get(self):
     url=self.request.get('s')
+    k=self.user.selectedCourseKey
     course=ndb.Key(urlsafe=self.user.selectedCourseKey).get()
     course.studentUrls.remove(url)
     course.numberOfStudents -= 1
     course.put()
     removed = ndb.Key(urlsafe=url).get()
     removed = removed.name + " " + removed.last_name
+
+    student=ndb.Key(urlsafe=url).get()
+    for key in student.myCourseKeys:
+      if key == k:
+        student.myCourseKeys.remove(key)
+
+    if student.selectedCourseKey==k:
+      delattr(student, "selectedCourseKey")
+
+    if hasattr(student.myCourseKeys, 'myCourseKeys[0]'):
+      student.selectedCourseKey=student.myCourseKeys[0]
+
+    student.put()
+
     self.redirect("instructor/inAddStudents?removed=" + removed)
 
 

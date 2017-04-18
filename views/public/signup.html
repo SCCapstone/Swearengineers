@@ -35,13 +35,13 @@
                 <div style="visibility:hidden; margin:15px 0;" id="fieldalert" class="alert alert-danger" role="alert">
                   <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                   <span class="sr-only">Error:</span>
-                  Please fill in all the fields!
+                  <span id="theError">Please fill in all the fields!</span>
                 </div>
                 <div class="form-group">
                   <div class="cols-sm-10">
                     <div class="input-group">
                       <span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
-                      <input type="text" name="name" id="fname" tabindex="1" class="form-control" placeholder="First Name" value="">
+                      <input type="text" name="name" value="{{name}}" id="fname" autocomplete="off" tabindex="1" class="form-control" placeholder="First Name" value="">
                     </div>
                   </div>
                 </div>
@@ -49,7 +49,7 @@
                   <div class="cols-sm-10">
                     <div class="input-group">
                       <span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
-                      <input type="text" name="lastname" id="lname" tabindex="2" class="form-control" placeholder="Last Name" value="">
+                      <input type="text" name="lastname" value="{{lastname}}" id="lname" autocomplete="off" tabindex="2" class="form-control" placeholder="Last Name" value="">
                     </div>
                   </div>
                 </div>
@@ -57,7 +57,7 @@
                   <div class="cols-sm-10">
                     <div class="input-group">
                       <span class="input-group-addon"><i class="fa fa-envelope fa" aria-hidden="true"></i></span>
-                      <input type="text" name="email" id="email" tabindex="3" class="form-control" placeholder="Email Address">
+                      <input type="text" name="email" value="{{email}}" id="email" autocomplete="off" tabindex="3" class="form-control" placeholder="Email Address">
                     </div>
                   </div>
                 </div>
@@ -65,7 +65,7 @@
                   <div class="cols-sm-10">
                     <div class="input-group">
                       <span class="input-group-addon"><i class="fa fa-users fa" aria-hidden="true"></i></span>
-                      <input type="text" name="username" id="username" tabindex="4" class="form-control" placeholder="Username" value="">
+                      <input type="text" name="username" value="{{username}}" id="username" autocomplete="off" tabindex="4" class="form-control" placeholder="Username" value="">
                     </div>
                   </div>
                 </div>
@@ -73,7 +73,7 @@
                   <div class="cols-sm-10">
                     <div class="input-group">
                       <span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
-                      <input type="password" name="password" id="password" tabindex="5" class="form-control" placeholder="Password">
+                      <input type="password" name="password" id="password" autocomplete="off" tabindex="5" class="form-control" placeholder="Password">
                     </div>
                   </div>
                 </div>
@@ -81,7 +81,7 @@
                   <div class="cols-sm-10">
                     <div class="input-group">
                       <span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
-                      <input type="password" name="confirmPassword" id="confirmPassword" tabindex="6" class="form-control" placeholder="Confirm Password">
+                      <input type="password" name="confirmPassword" id="confirmPassword" autocomplete="off" tabindex="6" class="form-control" placeholder="Confirm Password">
                     </div>
                   </div>
                 </div>
@@ -89,7 +89,7 @@
                   <div class="cols-sm-10">
                     <div class="input-group">
                       <span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
-                      <input type="password" name="teachercode" id="teachercode" tabindex="7" class="form-control" placeholder="Teacher Authentication Code" value="">
+                      <input type="password" name="teachercode" id="teachercode" autocomplete="off" tabindex="7" class="form-control" placeholder="Teacher Authentication Code" value="">
                     </div>
                   </div>
                 </div>
@@ -119,6 +119,22 @@ var code       = document.getElementById("teachercode");
 var selected   = student;
 var deselected = teacher;
 var temp;
+var errorbox;
+
+
+var error = "{{error}}"
+var errorCode = error.charAt(0);
+
+if(errorCode == 'A'){
+  student.value=true;
+  teacher.value=false;
+  errorResponse($('#teachercode'));
+}
+if(errorCode == 'E')errorResponse($('#email'));
+
+
+
+
 
 function toggle(current){
   if( current != selected ){
@@ -138,6 +154,8 @@ function toggle(current){
   }
 }
 
+
+
 function checkfields(){
   if(
        $("#username").val() == ""
@@ -148,21 +166,31 @@ function checkfields(){
     || $("#confirmPassword").val() == ""
     || ( selected == teacher && $("#teachercode").val() == "" )
   ){
-    $("#register-submit").attr('disabled', true);
-    submit.classList.add("btn-danger");
-    fieldalert.style.visibility="visible";
-    setTimeout(
-      function(){
-        fieldalert.style.visibility="hidden";
-        submit.classList.remove("btn-danger");
-        submit.classList.add("btn-info");
-        $("#register-submit").attr('disabled', false);
-      }, 1500);
+    errorResponse('');
     return false;
   }
-  else{
-    return true;
+  return true;
+}
+
+
+function errorResponse(red){
+  if(red){
+    red.css('background','#f2dede');
+    var old=$('#theError').html();
+    $('#theError').html(error);
   }
+  $("#register-submit").attr('disabled', true);
+  submit.classList.add("btn-danger");
+  fieldalert.style.visibility="visible";
+  setTimeout(
+    function(){
+      if(red) red.css('background','#fff');
+      $('#theError').html(old);
+      fieldalert.style.visibility="hidden";
+      submit.classList.remove("btn-danger");
+      submit.classList.add("btn-info");
+      $("#register-submit").attr('disabled', false);
+    }, 3500);
 }
 
 </script>
