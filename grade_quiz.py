@@ -71,7 +71,7 @@ def grade_quiz(self, user_key, Author, Problem, Quiz, Result):
   result.quizName = quiz.name
   result.quizUrl = quiz.key.urlsafe()
   result.date = eastern_date
-
+  result.courseUrl = courseUrl
   quiz.numberCompleted += 1
   quiz.results.append(result)
 
