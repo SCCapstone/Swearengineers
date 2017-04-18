@@ -22,7 +22,7 @@
 
 
 
-import logging, webapp2, urllib, time, datetime, json, os.path, inspect
+import logging, webapp2, urllib, time, datetime, json, os.path, inspect, pytz
 from collections import defaultdict
 from basehandler import *
 from signup import *
@@ -386,7 +386,15 @@ class ReleaseQuizHandler(BaseHandler):
     course.put()
     q = ndb.Key(urlsafe=self.request.get('k')).get()
     q.isReleased = True
-    q.releaseDate=datetime.datetime.now()
+    #utc = pytz.timezone('UTC')
+    #aware_date = utc.localize(datetime.datetime.now())
+    #aware_date.tzinfo
+    #aware_date.strftime("%a %b %d %H:%M:%S %Y")
+    #eastern = pytz.timezone('US/Eastern')
+    #eastern_date = aware_date.astimezone(eastern)
+    #eastern_date.tzinfo
+    #eastern_date.strftime("%a %b %d %H:%M:%S %Y")
+    #q.releaseDate=eastern_date
     q.put()
     self.redirect('/')
 
@@ -445,6 +453,15 @@ class createQuizHandler(BaseHandler):
       email=self.user.email_address)
     quiz.name = 'Quiz ' + str(course.numberOfQuizzes + 1)
     quiz.description = self.request.get('qdescription')
+    #utc = pytz.timezone('UTC')
+    #aware_date = utc.localize(datetime.datetime.now())
+    #aware_date.tzinfo
+    #aware_date.strftime("%a %b %d %H:%M:%S %Y")
+    #eastern = pytz.timezone('US/Eastern')
+    #eastern_date = aware_date.astimezone(eastern)
+    #eastern_date.tzinfo
+    #eastern_date.strftime("%a %b %d %H:%M:%S %Y")
+    #quiz.date = eastern_date
     quiz.put()
     course.numberOfQuizzes += 1
     if not course.quizUrls:
@@ -611,6 +628,15 @@ class CreateCourseHandler(BaseHandler):
     c.name=name
     c.numberOfQuizzes = 0
     c.numberOfStudents = 0
+    #utc = pytz.timezone('UTC')
+    #aware_date = utc.localize(datetime.datetime.now())
+    #aware_date.tzinfo
+    #aware_date.strftime("%a %b %d %H:%M:%S %Y")
+    #eastern = pytz.timezone('US/Eastern')
+    #eastern_date = aware_date.astimezone(eastern)
+    #eastern_date.tzinfo
+    #eastern_date.strftime("%a %b %d %H:%M:%S %Y")
+    #c.date = eastern_date
     c.put()
     k=c.key.urlsafe()
     if not hasattr(self.user, 'myCourseKeys'):
