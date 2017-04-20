@@ -64,6 +64,9 @@ class Result(ndb.Model):
   stringGrade = ndb.StringProperty(indexed=False)
   date = ndb.DateTimeProperty(auto_now_add=True)
   record = ndb.JsonProperty()
+  current_problem = ndb.IntegerProperty()
+  current_diff = ndb.StringProperty()
+  num_correct = ndb.IntegerProperty()
 
 
 class Quiz(ndb.Model):

@@ -78,6 +78,7 @@ class BaseHandler(webapp2.RequestHandler):
 
 
 
+
     vals = {
       'user': self.user,
       'mycourses': courses,

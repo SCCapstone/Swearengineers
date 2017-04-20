@@ -150,10 +150,12 @@ Quiz Results
             <strong>Error!</strong>&nbsp;&nbsp;There are invlid characters in an answer field.
         </div>
 
+
+
       <form action="/quiz" method="POST">
         <table id="quizoutputtable">
           {% for problem in problems reversed%}
-            <tr id={{forloop.counter}}>
+            <tr id={{forloop.counter}} class="problem_display{{forloop.counter}}">
               <td class="num2">{{ forloop.counter }}.</td>
               <td class="prob"><h3>{{ problem.content }}</h3></td>
               <td class="ans">
@@ -171,7 +173,7 @@ Quiz Results
             </script>
           {% endfor %}
         </table>
-        <div style="text-align:right">
+        <div style="text-align:right" class="submit_prob_button">
           <button
             style="width:25%;display:none; margin:5%"
             id ="submit"
@@ -179,7 +181,41 @@ Quiz Results
             type="submit">Save
           </button>
         </div>
+        <div style="text-align:right" class="next_prob_button">
+          <div
+            style="width:25%; margin:5%"
+            class="lgbtn btn btn-info"
+            onclick="next_problem()">Next
+          </div>
+        </div>
       </form>
+
+      <script>
+        var max_problems = {{ problems|length }};
+        var curr_problem = 1;
+
+        for (i = 2; i <= max_problems; i++) {
+            $(".problem_display" + i).hide();
+        }
+
+        if (curr_problem != max_problems) {
+            $(".submit_prob_button").hide();
+        } else {
+            $(".next_prob_button").hide();
+        }
+
+        function next_problem() {
+            $(".problem_display" + curr_problem).hide();
+            curr_problem ++;
+            $(".problem_display" + curr_problem).show();
+
+            if (curr_problem >= max_problems) {
+                $(".next_prob_button").hide();
+                $(".submit_prob_button").show();
+            }
+        }
+
+      </script>
     </div>
   </div>
 
