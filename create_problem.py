@@ -39,11 +39,12 @@ def create_problem(self, Problem, user_key, Author, Quiz):
   problem.tags = self.request.get('tags')
   problem.answer = self.request.get('answer')
   problem.difficulty = self.request.get('difficulty')
-  problem.put()
+  problem.quizName = quiz.name
 
   if not problem.content or not problem.tags or not problem.answer:
     self.display_message('Please fill out all parts of the form')
     return
+  problem.put()
   problem.url=problem.key.urlsafe()
   problem.put()
 

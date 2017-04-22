@@ -191,13 +191,11 @@
                 <i id="circle" class="fa fa-fw fa-circle" style="width:10%;color:#62ae43"></i>
               </td>
               <td width="40%">
-                {%if selectedcourse%}
-                  <button id="next"
-                      {% if not selectedquiz %}disabled{% endif %}
-                    class="lgbtn btn btn-info" data-target="#newquiz"
-                    type="submit">Save
-                  </button>
-                {%endif%}
+                <button id="next"
+                  {% if not selectedquiz %}disabled{% endif %}
+                  class="lgbtn btn btn-info" data-target="#newquiz"
+                  type="submit">Save
+                </button>
               </td>
             </tr>
           </table>

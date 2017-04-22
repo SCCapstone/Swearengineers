@@ -562,4 +562,6 @@ select:-moz-focusring {
   color: #31708f;
 }
 
-
+#allprobs td{
+  vertical-align:middle;
+}

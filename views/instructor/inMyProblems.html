@@ -14,16 +14,16 @@
 {% block maincontent %}
 
 <div class="row">
-  <div class="col-lg-8"><h2 class="page-header">My Problems</h2></div>
+  <div class="col-lg-8"><h2 class="page-header">Problem Database</h2></div>
 </div>
 
-{% include "selectquizform.html" %}
                                                           <!-- Dropdown Post -->
 <form action="/inMyProblems" method="POST">
   <input id="hidden" type="hidden" name="quiz">
   <input id="submitthis" type="submit" style="visibility:hidden">
 </form>
 
+{% include "selectquizform.html" %}
 
 
                                                           <!-- Keyword Input -->
@@ -50,29 +50,33 @@
              <th>Answer</th>
              <th>Difficulty</th>
              <th>Quiz</th>
-             <!-- <th>LaTeX</th> -->
-             <!-- <th>Author</th> -->
+             <th>Author</th>
              <th>Creation Date</th>
+             <th></th>
          </tr>
         </thead>
         <tbody>
 
-        {%for problem in problems %}
-          <tr>
+        {%for problem in allproblems %}
+          <tr id="allprobs">
               <td>{{ problem.tags }}</td>
               <td>{{ problem.content }}</td>
               <td>{{ problem.answer }}</td>
               <td>{{ problem.difficulty }}</td>
-              <td>{{ problem.quiz }}</td>
-            <!-- <td>{{ problem.content }}</td> -->
-            <!-- <td>{{ problem.author.identity }}</td> -->
-              <td>{{ problem.date }}</td>
-              <form action="/deleteProblem" method="POST">
-                <td><button type="submit" name="problem_key_delete" value="{{ problem.key.urlsafe }}">Delete Problem</button></td>
-              </form>
-              <form action="/editProblem" method="POST">
-                <td><button type="submit" name="problem_key_edit" value="{{ problem.key.urlsafe }}">Edit Problem</button></td>
-              </form>
+              <td>{{ problem.quizName }}</td>
+              <td>{{ problem.author.identity }}</td>
+              <td>{{ problem.date|date:"M d, Y" }}</td>
+              <td>
+                <form action="" method="POST">
+                  <button
+                    class="btn btn-info lgbtn"
+                    style="width:100%;"
+                    name="copyprob"
+                    value="{{problem.url}}"
+                    type="submit">Copy
+                  </button>
+                </form>
+              </td>
           </tr>
         {% endfor %}
 
@@ -81,8 +85,6 @@
     </div>
   </div>
 </div>
-
-
 
 
 <script>
@@ -135,8 +137,6 @@ function clearSearch() {
   search();
   input.focus();
 }
-
-
 
 
 </script>

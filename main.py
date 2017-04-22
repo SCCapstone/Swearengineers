@@ -348,24 +348,48 @@ class inProblemHandler(BaseHandler, webapp2.RequestHandler):
 class inMyProblemsHandler(BaseHandler):
   @instructor_required
   def get(self):
-    user = self.user
-    problem_query = Problem.query(ancestor=user_key(user.email_address)).order(-Problem.date)
-    problems = problem_query.fetch()
-#    quizzes = getMyQuizList(self)
-    template_values = {'problems': problems}
-            #'quizzes': quizzes
+    allproblems = Problem.query().order(-Problem.date).fetch()
+    template_values = {'allproblems': allproblems}
     self.render_template('instructor/inMyProblems.html', template_values)
   def post(self):
-    quiz = self.request.get('quiz')
-#    quizzes = getQuizList()
-    problem_query = Problem.query().filter(Problem.quiz == quiz)
-    problems = problem_query.fetch()
+    user=self.user
+    # get the selected course and quiz
+    course = ndb.Key(urlsafe=self.user.selectedCourseKey).get()
+    quiz = ndb.Key(urlsafe=course.selectedQuizKey).get()
+
+    # Get the requested problem to copy
+    copyproburl = self.request.get('copyprob')
+    copyprob = ndb.Key(urlsafe=copyproburl).get()
+
+    # Make a new problem
+    problem = Problem(parent=user_key(user.email_address))
+    problem.author = Author( identity=user.last_name, email=user.email_address)
+
+    # Copy the info
+    problem.content = copyprob.content
+    problem.tags = copyprob.tags
+    problem.answer = copyprob.answer
+    problem.difficulty = copyprob.difficulty
+    problem.quizName = quiz.name
+    problem.put()
+    problem.url=problem.key.urlsafe()
+    problem.put()
+    if problem.difficulty == 'Easy':
+      quiz.easy.append(problem)
+    if problem.difficulty == 'Medium':
+      quiz.medium.append(problem)
+    if problem.difficulty == 'Hard':
+      quiz.hard.append(problem)
+    quiz.put()
     template_values = {
-       'problems': problems,
-       'selectdefault': quiz,
-#       'quizzes': quizzes,
+      'problem_content': problem.content,
+      'problem_answer': problem.answer,
+      'problem_tags': problem.tags,
+      'problem_key': problem.key,
+      'problem_difficulty': problem.difficulty,
     }
-    self.render_template('instructor/inMyProblems.html', template_values)
+
+    self.render_template('instructor/inProblem.html', template_values)
 
 
 
