@@ -28,6 +28,7 @@ from basehandler import *
 from signup import *
 from create_problem import *
 from grade_quiz import *
+from mail import *
 
 
 
@@ -255,15 +256,16 @@ class AuthenticatedHandler(BaseHandler):
 class MainHandler(BaseHandler, webapp2.RequestHandler):
   @user_required
   def get(self):
-    mail.send_mail(
-      sender = 'MathQuizzes<MathQuizzes@math-quizzes-jesager.appspotmail.com>',
-      to = 'James <jamessager@hotmail.com>',
-      subject = "Testing",
-      body = """
-      <h1>Hi!</h1>
-      Test test test.
-      """+'<h3>another</h3>'
-    )
+    sendit()
+#    mail.send_mail(
+#      sender = 'MathQuizzes<MathQuizzes@math-quizzes-jesager.appspotmail.com>',
+#      to = 'James <jamessager@hotmail.com>',
+#      subject = "Testing",
+#      body = """
+#      <h1>Hi!</h1>
+#      Test test test.
+#      """+'<h3>another</h3>'
+#    )
 
     if self.user.isTeacher:
       if not hasattr(self.user,'selectedCourseKey'):
