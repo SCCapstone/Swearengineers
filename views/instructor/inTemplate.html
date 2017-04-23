@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <title>MathQuizzes</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="SwearEngineers">
+  <meta name="Description"
+     content="MathQuizzes is an Educational Web App designed to help math
+              teachers and math students from grades K-12 work together online.
+              It has been designed as a University of South Carolina College of
+              Engineering and Computing Capstone Project by Undergraduate
+              Students.  MathQuizzes has been released under the MIT Software
+              License by the SwearEngineers.">
+  <meta name="Keywords"
+     content="education math mathematics edu capstone University of South
+              Carolina CEC College of Engineering and Computing MIT LaTex
+              webapp quiz quizzes assignments grades K-12">
+
+  <!-- bootstrap -->
+  <link href="/../bootstrap/css/bootstrap.css" rel="stylesheet">
+  <!-- custom -->
+  <link href="../bootstrap/css/sb-admin.css" rel="stylesheet">
+  <!-- fonts -->
+  <link href="../bootstrap/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet">
+
+  <!-- To allow custom css at page-level -->
+  {% block header %}
+  {% endblock %}
+
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- jquery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+
+
+
+
+<body>
+{% if user.isTeacher %}
+<div id="wrapper">
+{% else %}
+<div>
+{% endif %}
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+
+
+
+   <!--
+   |  MathQuizzes Brand:
+   |    The logo at the top left
+   -->
+  <div class="navbar-header" style="padding-right:20%">
+    <a class="navbar-brand" href="/"><span class="logo2">Math</span>Quizzes</a>
+  </div>
+
+
+   <!--
+   | Options Menu:
+   |   This menu is activated by the user icon at the top-right
+   |   Settings Item activates Modal within fluid-container
+   -->
+  <ul class="nav navbar-right top-nav" style="float:right">
+
+    <li class="dropdown">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        {% if user.isTeacher %}
+          <i class="fa fa-fw fa-graduation-cap"></i>&nbsp;&nbsp;
+          {{ user.name }} &nbsp;&nbsp;
+        {% else %}
+          <i class="fa fa-user"></i>&nbsp;&nbsp;
+          {{ user.name }} &nbsp;&nbsp;
+        {% endif %}
+        <b class="caret"></b>
+      </a>
+
+
+      <ul class="dropdown-menu">
+        <li>
+          <a href="/settings" data-toggle="modal"><i class="fa fa-fw fa-gear"></i>
+             &nbsp;&nbsp;&nbsp;Settings
+         </a>
+        </li>
+        <li class="divider"></li>
+        <li>
+          <a href="/logout"><i class="fa fa-fw fa-power-off"></i>
+            &nbsp;&nbsp;&nbsp;Log Out
+          </a>
+        </li>
+      </ul>
+
+    </li>
+  </ul>
+  {% if mycourses %}
+    {% if not noCourseSelect %}
+      <ul class="nav top-nav" >
+        <li class="dropdown" style="margin-left:12%; min-width:20%; text-align:center">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+            style="font-family: 'Anton', sans-serif; font-size:1.5em; letter-spacing:5px; text-transform:uppercase">
+              {{ selectedcourse.name }}
+              {% if mycourses|length > 1 %}
+                <i style="float:right" class="fa fa-fw fa-sort-desc"></i>
+              {% endif %}
+          </a>
+          {% if mycourses|length > 1 %}
+          <ul class="dropdown-menu" style="width:100%">
+            {% for c in mycourses %}
+              {% if c != selectedcourse %}
+                <li onclick="document.location='/selectCourse?key={{ c.key.urlsafe }}'"
+                  style="text-transform:uppercase">
+                  <a href="#">{{c.name}}</a>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+         {% endif %}
+        </li>
+      </ul>
+    {% endif %}
+  {% endif %}
+
+
+
+
+{% if user.isTeacher %}
+  <!--
+  | Main Menu:
+  |   Located on the left ( or as hamburger in mobile view)
+  |   Holds links to the site's main pages
+  -->
+  <div class="collapse navbar-collapse navbar-ex1-collapse">
+    <ul class="nav navbar-nav side-nav">
+      <li id="home">
+        <a class="menu" href="/"><i class="fa fa-fw fa-home"></i>
+          &nbsp;&nbsp;&nbsp;&nbsp;Home
+        </a>
+      </li>
+      <li id="problem">
+        <a class="menu" href="../instructor/inProblem"><i class="fa fa-fw fa-graduation-cap"></i>
+          &nbsp;&nbsp;&nbsp;&nbsp;Create Problems
+        </a>
+      </li>
+      <li id="myproblems">
+        <a class="menu" id="myprobs" href="../instructor/inMyProblems"><i class="fa fa-fw fa-search"></i>
+          &nbsp;&nbsp;&nbsp;&nbsp;Problem Database
+        </a>
+      </li>
+      <li id="quizzes">
+        <a class="menu" href="../quiz"><i class="fa fa-fw fa-pencil"></i>
+          &nbsp;&nbsp;&nbsp;&nbsp;Test My Quiz
+        </a>
+      </li>
+      <li id="grades">
+        <a class="menu" href="../instructor/inMyGrades"><i class="fa fa-fw fa-calculator"></i>
+          &nbsp;&nbsp;&nbsp;&nbsp;My Grades
+        </a>
+      </li>
+      <li id="roster">
+        <a class="menu" id="roster" href="../instructor/inAddStudents"><i class="fa fa-fw fa-users"></i>
+          &nbsp;&nbsp;&nbsp;&nbsp;My Students
+        </a>
+      </li>
+      <li id="mycourses">
+        <a class="menu" id="mycourses" href="../instructor/inMyCourses"><i class="fa fa-fw fa-book"></i>
+          &nbsp;&nbsp;&nbsp;&nbsp;My Courses
+        </a>
+      </li>
+      <li id="help">
+        <a class="menu" href="../instructor/inHelp"><i class="fa fa-fw fa-question-circle"></i>
+          &nbsp;&nbsp;&nbsp;&nbsp;Help Topics
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endif %}
+</nav>
+
+
+
+<div id="page-wrapper" >
+  <div class="container-fluid">
+
+
+
+
+    <!--
+    | Change Settings Modal
+    |   Activated from Settings Menu
+    -->
+    <div class="modal fade" id="settings" role="dialog">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Change Password</h4>
+          </div>
+          <div class="modal-body">
+            <input type="password" name="oldpassword" id="oldpassword" tabindex="1" class="form-control" value="" placeholder="Enter Your Current Password">
+            <br>
+            <input type="password" name="newpassword" id="newpassword" tabindex="1" class="form-control" placeholder="Enter Your New Password">
+            <br>
+            <input type="password" name="confirmpassword" id="confirmpassword" tabindex="2" class="form-control" placeholder="Retype Your New Password">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Coming Soon!</button>
+            <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> -->
+            <!--<button type="button" class="bluebtn btn btn-primary" data-dismiss="modal">Save</button> -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  {%if not selectedcourse and user.isTeacher %}
+    <h1 style="color:red">Please add a course</h1>
+  {%endif%}
+
+    <!--
+    | Main content:
+    |   This content is specified by the selected main-menu option
+    -->
+    {% block maincontent %}{% endblock %}
+
+
+
+  </div> <!-- end container-fluid class-->
+</div> <!-- end page-wrapper class-->
+</div> <!-- end wrapper class -->
+
+
+<!-- Bootstrap Core JavaScript -->
+<script src="../bootstrap/js/bootstrap.min.js"></script>
+
+<script>
+
+
+/*******************************************************************************
+* Modal Focus Functions
+* ---------------------
+* - Assign focus to the first input area when a modal is shown
+* - Removes any browser autofill on pw fields
+*
+**********/
+  $('#newquiz').on('shown.bs.modal', function () {
+    $('#quizname').focus();
+  })
+  $('#settings').on('shown.bs.modal', function () {
+    $('#oldpassword').focus();
+    $('#oldpassword').val("");
+    $('#newpassword').val("");
+    $('#confirmpassword').val("");
+  })
+
+
+</script>
+
+</body>
+</html>
+
+
+
+

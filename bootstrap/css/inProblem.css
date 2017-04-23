@@ -1,0 +1,178 @@
+
+.inputArea {
+  border: 1px solid #CCC;
+  background-color: #f5f5f5;
+  display:inline-block;
+  width:100%;
+  padding-top:10px;
+  padding-bottom:5%;
+}
+
+p.emc2{
+  margin-left:5%;
+}
+label.inproblem{
+  font-size:110%;
+  font-family: Arial;
+}
+select.inproblem,
+input[type=text].inproblem {
+  width:100%;
+  padding: 12px 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color:#fff;
+}
+
+select.inproblem{
+  background: url(/img/selectArrow2.png) no-repeat right #fff;
+  background-size: 30px 60%;
+}
+
+table.inproblem{
+  width:100%;
+}
+.inproblem td{
+  padding:10px 5%;
+}
+td.in{
+  width:90px;
+  padding-right:0;
+  margin-right:0;
+}
+
+#next{
+  width:100%;
+}
+
+/* display color will changed after mathjax load */
+#display {
+  color:white;
+  background-color:white;
+  display:block;
+  height: 200px;
+  width: 100%;
+  padding: 30px;
+}
+
+ul.mbttn {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+  height:50px;
+}
+
+
+/* li color will changed after mathjax load */
+ul.mbttn li {
+  color: #333;
+  cursor: pointer;
+  display: block;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  transition: 0.3s;
+  font-size: 100%;
+  height: 100%;
+  float: left;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+:active, :focus { outline: none; -moz-outline-style: none; }
+
+ul.mbttn li:hover {
+  background-color: #555;
+  color:#fff;
+}
+.inproblem #quiztop{
+  padding-bottom:0;
+}
+#scrolling{
+  overflow:hidden;
+  overflow-y: auto;
+  max-height:75vh;
+}
+div.problemlist{
+  border-radius: 15px;
+  border:1px solid #CCC;
+  overflow:hidden;
+  box-shadow: 0 0 2px 2px #CCC;
+  width:450px;
+}
+table.problemlist {
+  margin: 0;
+  padding: 0;
+  border-bottom:1px solid #CCC;
+  background:#fff;
+}
+table.problemlist tr{
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 100%;
+  border-top:1px solid #CCC;
+  display: block;
+}
+table.problemlist tr:first-child{
+  border:none;
+}
+table.problemlist tr:hover {
+  background-color: #f5f5f5;
+  color:#000;
+}
+div.aproblem{
+  width:100%;
+  max-width:310px;
+  display:block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow:hidden;
+}
+td.aproblem{
+  padding:20px;
+  font-size:20px;
+  width:400px;
+}
+td.pnumber{
+  border-right:1px solid #ccc;
+  padding-left:15px;
+}
+td.pnumber div{
+  width:30px;
+}
+td.pnumber.Easy{
+  border-left:10px solid #62ae43;
+}
+td.pnumber.Medium{
+  border-left:10px solid orange;
+}
+td.pnumber.Hard{
+  border-left:10px solid red;
+}
+i.delete{
+  padding-top:15px;
+  color: #ebccd1;
+}
+i.delete:hover{
+  color: #a94442;
+}
+.editprob{
+  background: #d9edf7;
+}
+i.easy{
+  color:#62ae43;
+}
+i.medium{
+  color:orange;
+}
+i.hard{
+  color:red;
+}
+

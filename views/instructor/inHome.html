@@ -1,0 +1,131 @@
+
+{% extends "inTemplate.html" %}
+
+{% block header %}
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+  });
+</script>
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML-full"></script>
+{% endblock %}
+
+{% block maincontent %}
+
+
+<div class="row" style="margin-bottom:2%">
+  <div class="col-lg-8"><h2 class="page-header">My Quizzes</h2></div>
+  <div class="col-lg-3">
+    <!--
+    <button onclick="window.location.href='/instructor/inProblem?n=True'" class="btn btn-info lgbtn"
+      style="float:right; width:100%; margin-top:5%;">
+      New Quiz</button>
+-->
+  </div>
+</div>
+
+
+
+{%if not quizzes%}
+<h1 style="color:red">You have no Quizzes</h1>
+<h3 style="color:red">Create one on the create problems page</h3>
+{%endif%}
+
+
+
+
+
+<!--
+| Quiz Output Table
+-->
+<div class="row">
+  <div class="col-lg-1"></div>
+  <div class="col-lg-9">
+    <div class="table-responsive">
+      <table class="borderless table">
+        {% for q in quizzes %}
+          <tr style="border-bottom:1px solid #ccc">
+            <td colspan="2" class="lgbtn" style="border-bottom:1px solid #ccc">
+              <h3 style="margin:0; font-weight:bold">{{q.name}}</h3>
+            </td>
+          </tr>
+          <tr>
+            <td rowspan="2" style="padding-top:20px">
+              <table class="borderless table" style="margin-left:5%">
+                <tr>
+                  <td>Created Date:</td>
+                  <td style="font-weight:bold">{{q.date}}</td>
+                </tr>
+                <tr>
+                  <td>Quiz Description:</td>
+                  <td style="font-weight:bold">
+                    {%if q.descritopn%} {{q.description}}
+                    {%else%}N.A.{%endif%}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Date Assigned:</td>
+                  {% if q.isReleased %}
+                    <td style="font-weight:bold">{{q.releaseDate}}</td>
+                  {% else %}
+                    <td style="font-weight:bold">N.A.</td>
+                  {% endif %}
+                </tr>
+                <tr>
+                  <td>Number Graded:</td>
+                  <td style="font-weight:bold">{{q.numberCompleted}}</td>
+                </tr>
+              </table>
+            </td>
+            <td style="padding-top:20px">
+              <form action="/releaseQuiz" method="POST">
+                <button
+                  type="submit"
+                  style="width:100%;"
+                  name="k"
+                  value="{{q.key.urlsafe}}"
+                  class="blu btn btn-default lgbtn"
+                  {% if q.isReleased %}
+                    disabled="true"
+                    >Assigned
+                  {% else %}
+                    >Assign
+                  {% endif %}
+                </button>
+              </form>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <form action="/deleteQuiz" method="POST">
+                <button
+                  type="submit"
+                  style="width:100%;"
+                  name="k"
+                  value="{{q.key.urlsafe}}"
+                  class="rd btn btn-danger lgbtn">Delete
+                </button>
+              </form>
+            </td>
+          </tr>
+          <tr>
+           <td colspan="2" style="padding-bottom:10%"></td>
+          </tr>
+        {% endfor %}
+
+      </table>
+    </div>
+  </div>
+</div>
+
+
+
+
+<script>
+
+document.getElementById("home").className += "active";
+$('#quizform').css('display', 'none');
+
+</script>
+
+{% endblock %}

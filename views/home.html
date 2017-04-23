@@ -1,0 +1,142 @@
+
+{% extends "instructor/inTemplate.html" %}
+
+{% block maincontent %}
+
+
+<!--
+ | Buttons
+-->
+<form>
+<div class="text-center">
+  <div class="btn-group" data-toggle="buttons">
+    <label id="assigned" class="btn btn-default active" onclick="toggle(assigned)">
+      Assigned Quizzes
+    </label>
+    <label id="grades" class="btn btn-default" onclick="toggle(grades)">
+      &nbsp;&nbsp;Quiz Grades&nbsp;
+    </label>
+  </div>
+</div>
+</form>
+
+
+
+
+                                                  <!-- New Quiz Output Table -->
+<div id="assignedoutput" class="row">
+  <div class="col-lg-2"></div>
+  <div class="col-lg-8">
+    <h2>Assigned Quizzes</h2>
+    {% if selectedcourse.numberOfAssigned == 0 %}
+      <hr>
+      <br>
+      <h4 style="text-align:center"><em>Sorry, no assigned quizzes at the moment.</em></h4>
+    {% else %}
+      <div class="table-responsive">
+        <table id="myTable" class="table table-hover table-striped" name="problemsTable">
+          <thead>
+           <tr>
+             <th>Quiz Name </th>
+             <th>Date Assigned</th>
+             <th>Instructor</th>
+             <th>Description </th>
+           </tr>
+          </thead>
+          <tbody>
+            {%for q in quizzes %}
+              {% if q.isReleased %}
+                <tr class="result" data-toggle="tooltip" title="Click to Start Quiz"
+                      style="cursor:pointer"
+                      onclick="document.location='/quiz?k={{ q.key.urlsafe }}';">
+                  <td name="quiz"><a href="#"><h4>{{ q.name }}</h4></a></td>
+                  <td><h4>{{ q.releaseDate }}</h4></td>
+                  <td><h4>{{ q.author.identity }}</h4></td>
+                  <td><h4>{{ q.description }}</h4></td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+
+
+
+<div class="row" id="gradesoutput" style="display:none">
+  <div class="col-lg-2"></div>
+  <div class="col-lg-8">
+    <h2>Quiz Grades</h2>
+    {% if not grades %}
+      <hr>
+      <br>
+      <h4 style="text-align:center"><em>Sorry, no grades to show at the moment.</em></h4>
+    {% else %}
+      <div class="table-responsive">
+        <table id="myTable" class="table table-hover table-striped" name="problemsTable">
+          <thead>
+           <tr>
+             <th>Quiz Name </th>
+             <th>My Grade</th>
+             <th>Completion Date</th>
+           </tr>
+          </thead>
+          <tbody>
+            {%for grade in grades %}
+              {%if grade.quizName %}
+                <tr class="result" data-toggle="tooltip" title="Click to View Quiz Results"
+                      style="cursor:pointer"
+                      onclick="document.location='/quiz?grade={{ grade.key.urlsafe }}';">
+                  <td name="quiz"><a href="#"><h4>{{ grade.quizName }}</h4></a></td>
+                  <td><h4>{{ grade.stringGrade }}</h4></td>
+                  <td><h4>{{ grade.date }}</h4></td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+
+$('#quizform').css('display', 'none');
+
+
+var assigned   = document.getElementById("assigned");
+var grades     = document.getElementById("grades");
+var selected   = assigned;
+var deselected = grades;
+var temp;
+function toggle(current){
+  if( current != selected ){
+    selected.classList.remove("active");
+    deselected.classList.add("active");
+    temp=deselected;
+    deselected=selected;
+    selected=temp;
+    if( current == assigned ){
+      $("#gradesoutput").css('display','none');
+      $("#assignedoutput").css('display','block');
+    }
+    else{
+      $("#assignedoutput").css('display','none');
+      $("#gradesoutput").css('display','block');
+    }
+  }
+}
+
+
+
+
+</script>
+{% endblock %}
+
+
+
+
