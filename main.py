@@ -255,6 +255,17 @@ class AuthenticatedHandler(BaseHandler):
 class MainHandler(BaseHandler, webapp2.RequestHandler):
   @user_required
   def get(self):
+
+    mail.send_mail(
+      sender = 'MathQuizzes<MathQuizzes@math-quizzes-jesager.appspotmail.com>',
+      to = 'James <jamessager@hotmail.com>',
+      subject = "Testing",
+      body = """
+      Hi!
+      Test test test.
+      """
+    )
+
     if self.user.isTeacher:
       if not hasattr(self.user,'selectedCourseKey'):
         self.render_template('instructor/inMyCourses.html', {'newuser': True})
