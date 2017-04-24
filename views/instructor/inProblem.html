@@ -223,7 +223,7 @@
   {% if selectedquiz %}
     <div class="problemlist">
       <div class="inproblem">
-        {% with selectedreleased as selected %}
+        {% with selectedquiz as selected %}
           {% with 'Select an unassigned quiz:' as label %}
             {% with unassigned as quiztype %}
               {% with 1 as blue %}
