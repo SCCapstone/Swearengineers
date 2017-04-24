@@ -79,6 +79,9 @@ class Quiz(ndb.Model):
   easy = ndb.StructuredProperty(Problem, repeated=True)
   medium = ndb.StructuredProperty(Problem, repeated=True)
   hard = ndb.StructuredProperty(Problem, repeated=True)
+  required_easy = ndb.IntegerProperty(default=0)
+  required_medium = ndb.IntegerProperty(default=0)
+  required_hard = ndb.IntegerProperty(default=0)
   results = ndb.StructuredProperty(Result, repeated=True)
   numberCompleted = ndb.IntegerProperty(default=0)
 
@@ -93,6 +96,7 @@ class Course(ndb.Model):
   studentUrls = ndb.JsonProperty()
   quizUrls = ndb.JsonProperty(default=[])
   selectedQuizKey = ndb.StringProperty()
+  selectedReleasedKey = ndb.StringProperty()
 
 
 class User(ndb.Model):
@@ -261,18 +265,42 @@ class MainHandler(BaseHandler, webapp2.RequestHandler):
         return
       self.render_template('instructor/inHome.html')
     else:
-      if hasattr(self.user,'selectedCourseKey'):
+      if not hasattr(self.user,'selectedCourseKey'):
+        self.render_template('home.html')
+      else:
         r=[]
-        courseUrl = self.user.selectedCourseKey
+        assignedUrls=[]
+        assignedquizzes=[]
         s = self.user.key.urlsafe()
         allr = Result.query().filter(Result.studentUrl == s).fetch()
+        courseUrl = self.user.selectedCourseKey
+        course = ndb.Key(urlsafe=courseUrl).get()
+        for url in course.quizUrls:
+          q=ndb.Key(urlsafe=url[2]).get()
+          if q.isReleased:
+            assignedUrls.append(url[2])
         for result in allr:
           if result.courseUrl==courseUrl:
             r.append(result)
-        self.render_template('home.html', {'grades': r})
-      else:
-        self.render_template('home.html')
+            for url in assignedUrls:
+              if result.quizUrl==url:
+                assignedUrls.remove(url)
+        for url in assignedUrls:
+          assignedquizzes.append(ndb.Key(urlsafe=url).get())
 
+        vals={'grades': r, 'assignedquizzes':assignedquizzes}
+        self.render_template('home.html', vals)
+  def post(self):
+    quiz=ndb.Key(urlsafe=self.request.get('quizurl')).get()
+    reqtype=self.request.get('type')
+    required=int(self.request.get('required'))
+    if reqtype == "easy":
+      quiz.required_easy=required
+    if reqtype == "med":
+      quiz.required_medium=required
+    if reqtype == "hard":
+      quiz.required_hard=required
+    quiz.put()
 
 
 
@@ -304,8 +332,19 @@ class QuizHandler(BaseHandler, webapp2.RequestHandler):
     if self.request.get('grade') is not '':
       g = ndb.Key(urlsafe=self.request.get('grade')).get()
       self.render_template('quiz.html', {'result':g})
-    else:
+    elif self.user.isTeacher:
       self.render_template('quiz.html')
+    else:
+      problems = []
+      qkey=self.request.get('k')
+      quiz=ndb.Key(urlsafe=qkey).get()
+      for p in reversed(quiz.hard):
+        problems.append(p)
+      for p in reversed(quiz.medium):
+        problems.append(p)
+      for p in reversed(quiz.easy):
+        problems.append(p)
+      self.render_template('quiz.html', {'problems':problems, 'selectedquiz':quiz})
   def post(self):
     grade_quiz(self, user_key, Author, Problem, Quiz, Result)
 
@@ -420,19 +459,19 @@ class ReleaseQuizHandler(BaseHandler):
   def post(self):
     course = ndb.Key(urlsafe=self.user.selectedCourseKey).get()
     course.numberOfAssigned += 1
-    course.put()
-    q = ndb.Key(urlsafe=self.request.get('k')).get()
+    qkey=self.request.get('k')
+    q = ndb.Key(urlsafe=qkey).get()
     q.isReleased = True
-    #utc = pytz.timezone('UTC')
-    #aware_date = utc.localize(datetime.datetime.now())
-    #aware_date.tzinfo
-    #aware_date.strftime("%a %b %d %H:%M:%S %Y")
-    #eastern = pytz.timezone('US/Eastern')
-    #eastern_date = aware_date.astimezone(eastern)
-    #eastern_date.tzinfo
-    #eastern_date.strftime("%a %b %d %H:%M:%S %Y")
-    #q.releaseDate=eastern_date
+    q.releaseDate = datetime.datetime.now()
     q.put()
+    if qkey == course.selectedQuizKey:
+      course.selectedQuizKey = ''
+    if course.quizUrls:
+      for u in reversed(course.quizUrls):
+        q=ndb.Key(urlsafe=u[2]).get()
+        if not q.isReleased:
+          course.selectedQuizKey = u[2]
+    course.put()
     self.redirect('/')
 
 
@@ -443,9 +482,6 @@ class deleteQuizHandler(BaseHandler):
   @instructor_required
   def post(self):
     course=ndb.Key(urlsafe=self.user.selectedCourseKey).get()
-    # We can decrament the quiz number if it's at the end of the stack
-    if course.numberOfQuizzes == (course.nextQuizNum - 1):
-      course.nextQuizNum -=1
     course.numberOfQuizzes -= 1
     k=self.request.get('k')
     quiz=ndb.Key(urlsafe=k).get()
@@ -454,6 +490,11 @@ class deleteQuizHandler(BaseHandler):
     course.quizUrls.remove([quiz.name, quiz.description, quiz.key.urlsafe()])
     if course.selectedQuizKey == k:
       course.selectedQuizKey=''
+    if course.quizUrls:
+      for u in reversed(course.quizUrls):
+        q=ndb.Key(urlsafe=u[2]).get()
+        if not q.isReleased:
+          course.selectedQuizKey = u[2]
     course.put()
     ndb.Key(urlsafe=k).delete()
     self.redirect('/')
@@ -468,10 +509,14 @@ class deleteQuizHandler(BaseHandler):
 class selectQuizHandler(BaseHandler):
   @instructor_required
   def post(self):
-    if hasattr(self.user, 'selectedCourseKey'):
-      course = ndb.Key(urlsafe=self.user.selectedCourseKey).get()
-      course.selectedQuizKey=self.request.get('dropdownselect')
-      course.put()
+    qkey=self.request.get('dropdownselect')
+    q=ndb.Key(urlsafe=qkey).get()
+    course = ndb.Key(urlsafe=self.user.selectedCourseKey).get()
+    if not q.isReleased:
+      course.selectedQuizKey=qkey
+    else:
+      course.selectedReleasedKey=qkey
+    course.put()
     # remove dangleing vars from url on return
     url, sep, var = self.request.referer.partition('?')
     self.redirect(url)
@@ -493,15 +538,6 @@ class createQuizHandler(BaseHandler):
       email=self.user.email_address)
     quiz.name = 'Quiz ' + str(course.nextQuizNum)
     quiz.description = self.request.get('qdescription')
-    #utc = pytz.timezone('UTC')
-    #aware_date = utc.localize(datetime.datetime.now())
-    #aware_date.tzinfo
-    #aware_date.strftime("%a %b %d %H:%M:%S %Y")
-    #eastern = pytz.timezone('US/Eastern')
-    #eastern_date = aware_date.astimezone(eastern)
-    #eastern_date.tzinfo
-    #eastern_date.strftime("%a %b %d %H:%M:%S %Y")
-    #quiz.date = eastern_date
     quiz.put()
     course.numberOfQuizzes += 1
     course.nextQuizNum += 1
@@ -647,23 +683,6 @@ class deleteProblemHandler(BaseHandler):
     self.redirect("instructor/inProblem")
 
 
-# not currently used because this must redirect.
-# the course dropdown will cause error
-# edit is called from inProblemHandler
-class editProblemHanlder(BaseHandler):
-  @instructor_required
-  def get(self):
-    prob_key = ndb.Key(urlsafe=self.request.get('p'))
-    problem = prob_key.get()
-    template_values = {
-      'problem_content': problem.content,
-      'problem_answer': problem.answer,
-      'problem_tags': problem.tags,
-      'problem_key': prob_key,
-      'problem_difficulty': problem.difficulty,
-    }
-    self.render_template('instructor/inProblem.html', template_values)
-
 
 
 
@@ -711,7 +730,10 @@ class DeleteCourseHandler(BaseHandler):
     self.user.myCourseKeys.remove(k)
     self.user.put()
     ndb.Key(urlsafe=k).delete()
-    self.redirect('instructor/inMyCourses')
+    if not hasattr(self.user,'selectedCourseKey'):
+      self.render_template('instructor/inMyCourses.html', {'newuser': True})
+    else:
+      self.redirect('instructor/inMyCourses')
 
 
 class EditCourseHandler(BaseHandler):
@@ -733,6 +755,50 @@ class SelectCourseHandler(BaseHandler):
     # remove dangleing vars from url on return
     url, sep, var = self.request.referer.partition('?')
     self.redirect(url)
+
+
+
+
+
+class editGradeHandler(BaseHandler):
+  @instructor_required
+  def post(self):
+    rkey=self.request.get('r')
+    changenumber=self.request.get('n')
+    courseUrl=self.user.selectedCourseKey
+    course = ndb.Key(urlsafe=courseUrl).get()
+    quiz=ndb.Key(urlsafe=course.selectedReleasedKey).get()
+    result=ndb.Key(urlsafe=rkey).get()
+
+    # remove the old quiz result
+    for r in quiz.results:
+      if r.url == rkey:  quiz.results.remove(r)
+
+    # update the zipped quiz in the result
+    numproblems = 0
+    correct = 0
+    for p, s, a, g in result.record:
+      if int(numproblems+1) == int(changenumber):
+        if g:
+          result.record[numproblems]=(p,s,a,0)
+        else:
+          result.record[numproblems]=(p,s,a,1)
+          correct += 1
+      elif g: correct += 1
+      numproblems +=1
+
+    # update the other result variables
+    result.floatGrade=100.0*correct/numproblems
+    result.stringGrade =str(round(result.floatGrade,1))+"%"
+
+    # put everything back
+    result.put()
+    quiz.results.append(result)
+    quiz.put()
+
+    self.render_template('quiz.html', {'result': result })
+
+
 
 ################################################################################
 # Displays Help HTML
@@ -811,10 +877,10 @@ app = webapp2.WSGIApplication([
   webapp2.Route('/instructor/inHelp', helpHandler, name='inHelp'),
 
   # edit classes
+  webapp2.Route('/editGrade', editGradeHandler, name='editGrade'),
   webapp2.Route('/createQuiz', createQuizHandler, name='createQuiz'),
   webapp2.Route('/selectQuiz', selectQuizHandler, name='selectQuiz'),
   webapp2.Route('/deleteProblem', deleteProblemHandler, name='deleteProblem'),
-  webapp2.Route('/editProblem', editProblemHanlder, name='editProblem'),
   webapp2.Route('/addOneStudent', AddOneStudentHandler, name='addOneStudent'),
   webapp2.Route('/removeOneStudent', RemoveOneStudentHandler, name='removeOneStudent'),
   webapp2.Route('/releaseQuiz', ReleaseQuizHandler, name='releaseQuiz'),

@@ -14,66 +14,118 @@
 
 
 <div class="row" style="margin-bottom:2%">
-  <div class="col-lg-8"><h2 class="page-header">My Quizzes</h2></div>
-  <div class="col-lg-3">
-    <!--
-    <button onclick="window.location.href='/instructor/inProblem?n=True'" class="btn btn-info lgbtn"
-      style="float:right; width:100%; margin-top:5%;">
-      New Quiz</button>
--->
+  <div class="col-lg-6"><h2 class="page-header">My Quizzes</h2></div>
+  <div class="col-lg-4" style="text-align:right; margin-right:15px">
+    <div class="btn-group" data-toggle="buttons" style="margin-top:4%">
+      <label id="unassigned" class="btn btn-info active lgbtn" onclick="toggle(unassigned)">
+        &nbsp;&nbsp;Unassigned Quizzes&nbsp;
+      </label>
+      <label id="assigned" class="btn btn-default lgbtn"
+        onclick="toggle(assigned)">
+        &nbsp;&nbsp;Assigned Quizzes&nbsp;
+      </label>
+    </div>
   </div>
 </div>
-
-
-
-{%if not quizzes%}
-<h1 style="color:red">You have no Quizzes</h1>
-<h3 style="color:red">Create one on the create problems page</h3>
-{%endif%}
+<br>
 
 
 
 
 
 <!--
-| Quiz Output Table
+| Unassigned Quiz Output Table
 -->
+<div id="unassignedoutput">
+{%if not unassigned%}
+    <!--
+    |  Null Quiz Alert
+    |   Activated by Page Load
+    -->
 <div class="row">
   <div class="col-lg-1"></div>
   <div class="col-lg-9">
-    <div class="table-responsive">
+    <div style="margin-top:20px" class="alert alert-info fade in">
+        <i class="fa fa-fw fa-exclamation-triangle fa-2x"></i>&nbsp;&nbsp;
+        <p style="display:inline;position:relative; bottom:5px"><strong>This Course has No Unassigned Quizzes!</strong></p>
+        <p style="position:relative; bottom:5px; left:50px;">
+        Please create a quiz on the <a style="color:#31708f; text-decoration:underline" href="/instructor/inProblem">Create Problems</a> page to continue.</p>
+    </div>
+  </div>
+</div>
+{%endif%}
+<div class="row">
+  <div class="col-lg-1"></div>
+  <div class="col-lg-9">
+    <div class="table-responsive" style="overflow:visible">
       <table class="borderless table">
-        {% for q in quizzes %}
-          <tr style="border-bottom:1px solid #ccc">
-            <td colspan="2" class="lgbtn" style="border-bottom:1px solid #ccc">
-              <h3 style="margin:0; font-weight:bold">{{q.name}}</h3>
+        {% for q in unassigned %}
+          <tr>
+            <td class="lgbtn">
+             <h3 style="margin:0; font-weight:bold; position:relative; top:12px">
+               <i class="fa fa-fw fa-folder-open myicon"></i>
+               {{q.name}}
+             </h3>
             </td>
+            <td class="lgbtn" style="vertical-align:bottom; text-align:right; padding-right:10px">
+             <h4 style="margin:0; font-weight:bold">
+               &nbsp;&nbsp;{{q.description}}
+             </h4>
+            </td>
+          </tr>
+            <td colspan="2">
+              <div style="margin-left:6%; width:94%; border-top:1px solid #ccc"></div>
+            </td>
+          <tr>
           </tr>
           <tr>
             <td rowspan="2" style="padding-top:20px">
-              <table class="borderless table" style="margin-left:5%">
+              <table class="borderless table" style="margin-left:10%;">
                 <tr>
-                  <td>Created Date:</td>
-                  <td style="font-weight:bold">{{q.date}}</td>
+                  <td>Date Created:</td>
+                  <td style="font-weight:bold">{{q.date|date:"M d, Y" }}</td>
                 </tr>
                 <tr>
-                  <td>Quiz Description:</td>
-                  <td style="font-weight:bold">
-                    {%if q.descritopn%} {{q.description}}
-                    {%else%}N.A.{%endif%}
+                  <td>Easy Required:</td>
+                  <td class="easyslider">
+                      <span style="margin-right:30px;"><span style="font-weight:bold; font-size:110%;" id="easyval{{forloop.counter}}">{{q.required_easy}}</span>&nbsp;/&nbsp;{{q.easy|length}}</span>
+                      <input id="easy{{forloop.counter}}" type="text" data-slider-handle="square" data-slider-tooltip="hide" data-slider-min="0" data-slider-max="{{q.easy|length}}" data-slider-step="1" data-slider-value="{{q.required_easy}}"/>
+                    <script>
+                      $("#easy{{forloop.counter}}").slider();
+                      $("#easy{{forloop.counter}}").bind("slideStop", function(slideEvt) {
+                        $("#easyval{{forloop.counter}}").text(slideEvt.value);
+                        $.post("/", {quizurl:"{{q.key.urlsafe}}", required:slideEvt.value, type:"easy"});
+                      });
+                    </script>
                   </td>
                 </tr>
                 <tr>
-                  <td>Date Assigned:</td>
-                  {% if q.isReleased %}
-                    <td style="font-weight:bold">{{q.releaseDate}}</td>
-                  {% else %}
-                    <td style="font-weight:bold">N.A.</td>
-                  {% endif %}
+                  <td>Medium Required:</td>
+                  <td class="medslider">
+                      <span style="margin-right:30px;"><span style="font-weight:bold; font-size:110%;" id="medval{{forloop.counter}}">{{q.required_medium}}</span>&nbsp;/&nbsp;{{q.medium|length}}</span>
+                      <input id="med{{forloop.counter}}" type="text" data-slider-handle="square" data-slider-tooltip="hide" data-slider-min="0" data-slider-max="{{q.medium|length}}" data-slider-step="1" data-slider-value="{{q.required_medium}}"/>
+                    <script>
+                      $("#med{{forloop.counter}}").slider();
+                      $("#med{{forloop.counter}}").bind("slideStop", function(slideEvt) {
+                        $("#medval{{forloop.counter}}").text(slideEvt.value);
+                        $.post("/", {quizurl:"{{q.key.urlsafe}}", required:slideEvt.value, type:"med"});
+                      });
+                    </script>
+                  </td>
                 </tr>
                 <tr>
-                  <td>Number Graded:</td>
-                  <td style="font-weight:bold">{{q.numberCompleted}}</td>
+                  <td>Hard Required:</td>
+                  <td class="hardslider">
+                      <span style="margin-right:30px;"><span style="font-weight:bold; font-size:110%;" id="hardval{{forloop.counter}}">{{q.required_hard}}</span>&nbsp;/&nbsp;{{q.hard|length}}</span>
+                      <input id="hard{{forloop.counter}}" type="text" data-slider-handle="square" data-slider-tooltip="hide" data-slider-min="0" data-slider-max="{{q.hard|length}}" data-slider-step="1" data-slider-value="{{q.required_hard}}"/>
+                    <script>
+                      $("#hard{{forloop.counter}}").slider();
+                      $("#hard{{forloop.counter}}").bind("slideStop", function(slideEvt) {
+                        $("#hardval{{forloop.counter}}").text(slideEvt.value);
+                        $.post("/", {quizurl:"{{q.key.urlsafe}}", required:slideEvt.value, type:"hard"});
+                      });
+                    </script>
+                  </td>
                 </tr>
               </table>
             </td>
@@ -89,7 +141,7 @@
                     disabled="true"
                     >Assigned
                   {% else %}
-                    >Assign
+                    >Assign Quiz
                   {% endif %}
                 </button>
               </form>
@@ -103,7 +155,7 @@
                   style="width:100%;"
                   name="k"
                   value="{{q.key.urlsafe}}"
-                  class="rd btn btn-danger lgbtn">Delete
+                  class="rd btn btn-danger lgbtn">Delete Quiz
                 </button>
               </form>
             </td>
@@ -117,6 +169,148 @@
     </div>
   </div>
 </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<!--
+| Assigned Quiz Output Table
+-->
+<div id="assignedoutput" style="display:none">
+{%if not assigned%}
+ <!--
+ |  Null Quiz Alert
+ |   Activated by Page Load
+ -->
+<div class="row">
+  <div class="col-lg-1"></div>
+  <div class="col-lg-9">
+    <div style="margin-top:20px" class="alert alert-info fade in">
+        <i class="fa fa-fw fa-exclamation-triangle fa-2x"></i>&nbsp;&nbsp;
+        <p style="display:inline;position:relative; bottom:5px"><strong>This Course has No Assigned Quizzes!</strong></p>
+        <p style="position:relative; bottom:5px; left:50px;">
+        Please, select another option to continue.</p>
+    </div>
+  </div>
+</div>
+{%endif%}
+
+<div class="row">
+  <div class="col-lg-1"></div>
+  <div class="col-lg-9">
+    <div class="table-responsive" style="overflow:visible">
+      <table class="borderless table">
+        {% for q in assigned %}
+          <tr>
+            <td class="lgbtn">
+             <h3 style="margin:0; font-weight:bold; position:relative; top:12px">
+               <i class="fa fa-fw fa-folder myicon"></i>
+               {{q.name}}
+             </h3>
+            </td>
+            <td class="lgbtn" style="vertical-align:bottom; text-align:right; padding-right:10px">
+             <h4 style="margin:0; font-weight:bold">
+               &nbsp;&nbsp;{{q.description}}
+             </h4>
+            </td>
+          </tr>
+            <td colspan="2">
+              <div style="margin-left:6%; width:94%; border-top:1px solid #ccc"></div>
+            </td>
+          <tr>
+          </tr>
+          <tr>
+            <td rowspan="2" style="padding-top:20px; width:60%">
+              <table class="borderless table" style="margin-left:10%;">
+                <tr>
+                  <td width="30%">Date Created:</td>
+                  <td style="font-weight:bold">{{q.date|date:"M d, Y" }}</td>
+                </tr>
+                <tr>
+                <tr>
+                  <td>Date Assigned:</td>
+                  <td style="font-weight:bold">{{q.releaseDate|date:"M d, Y" }}</td>
+                <tr>
+                  <td>Number Graded:</td>
+                  <td style="font-weight:bold">{{q.numberCompleted}}</td>
+                </tr>
+                <tr>
+                  <td>Easy Required:</td>
+                  <td>
+                    <span style="margin-right:30px;"><span style="font-weight:bold; font-size:110%;">{{q.required_easy}}</span>&nbsp;/&nbsp;{{q.easy|length}}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Medium Required:</td>
+                  <td>
+                    <span style="margin-right:30px;"><span style="font-weight:bold; font-size:110%;">{{q.required_medium}}</span>&nbsp;/&nbsp;{{q.medium|length}}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Hard Required:</td>
+                  <td>
+                    <span style="margin-right:30px;"><span style="font-weight:bold; font-size:110%;">{{q.required_hard}}</span>&nbsp;/&nbsp;{{q.hard|length}}</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+            <!--
+            <td style="padding-top:20px">
+                <button
+                  {%if not q.numberCompleted %}
+                    disabled
+                  {%endif%}
+                  type="submit"
+                  style="width:100%;"
+                  name="k"
+                  value="{{q.key.urlsafe}}"
+                  class="blu btn btn-default lgbtn">
+                  {%if not q.numberCompleted %}
+                    No Grades Available
+                  {%else %}
+                    View Grades
+                  {%endif%}
+                </button>
+            </td>
+           -->
+          </tr>
+          <tr>
+            <td>
+              <form action="/deleteQuiz" method="POST">
+                <button
+                  type="submit"
+                  style="width:100%;"
+                  name="k"
+                  value="{{q.key.urlsafe}}"
+                  class="rd btn btn-danger lgbtn">Delete Quiz
+                </button>
+              </form>
+            </td>
+          </tr>
+          <tr>
+           <td colspan="2" style="padding-bottom:10%"></td>
+          </tr>
+        {% endfor %}
+
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+
+
+
+
+
 
 
 
@@ -125,6 +319,37 @@
 
 document.getElementById("home").className += "active";
 $('#quizform').css('display', 'none');
+
+
+var unassigned = document.getElementById("unassigned");
+var assigned   = document.getElementById("assigned");
+var selected   = unassigned;
+var deselected = assigned;
+var temp;
+function toggle(current){
+  if( current != selected ){
+    selected.classList.remove("btn-info", "active");
+    selected.classList.add("btn-default");
+    deselected.classList.remove("btn-default");
+    deselected.classList.add("btn-info", "active");
+    temp=deselected;
+    deselected=selected;
+    selected=temp;
+    if( current == assigned ){
+      $("#unassignedoutput").css('display','none');
+      $("#assignedoutput").css('display','block');
+    }
+    else{
+      $("#assignedoutput").css('display','none');
+      $("#unassignedoutput").css('display','block');
+    }
+  }
+}
+
+
+
+
+
 
 </script>
 

@@ -565,3 +565,41 @@ select:-moz-focusring {
 #allprobs td{
   vertical-align:middle;
 }
+
+
+
+.easyslider .slider-selection {
+  background: #dff0d8;
+}
+.easyslider .slider-handle {
+  background: #3c763d;
+}
+
+.medslider .slider-selection {
+  background: #fcf8e3;
+}
+.medslider .slider-handle {
+  background: #f0ad4e;
+}
+
+.hardslider .slider-selection {
+  background: #f2dede;
+}
+.hardslider .slider-handle {
+  background: #d9534f;
+}
+
+i.myicon {
+  position:relative;
+  right:25px;
+  top:10px;
+  color:#FFF;
+  background:#5bc0de;
+  font-size:45px;
+  width:60px;
+  height:60px;
+  border-radius: 30px;
+  padding:8px;
+  box-shadow: 3px 1px 1px #CCC;
+}
+

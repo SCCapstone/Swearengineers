@@ -12,12 +12,17 @@ from sympy.parsing.sympy_parser import standard_transformations,\
 ################################################################################
 def grade_quiz(self, user_key, Author, Problem, Quiz, Result):
 
+  transformations = (standard_transformations +
+    (implicit_multiplication_application,))
   posted=self.request.POST.items()
   courseUrl=self.user.selectedCourseKey
   course = ndb.Key(urlsafe=courseUrl).get()
-  quiz=ndb.Key(urlsafe=course.selectedQuizKey).get()
-  transformations = (standard_transformations +
-    (implicit_multiplication_application,))
+  if self.user.isTeacher:
+    quiz=ndb.Key(urlsafe=course.selectedQuizKey).get()
+  else:
+    qkey=self.request.get('key')
+    quiz=ndb.Key(urlsafe=qkey).get()
+
   good=0
   problems=[]
   solutions=[]
@@ -56,25 +61,18 @@ def grade_quiz(self, user_key, Author, Problem, Quiz, Result):
   grade=100.0*good/len(problems)
   stringgrade=str(round(grade,1))+"%"
   record = zip(reversed(problems), reversed(solutions), answers, grades)
-  #utc = pytz.timezone('UTC')
-  #aware_date = utc.localize(datetime.datetime.now())
-  #aware_date.tzinfo
-  #aware_date.strftime("%a %b %d %H:%M:%S %Y")
-  #eastern = pytz.timezone('US/Eastern')
-  #eastern_date = aware_date.astimezone(eastern)
-  #eastern_date.tzinfo
-  #eastern_date.strftime("%a %b %d %H:%M:%S %Y")
-
 
   result = Result(parent=quiz.key)
-  result.student = Author( identity=self.user.name, email=self.user.email_address)
+  result.student = Author(
+    identity=(self.user.name + ' ' + self.user.last_name),
+    email=self.user.email_address
+  )
   result.studentUrl = self.user.key.urlsafe()
   result.floatGrade = grade
   result.stringGrade = stringgrade
   result.record = record
   result.quizName = quiz.name
   result.quizUrl = quiz.key.urlsafe()
-  #result.date = eastern_date
   result.courseUrl = courseUrl
   quiz.numberCompleted += 1
   quiz.results.append(result)
@@ -85,8 +83,10 @@ def grade_quiz(self, user_key, Author, Problem, Quiz, Result):
     result.put()
     quiz.put()
 
+  if self.user.isTeacher:
+    self.render_template('quiz.html', {'result': result })
 
-  print result.url
-  self.render_template('quiz.html', {'result': result })
+  else:
+    self.render_template('quiz.html', {'result':result, 'selectedquiz':quiz})
 
 

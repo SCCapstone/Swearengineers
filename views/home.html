@@ -28,7 +28,7 @@
   <div class="col-lg-2"></div>
   <div class="col-lg-8">
     <h2>Assigned Quizzes</h2>
-    {% if selectedcourse.numberOfAssigned == 0 %}
+    {% if not assignedquizzes %}
       <hr>
       <br>
       <h4 style="text-align:center"><em>Sorry, no assigned quizzes at the moment.</em></h4>
@@ -44,15 +44,15 @@
            </tr>
           </thead>
           <tbody>
-            {%for q in quizzes %}
+            {%for q in assignedquizzes %}
               {% if q.isReleased %}
                 <tr class="result" data-toggle="tooltip" title="Click to Start Quiz"
                       style="cursor:pointer"
                       onclick="document.location='/quiz?k={{ q.key.urlsafe }}';">
                   <td name="quiz"><a href="#"><h4>{{ q.name }}</h4></a></td>
-                  <td><h4>{{ q.releaseDate }}</h4></td>
+                  <td><h4>{{ q.releaseDate|date:"M d, Y" }}</h4></td>
                   <td><h4>{{ q.author.identity }}</h4></td>
-                  <td><h4>{{ q.description }}</h4></td>
+                  <td><h4>{%if q.description%}{{ q.description }}{%else%}None{%endif%}</h4></td>
                 </tr>
               {% endif %}
             {% endfor %}
@@ -79,7 +79,7 @@
         <table id="myTable" class="table table-hover table-striped" name="problemsTable">
           <thead>
            <tr>
-             <th>Quiz Name </th>
+             <th>Quiz Name</th>
              <th>My Grade</th>
              <th>Completion Date</th>
            </tr>
@@ -92,7 +92,7 @@
                       onclick="document.location='/quiz?grade={{ grade.key.urlsafe }}';">
                   <td name="quiz"><a href="#"><h4>{{ grade.quizName }}</h4></a></td>
                   <td><h4>{{ grade.stringGrade }}</h4></td>
-                  <td><h4>{{ grade.date }}</h4></td>
+                  <td><h4>{{ grade.date|date:"M d, Y" }}</h4></td>
                 </tr>
               {% endif %}
             {% endfor %}

@@ -18,12 +18,14 @@
 </div>
 
                                                           <!-- Dropdown Post -->
-<form action="/inMyProblems" method="POST">
-  <input id="hidden" type="hidden" name="quiz">
-  <input id="submitthis" type="submit" style="visibility:hidden">
-</form>
 
-{% include "selectquizform.html" %}
+{% with selectedquiz as selected %}
+  {% with 'Select an unassigned quiz to copy to:' as label %}
+    {% with unassigned as quiztype %}
+      {% include "selectquizform.html" %}
+    {% endwith %}
+  {% endwith %}
+{% endwith %}
 
 
                                                           <!-- Keyword Input -->

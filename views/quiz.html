@@ -45,9 +45,6 @@ Quiz Results
 
 
 
-
-
-
                                                     <!-- Result Output Table -->
 {% if result %}
   <div class="row">
@@ -78,45 +75,62 @@ Quiz Results
               </tr>
               <tr>
                 <td>Date:</td>
-                <td>{{ result.date }}</td>
+                <td>{{ result.date|date:"M d, Y" }}</td>
               </tr>
             </table>
           </div>
         </div>
       </div>
-      <form action="/quiz" method="POST">
-        <table id="quizoutputtable">
-            {%for p, s, a, g in result.record %}
-              <tr class="gradetr" id={{forloop.counter}}>
-                <td class="num">{{ forloop.counter }}.</td>
-                <td class="prob" style="width:60%"><h4>{{ p }}</h4></td>
-                <td><h4>{{ a }}</h4></td>
-               <td style="width:45px">
-                 {% if g == 0 %}
-                   <img width="100%" src="./img/red_X2.png"/>
-                 {% else %}
-                   <img width="100%" src="./img/green.png"/>
-                 {% endif %}
-               </td>
-               <td style="text-align:center">
-                 {% if g == 0 %}
-                   <h4 style="color:red; font-style:italic; font-weight:bold">{{s}}</h4>
-                 {% endif %}
-               </td>
-               <td style="min-width:10%; padding:20px; text-align:center">
-                 {%if user.isTeacher %}
-                 <button disabled type="button" class="btn btn-default">Edit Grade</button>
-                 {%endif%}
-               </td>
-              </tr>
-          {% endfor %}
-        </table>
-      </form>
+      <table id="quizoutputtable">
+        {%for p, s, a, g in result.record %}
+          <tr class="gradetr" id={{forloop.counter}}>
+            <td class="num">{{ forloop.counter }}.</td>
+            <td class="prob" style="width:60%"><h4>{{ p }}</h4></td>
+            <td><h4>{{ a }}</h4></td>
+           <td style="width:45px">
+             {% if g == 0 %}
+               <img width="100%" src="./img/red_X2.png"/>
+             {% else %}
+               <img width="100%" src="./img/green.png"/>
+             {% endif %}
+           </td>
+           <td style="text-align:center">
+             {% if g == 0 %}
+               <h4 style="color:red; font-style:italic; font-weight:bold">{{s}}</h4>
+             {% endif %}
+           </td>
+           <td style="min-width:10%; padding:20px; text-align:center">
+             {%if user.isTeacher and result.student.email != user.email_address %}
+               <form method="POST" action="/editGrade">
+                 <input type="hidden" name="r" value="{{result.key.urlsafe}}"></input>
+                 <input type="hidden" name="n" value="{{forloop.counter}}"></input>
+                 <button type="submit" class="btn btn-default">Edit Grade</button>
+               </form>
+             {%endif%}
+           </td>
+          </tr>
+        {% endfor %}
+      </table>
+      {%if user.isTeacher and result.student.email != user.email_address %}
+        <div style="text-align:right">
+          <button
+            style="width:25%; margin:5%"
+             onclick="window.location.href='/instructor/inMyGrades'"
+            class="lgbtn btn btn-info">Back
+          </button>
+        </div>
+      {%endif%}
+      {%if not user.isTeacher%}
+        <div style="text-align:right">
+          <button
+            style="width:25%; margin:5%"
+             onclick="window.location.href='/'"
+            class="lgbtn btn btn-info">Home
+          </button>
+        </div>
+      {%endif%}
     </div>
   </div>
-  <br>
-  <br>
-  <br>
 
 {% else %}
 
@@ -125,20 +139,35 @@ Quiz Results
     <div class="col-lg-1"></div>
     <div class="col-lg-10" style="padding:0; box-shadow: 2px 2px 4px 2px #ccc">
       {% if user.isTeacher %}
-        {% with 1 as blue %}
-          {% include "instructor/selectquizform.html" %}
+        {% with selectedquiz as selected %}
+          {% with 'Select a quiz:' as label %}
+            {% with quizzes as quiztype %}
+              {% with 1 as blue %}
+                {% include "instructor/selectquizform.html" %}
+              {% endwith %}
+            {% endwith %}
+          {% endwith %}
         {% endwith %}
+
       {% else %}
-        <table class="table" style="width:35%;">
-          <tr>
-            <td style="width:35%">Quiz:</td>
-            <td>{{quiz.name}}</td>
-          </tr>
-          <tr>
-            <td>Instructor:</td>
-            <td>{{quiz.author.identity}}</td>
-          </tr>
-        </table>
+        <div id="quiztop">
+          <h3 id="quizresulttitle">{{ selectedquiz.name }}</h3>
+          <p style="text-align:center; font-weight:bold">{{selectedquiz.description}}</p>
+          <div class="row" style="background:#d9edf7; padding:20px">
+            <div class="col-lg-5">
+              <table>
+                <tr>
+                  <td width="150px">Name:</td>
+                  <td>{{ user.name }} {{user.last_name}}</td>
+                </tr>
+                <tr>
+                  <td>Instructor:</td>
+                  <td>{{ selectedquiz.author.identity }}</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
       {% endif %}
 
         <!--
@@ -149,8 +178,6 @@ Quiz Results
             <i class="fa fa-fw fa-exclamation-triangle"></i>&nbsp;&nbsp;
             <strong>Error!</strong>&nbsp;&nbsp;There are invlid characters in an answer field.
         </div>
-
-
 
       <form action="/quiz" method="POST">
         <table id="quizoutputtable">
@@ -173,6 +200,10 @@ Quiz Results
             </script>
           {% endfor %}
         </table>
+        <input type="hidden"
+            name="key"
+            value="{{selectedquiz.key.urlsafe}}">
+         </input>
         <div style="text-align:right" class="submit_prob_button">
           <button
             style="width:25%;display:none; margin:5%"
@@ -226,7 +257,11 @@ Quiz Results
 <script>
 
   {% if user.isTeacher %}
-    document.getElementById("quizzes").className += "active";
+    {% if result and result.student.email != user.email_address %}
+      document.getElementById("grades").className += "active";
+    {% else %}
+      document.getElementById("quizzes").className += "active";
+    {% endif %}
   {% endif %}
 
   /* django defined:*/

@@ -8,21 +8,21 @@
 <div id="quiztop">
 {% endif %}
   <form id="selectform" action="/selectQuiz" method="POST">
-    <label>Select Quiz:</label>
+    <label {%if not blue%}style="color:black"{%endif%}>{{label}}</label>
     <select onchange="dropdown()" id="selectid"
       class="form-control">
-      {% if not selectedquiz %}
+      {% if not selected %}
         <option selected>Select a Quiz</option>
       {% else %}
-        <option selected {%if selectedcourse.numberOfQuizzes != 1%} style="display:none"{%endif%}>
-          {{ selectedquiz.name }}
-          {% if selectedquiz.description %}
+        <option selected >
+          {{ selected.name }}
+          {% if selected.description %}
             :&nbsp;&nbsp;{{selectedquiz.description}}
           {% endif %}
         </option>
       {% endif %}
-      {% for q in quizzes %}
-        {% if selectedquiz.name != q.name %}
+      {% for q in quiztype %}
+        {% if selected.name != q.name %}
           <option value="{{ q.key.urlsafe }}">
             {{ q.name }}
             {% if q.desc %}
@@ -39,7 +39,6 @@
 {% if blue %}
 </div>
 {% endif %}
-
 
 <script>
 /*******************************************************************************

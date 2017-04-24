@@ -17,32 +17,43 @@
 </div>
 
 
-{% include "selectquizform.html" %}
+<div class="row" id="gradesoutput">
+  <div class="col-lg-2"></div>
+  <div class="col-lg-8">
+    {% with selectedreleased as selected %}
+      {% with 'Select from assigned quizzes:' as label %}
+        {% with assigned as quiztype %}
+          {% include "selectquizform.html" %}
+        {% endwith %}
+      {% endwith %}
+    {% endwith %}
+  </div>
+</div>
 
 
 <div class="row" id="gradesoutput">
   <div class="col-lg-2"></div>
   <div class="col-lg-8">
-    {% if not selectedquiz.results %}
+    {% if not selectedreleased.results %}
       <h4 style="text-align:center"><em>Sorry, no grades to show at the moment.</em></h4>
     {% else %}
       <div class="table-responsive">
         <table id="myTable" class="table table-hover table-striped" name="problemsTable">
           <thead>
            <tr>
-             <th>Student Name </th>
-             <th>Grade</th>
+             <th width="33%">Student Name </th>
+             <th width="33%">Grade</th>
              <th>Completion Date</th>
            </tr>
           </thead>
           <tbody>
-            {% for grade in selectedquiz.results reversed %}
+            {% for grade in selectedreleased.results reversed %}
                 <tr class="result" data-toggle="tooltip" title="Click to View Quiz Results"
                       style="cursor:pointer"
                       onclick="document.location='../quiz?grade={{ grade.url }}';">
                   <td name="quiz"><a href="#"><h4>{{ grade.student.identity }}</h4></a></td>
                   <td><h4>{{ grade.stringGrade }}</h4></td>
-                  <td><h4>{{ grade.date }}</h4></td>
+                  <td><h4>{{ grade.date|date:"M d, Y" }}</h4></td>
                 </tr>
             {% endfor %}
           </tbody>
@@ -151,7 +162,6 @@
 <script>
 
 document.getElementById("grades").className += "active";
-$('#quizform').css('display', 'none');
 
 </script>
 

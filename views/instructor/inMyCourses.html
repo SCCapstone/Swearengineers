@@ -7,11 +7,12 @@
   <div class="col-lg-3">
     <button id="newcoursebtn"
       type="button" data-toggle="modal" data-target="#newcourse"
-      style="float:right; width:85%; margin-top:5%;"
+      style="float:right; width:85%; margin-top:7%;"
       class="btn btn-info lgbtn">New Course
     </button>
   </div>
 </div>
+<br>
 
 <!--
 | New Course Modal
@@ -93,20 +94,28 @@
 <div class="row">
   <div class="col-lg-1"></div>
   <div class="col-lg-9">
-    <div class="table-responsive">
+    <div class="table-responsive" style="overflow:visible">
       <table class="borderless table">
         {% for c in mycourses %}
           <tr>
-            <td colspan="2" class="lgbtn" style="border-bottom:1px solid #ccc">
-              <h3 style="margin:0; font-weight:bold">{{c.name}}</h3>
+            <td colspan="2" class="lgbtn">
+             <h3 style="margin:0; font-weight:bold; position:relative; top:12px">
+               <i class="fa fa-fw fa-folder-open myicon"></i>
+                {{c.name}}
+             </h3>
             </td>
           </tr>
+          </tr>
+            <td colspan="2">
+              <div style="margin-left:6%; width:94%; border-top:1px solid #ccc"></div>
+            </td>
+          <tr>
           <tr>
             <td rowspan="2" style="padding-top:20px">
-              <table class="borderless table" style="margin-left:5%">
+              <table class="borderless table" style="margin-left:10%; width:60%">
                 <tr>
-                  <td>Created Date:</td>
-                  <td style="font-weight:bold">{{c.date}}</td>
+                  <td width="40%">Created Date:</td>
+                  <td style="font-weight:bold">{{c.date|date:"M d, Y"}}</td>
                 </tr>
                 <tr>
                   <td>Number of Students:</td>

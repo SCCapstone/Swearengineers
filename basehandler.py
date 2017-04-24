@@ -50,8 +50,11 @@ class BaseHandler(webapp2.RequestHandler):
     vals = {}
     course = ''
     quiz = ''
+    selectedReleased = ''
     courses=[]
     quizzes=[]
+    unassigned=[]
+    assigned=[]
     problems=[]
 
     if hasattr(self.user, 'myCourseKeys'):
@@ -62,7 +65,13 @@ class BaseHandler(webapp2.RequestHandler):
       course = ndb.Key(urlsafe=self.user.selectedCourseKey).get()
       if course and course.quizUrls:
         for url in course.quizUrls:
-          quizzes.insert(0, ndb.Key(urlsafe=url[2]).get())
+          q=ndb.Key(urlsafe=url[2]).get()
+          quizzes.insert(0, q)
+          print '\n'
+          if q.isReleased:
+            assigned.insert(0,q)
+          else:
+            unassigned.insert(0,q)
 
       if course and course.selectedQuizKey:
         quiz=ndb.Key(urlsafe=course.selectedQuizKey).get()
@@ -73,25 +82,25 @@ class BaseHandler(webapp2.RequestHandler):
         for p in reversed(quiz.easy):
           problems.append(p)
 
-
-
-
-
-
+      if course and course.selectedReleasedKey:
+        selectedReleased=ndb.Key(urlsafe=course.selectedReleasedKey).get()
 
     vals = {
       'user': self.user,
       'mycourses': courses,
       'selectedcourse': course,
       'selectedquiz': quiz,
+      'selectedreleased': selectedReleased,
       'problems': problems,
       'quizzes': quizzes,
+      'unassigned': unassigned,
+      'assigned': assigned,
     }
 
-    if not params:
-      params = vals
-    else:
-      params.update(vals)
+    if params:
+      vals.update(params)
+
+    params = vals
 
     path = os.path.join(os.path.dirname(__file__), 'views', view_filename)
     return self.response.out.write(template.render(path, params))

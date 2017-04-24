@@ -25,14 +25,17 @@ def create_problem(self, Problem, user_key, Author, Quiz):
        for p in quiz.easy:
          if p.url == problem.url:
            quiz.easy.remove(p)
+           quiz.required_easy -=1
      if problem.difficulty == 'Medium':
        for p in quiz.medium:
          if p.url == problem.url:
            quiz.medium.remove(p)
+           quiz.required_medium -=1
      if problem.difficulty == 'Hard':
        for p in quiz.hard:
          if p.url == problem.url:
            quiz.hard.remove(p)
+           quiz.required_hard -=1
 
 
   problem.content = self.request.get('problem')
@@ -50,10 +53,13 @@ def create_problem(self, Problem, user_key, Author, Quiz):
 
   if problem.difficulty == 'Easy':
     quiz.easy.append(problem)
+    quiz.required_easy +=1
   if problem.difficulty == 'Medium':
     quiz.medium.append(problem)
+    quiz.required_medium +=1
   if problem.difficulty == 'Hard':
     quiz.hard.append(problem)
+    quiz.required_hard +=1
 
   quiz.put()
   template_values = {
