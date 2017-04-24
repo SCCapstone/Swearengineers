@@ -14,20 +14,20 @@
 
 
 <div class="row" style="margin-bottom:2%">
-  <div class="col-lg-6"><h2 class="page-header">My Quizzes</h2></div>
-  <div class="col-lg-4" style="text-align:right; margin-right:15px">
-    <div class="btn-group" data-toggle="buttons" style="margin-top:4%">
-      <label id="unassigned" class="btn btn-info active lgbtn" onclick="toggle(unassigned)">
+  <div class="col-lg-5"><h2 class="page-header">My Quizzes</h2></div>
+  <div class="col-lg-5" style="text-align:right; margin-right:15px">
+    <div class="btn-group" data-toggle="buttons" style="margin-top:6%">
+      <label id="unassigned" class="btn btn-info active"
+        onclick="toggle(unassigned)" style="text-transform:uppercase">
         &nbsp;&nbsp;Unassigned Quizzes&nbsp;
       </label>
-      <label id="assigned" class="btn btn-default lgbtn"
-        onclick="toggle(assigned)">
+      <label id="assigned" class="btn btn-default"
+        onclick="toggle(assigned)" style="text-transform:uppercase">
         &nbsp;&nbsp;Assigned Quizzes&nbsp;
       </label>
     </div>
   </div>
 </div>
-<br>
 
 
 
@@ -262,6 +262,17 @@
                 </tr>
               </table>
             </td>
+            <td style="padding-top:20px">
+              <form action="/deleteQuiz" method="POST">
+                <button
+                  type="submit"
+                  style="width:100%;"
+                  name="k"
+                  value="{{q.key.urlsafe}}"
+                  class="rd btn btn-danger lgbtn">Delete Quiz
+                </button>
+              </form>
+            </td>
             <!--
             <td style="padding-top:20px">
                 <button
@@ -280,7 +291,6 @@
                   {%endif%}
                 </button>
             </td>
-           -->
           </tr>
           <tr>
             <td>
@@ -295,6 +305,7 @@
               </form>
             </td>
           </tr>
+           -->
           <tr>
            <td colspan="2" style="padding-bottom:10%"></td>
           </tr>

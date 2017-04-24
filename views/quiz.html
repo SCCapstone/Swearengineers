@@ -24,7 +24,7 @@ Quiz Results
 {% block maincontent %}
 
 
-{% if not result %}
+{% if not result and user.isTeacher %}
   <div class="row">
     <div class="col-lg-8">
       <h2 class="page-header">Test My Quiz</h2>
@@ -140,8 +140,8 @@ Quiz Results
     <div class="col-lg-10" style="padding:0; box-shadow: 2px 2px 4px 2px #ccc">
       {% if user.isTeacher %}
         {% with selectedquiz as selected %}
-          {% with 'Select a quiz:' as label %}
-            {% with quizzes as quiztype %}
+          {% with 'Select an unassigned quiz:' as label %}
+            {% with unreleased as quiztype %}
               {% with 1 as blue %}
                 {% include "instructor/selectquizform.html" %}
               {% endwith %}

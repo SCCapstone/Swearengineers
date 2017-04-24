@@ -699,19 +699,17 @@ class CreateCourseHandler(BaseHandler):
   @instructor_required
   def post(self):
     name=self.request.get('course_name')
+    chars=len(name)-name.count(' ')
+    if not chars:
+      if not hasattr(self.user,'selectedCourseKey'):
+        self.render_template('instructor/inMyCourses.html', {'newuser': True})
+      else:
+        self.render_template('instructor/inMyCourses.html')
+        return
     c=Course()
     c.name=name
     c.numberOfQuizzes = 0
     c.numberOfStudents = 0
-    #utc = pytz.timezone('UTC')
-    #aware_date = utc.localize(datetime.datetime.now())
-    #aware_date.tzinfo
-    #aware_date.strftime("%a %b %d %H:%M:%S %Y")
-    #eastern = pytz.timezone('US/Eastern')
-    #eastern_date = aware_date.astimezone(eastern)
-    #eastern_date.tzinfo
-    #eastern_date.strftime("%a %b %d %H:%M:%S %Y")
-    #c.date = eastern_date
     c.put()
     k=c.key.urlsafe()
     if not hasattr(self.user, 'myCourseKeys'):
@@ -728,6 +726,10 @@ class DeleteCourseHandler(BaseHandler):
   def post(self):
     k=self.request.get('key')
     self.user.myCourseKeys.remove(k)
+    if self.user.selectedCourseKey == k:
+      self.user.selectedCourseKey = ''
+      for key in reversed(self.user.myCourseKeys):
+        self.user.selectedCourseKey=key
     self.user.put()
     ndb.Key(urlsafe=k).delete()
     if not hasattr(self.user,'selectedCourseKey'):
