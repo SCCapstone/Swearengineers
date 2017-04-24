@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from google.appengine.api import mail
 
-WEBSENDER='MathQuizzes<MathQuizzes@math-quizzes-jesager.appspotmail.com>'
 
 def sendit():
   course_name='Math 101'
@@ -15,10 +14,14 @@ def sendit():
   last='Sager'
   email='jamessager@hotmail.com'
   address=first + ' ' + last + '<' + email + '>'
+  sub='New Quiz from Instructor ' + instructor
 
-  subject='New Quiz from Instructor' + instructor
 
-  message = mail.EmailMessage(WEBSENDER, subject)
+  message = mail.EmailMessage(
+    sender='MathQuizzes<MathQuizzes@math-quizzes-jesager.appspotmail.com>',
+    subject=sub
+  )
+
   message.to = address
 
   message.body = """
