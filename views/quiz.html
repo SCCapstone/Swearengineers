@@ -179,7 +179,7 @@ Quiz Results
             <strong>Error!</strong>&nbsp;&nbsp;There are invlid characters in an answer field.
         </div>
 
-      <form action="/quiz" method="POST">
+      <form action="/quiz" method="POST" id="quizForm">
         <table id="quizoutputtable">
           {% for problem in problems reversed%}
             <tr id={{forloop.counter}} class="problem_display{{forloop.counter}}">
@@ -245,6 +245,14 @@ Quiz Results
                 $(".submit_prob_button").show();
             }
         }
+
+        document.getElementById("quizForm").addEventListener('keypress', function(event)
+        {
+            if(event.keyCode == 13)
+            {
+                event.preventDefault();
+            }
+        });
 
       </script>
     </div>
