@@ -218,8 +218,11 @@ Quiz Results
             class="lgbtn btn btn-info"
             onclick="next_problem()">Next
           </div>
+          <p style="width:25%; margin:5%" id="toAdvance"></p>
         </div>
       </form>
+
+
 
       <script>
         var max_problems = {{ problems|length }};
@@ -251,11 +254,10 @@ Quiz Results
                     quizId: "{{selectedquiz.key.urlsafe}}"
                     }), function(data) {
                       if (data.correct) {
-                          alert("You got all the '" + data.difficulty + "' problems correct! You can skip any remaining "
+                          document.getElementById("toAdvance").innerHTML= ("You got all the '" + data.difficulty + "' problems correct! You can skip any remaining "
                               + data.difficulty + " problems.")
-                      } else {
-                          alert("That was incorrect. Please continue doing the " + data.difficulty + " problems.")
-                      }
+                      } 
+                      
 
                     }, "json");
 

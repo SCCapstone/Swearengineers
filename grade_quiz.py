@@ -118,7 +118,7 @@ def grade_quiz(self, user_key, Author, Problem, Quiz, Result):
     grade = 100.0 * (correct_hard + correct_medium + correct_easy) / (
         quiz.required_hard + quiz.required_medium + quiz.required_easy)
     stringgrade = str(round(grade, 1)) + "%"
-    record = zip(reversed(problems), reversed(solutions), answers, grades)
+    record = zip(problems, solutions, answers, grades)
 
     result = Result(parent=quiz.key)
     result.student = Author(
