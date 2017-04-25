@@ -22,13 +22,17 @@
 
 
 
-import logging, webapp2, urllib, time, datetime, json, os.path, inspect, pytz
+import logging, webapp2, urllib, time, datetime, json, os.path, inspect, pytz, _json
 from collections import defaultdict
 from basehandler import *
 from signup import *
 from create_problem import *
 from grade_quiz import *
 
+from sympy import *
+from sympy.parsing.sympy_parser import parse_expr
+from sympy.parsing.sympy_parser import standard_transformations,\
+  implicit_multiplication_application
 
 
 ################################################################################
@@ -333,18 +337,19 @@ class QuizHandler(BaseHandler, webapp2.RequestHandler):
       g = ndb.Key(urlsafe=self.request.get('grade')).get()
       self.render_template('quiz.html', {'result':g})
     elif self.user.isTeacher:
-      self.render_template('quiz.html')
+      qkey = self.request.get('k')
+      self.render_template('quiz.html', {'qkey': qkey})
     else:
       problems = []
-      qkey=self.request.get('k')
-      quiz=ndb.Key(urlsafe=qkey).get()
+      qkey = self.request.get('k')
+      quiz = ndb.Key(urlsafe=qkey).get()
       for p in reversed(quiz.hard):
         problems.append(p)
       for p in reversed(quiz.medium):
         problems.append(p)
       for p in reversed(quiz.easy):
         problems.append(p)
-      self.render_template('quiz.html', {'problems':problems, 'selectedquiz':quiz})
+      self.render_template('quiz.html', {'problems':problems, 'selectedquiz':quiz, 'qkey': qkey})
   def post(self):
     grade_quiz(self, user_key, Author, Problem, Quiz, Result)
 
@@ -811,6 +816,56 @@ class helpHandler(BaseHandler):
     self.render_template('instructor/inHelp.html', {'noCourseSelect':True})
 
 
+class problemGraderHandler(BaseHandler):
+
+  @user_required
+  def post(self):
+    request_str = self.request.body
+    print request_str
+    request_json = json.loads(request_str)
+
+    quiz = ndb.Key(urlsafe=request_json['quizId']).get()
+
+    self.response.headers["Content-Type"] = "application/json"
+
+    number = request_json['problemNumber']
+
+    is_correct = False
+    their_answer = request_json['answer']
+
+    correct_answer = ''
+
+    medNumber = number - len(quiz.easy);
+    hardNumber = (number - len(quiz.medium) - len(quiz.easy))
+    diff = 'easy'
+
+    if number < len(quiz.easy):
+      correct_answer = quiz.easy[number].answer
+    elif medNumber < len(quiz.medium) and medNumber >= 0:
+      correct_answer = quiz.medium[medNumber].answer
+      diff = quiz.medium[medNumber].difficulty
+    elif hardNumber < len(quiz.hard) and hardNumber >= 0:
+      correct_answer = quiz.hard[hardNumber].answer
+      diff = quiz.medium[hardNumber].difficulty
+
+    print 'correct: ', correct_answer
+    try:
+      transformations = (standard_transformations +
+                         (implicit_multiplication_application,))
+      eq1 = parse_expr(correct_answer, transformations=transformations)
+      eq2 = parse_expr(their_answer, transformations=transformations)
+
+      # TODO fix grading
+      if eq1.equals(eq2):
+        is_correct = True
+    except:
+      pass
+    json_obj = {
+        'correct': is_correct,
+        'difficulty': diff
+    }
+
+    self.response.out.write(json.dumps(json_obj))
 
 
 class accountSummaryHandler(BaseHandler):
@@ -877,6 +932,7 @@ app = webapp2.WSGIApplication([
   webapp2.Route('/instructor/inAddStudents', inAddStudentsHandler, name='inAddStudents'),
   webapp2.Route('/instructor/inMyCourses', inMyCoursesHandler, name='inMyCourses'),
   webapp2.Route('/instructor/inHelp', helpHandler, name='inHelp'),
+  webapp2.Route('/quiz/grade', problemGraderHandler, name='inGradeJson'),
 
   # edit classes
   webapp2.Route('/editGrade', editGradeHandler, name='editGrade'),

@@ -183,7 +183,7 @@ Quiz Results
         <table id="quizoutputtable">
           {% for problem in problems reversed%}
             <tr id={{forloop.counter}} class="problem_display{{forloop.counter}}">
-              <td class="num2">{{ forloop.counter }}.</td>
+              <td class="num2">{{problem.difficulty}} {{ forloop.counter }}.</td>
               <td class="prob"><h3>{{ problem.content }}</h3></td>
               <td class="ans">
                 <input class="answerbox" autocomplete="off" id="answer{{forloop.counter}}" tabindex="{{forloop.counter}}" type="text" name="{{ forloop.counter }}">
@@ -237,13 +237,32 @@ Quiz Results
 
         function next_problem() {
             $(".problem_display" + curr_problem).hide();
-            curr_problem ++;
-            $(".problem_display" + curr_problem).show();
 
-            if (curr_problem >= max_problems) {
+            if ((curr_problem + 1) >= max_problems) {
                 $(".next_prob_button").hide();
+                curr_problem ++;
+                $(".problem_display" + curr_problem).show();
                 $(".submit_prob_button").show();
+            } else {
+
+                $.post("/quiz/grade", JSON.stringify({
+                    problemNumber: curr_problem - 1,
+                    answer: $("#answer" + curr_problem).val(),
+                    quizId: "{{selectedquiz.key.urlsafe}}"
+                    }), function(data) {
+                      if (data.correct) {
+                          alert("You got all the '" + data.difficulty + "' problems correct! You can skip any remaining "
+                              + data.difficulty + " problems.")
+                      } else {
+                          alert("That was incorrect. Please continue doing the " + data.difficulty + " problems.")
+                      }
+
+                    }, "json");
+
+                curr_problem ++;
             }
+
+            $(".problem_display" + curr_problem).show();
         }
 
         document.getElementById("quizForm").addEventListener('keypress', function(event)
@@ -253,6 +272,8 @@ Quiz Results
                 event.preventDefault();
             }
         });
+
+
 
       </script>
     </div>
