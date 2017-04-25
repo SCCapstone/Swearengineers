@@ -524,6 +524,7 @@ select:-moz-focusring {
   padding:2% 5%;
 }
 #quizoutputtable td.ans{
+    width: 30%;
   padding:0 5%;
 }
 #quizoutputtable input{
