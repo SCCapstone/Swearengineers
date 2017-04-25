@@ -115,8 +115,11 @@ def grade_quiz(self, user_key, Author, Problem, Quiz, Result):
     print 'req med', quiz.required_medium
     print 'req', quiz.required_easy
 
-    grade = 100.0 * (correct_hard + correct_medium + correct_easy) / (
-        quiz.required_hard + quiz.required_medium + quiz.required_easy)
+    try:
+        grade = 100.0 * (correct_hard + correct_medium + correct_easy) / (
+            quiz.required_hard + quiz.required_medium + quiz.required_easy)
+    except:
+        grade = 100.0
     stringgrade = str(round(grade, 1)) + "%"
     record = zip(problems, solutions, answers, grades)
 
